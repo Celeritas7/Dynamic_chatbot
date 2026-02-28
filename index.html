@@ -26,13 +26,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .pitch-r{display:flex;align-items:center;gap:8px}
 .pitch-time{font-size:11px;color:var(--text2)}
 .day-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px}
-.day-badge.weekday{background:#E5EAFF;color:#3B5BDB}
-.day-badge.weekend{background:#FFF0E5;color:#E8722A}
-.day-badge.holiday{background:#FFE5E5;color:#DC2626}
+.day-badge.weekday{background:#E5EAFF;color:#3B5BDB}.day-badge.weekend{background:#FFF0E5;color:#E8722A}.day-badge.holiday{background:#FFE5E5;color:#DC2626}
 .hol-btn{background:none;border:1.5px solid var(--as);border-radius:7px;padding:2px 7px;font-size:9px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text2);transition:all .2s}
 .hol-btn.active{background:#DC2626;color:white;border-color:#DC2626}
 .corner-btn{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;border:none;background:var(--accent);color:white;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:200;transition:all .3s;display:flex;align-items:center;justify-content:center}
-.corner-btn:hover{transform:scale(1.08)}
 .loc-bar{display:flex;gap:6px;margin-bottom:12px}
 .loc-g{display:flex;background:var(--card);border-radius:12px;padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .loc-b{border:none;background:transparent;padding:6px 12px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .3s;white-space:nowrap}
@@ -45,8 +42,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .poss-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 .poss-dot.d-atk{background:#DC2626}.poss-dot.d-mid{background:#F59E0B}.poss-dot.d-def{background:#8B5CF6}.poss-dot.d-done{background:#059669}
-.poss-text{flex:1;font-size:12px;font-weight:600}
-.poss-sub{font-size:10px;color:var(--text2)}
+.poss-text{flex:1;font-size:12px;font-weight:600}.poss-sub{font-size:10px;color:var(--text2)}
 .pass-def-btn{border:none;padding:6px 12px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;background:#8B5CF6;color:white;transition:all .2s;flex-shrink:0}
 .pitch-field{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 0}
 .study-focus{width:100%;max-width:420px;text-align:center;animation:fadeUp .5s ease forwards;opacity:0}
@@ -63,27 +59,97 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .study-controls{display:flex;gap:10px;justify-content:center;margin-top:4px}
 .study-ctrl{border:none;padding:10px 20px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
 .study-ctrl.start{background:#DC2626;color:white;box-shadow:0 4px 16px rgba(220,38,38,.3)}
-.study-ctrl.pause{background:#F59E0B;color:white}
-.study-ctrl.done{background:#059669;color:white}
-.study-ctrl:hover{transform:translateY(-1px)}
+.study-ctrl.pause{background:#F59E0B;color:white}.study-ctrl.done{background:#059669;color:white}
 .dev-tasks{width:100%;max-width:420px;margin-top:16px}
 .dev-header{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.dev-card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px;transition:all .3s}
+.dev-card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px}
 .dev-cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s}
 .dev-cb.checked{background:var(--accent);border-color:var(--accent)}
 .dev-cb.checked::after{content:'✓';color:white;font-size:11px;font-weight:700}
-.dev-title{font-size:14px;font-weight:500;flex:1}
-.dev-title.strike{text-decoration:line-through;opacity:.5}
-.dev-tag{font-size:10px;color:var(--text2)}
+.dev-title{font-size:14px;font-weight:500;flex:1}.dev-tag{font-size:10px;color:var(--text2)}
 .dev-rm{border:none;background:none;font-size:12px;cursor:pointer;color:var(--text2);flex-shrink:0}
 .mood-bar{display:flex;gap:8px;margin-bottom:14px;width:100%}
 .mood-btn{flex:1;border:2px solid var(--as);background:var(--card);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .3s;font-family:'DM Sans',sans-serif}
 .mood-btn.active{border-color:var(--accent);background:var(--as);transform:scale(1.03)}
-.mood-emoji{font-size:24px;display:block;margin-bottom:2px}
-.mood-lbl{font-size:10px;font-weight:600;color:var(--text2)}
+.mood-emoji{font-size:24px;display:block;margin-bottom:2px}.mood-lbl{font-size:10px;font-weight:600;color:var(--text2)}
 .link-c{background:var(--card);border-radius:13px;padding:13px;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .3s;text-decoration:none;color:var(--text);width:100%;max-width:420px}
-.link-c:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.link-i{font-size:24px;flex-shrink:0}.link-t{font-size:13px;font-weight:600}
+
+/* ==== CENTERED OVERLAY ==== */
+.ov-bg{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+.ov-bg.show{display:flex;align-items:center;justify-content:center;animation:ovIn .3s ease}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.ov-panel{background:var(--bg);border-radius:20px;width:94%;max-width:480px;max-height:88vh;overflow-y:auto;padding:20px;box-shadow:0 16px 64px rgba(0,0,0,.25);animation:panUp .35s ease}
+@keyframes panUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ov-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ov-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700}
+.ov-close{border:none;background:var(--card);width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.1);color:var(--text)}
+.ov-tabs{display:flex;background:var(--card);border-radius:12px;padding:3px;margin-bottom:14px}
+.ov-tab{flex:1;border:none;background:transparent;padding:8px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .3s;text-align:center}
+.ov-tab.active{background:var(--accent);color:white}
+
+/* Player sections */
+.player-sec{margin-bottom:14px;border-radius:12px;padding:12px;border:1.5px solid var(--as)}
+.player-sec.atk{background:rgba(220,38,38,.03);border-color:rgba(220,38,38,.15)}
+.player-sec.mid{background:rgba(245,158,11,.03);border-color:rgba(245,158,11,.15)}
+.player-sec.def{background:rgba(139,92,246,.03);border-color:rgba(139,92,246,.15)}
+.player-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.player-icon{font-size:16px}.player-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.player-hdr.atk .player-name{color:#DC2626}.player-hdr.mid .player-name{color:#D97706}.player-hdr.def .player-name{color:#7C3AED}
+.player-add-btn{margin-left:auto;border:none;background:var(--as);color:var(--accent);padding:3px 8px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.dc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.dc-chip{padding:6px 12px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--as);background:var(--card);color:var(--text);display:flex;align-items:center;gap:5px}
+.dc-chip:active{transform:scale(.95)}
+.dc-chip-count{font-size:9px;background:var(--as);color:var(--accent);padding:0 6px;border-radius:6px;font-weight:700}
+.dc-item{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:8px;padding:8px 10px;margin-bottom:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.dc-item-info{flex:1;min-width:0}.dc-item-n{font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dc-item-c{font-size:8px;color:var(--text2)}
+.dc-pri-btns{display:flex;gap:2px;flex-shrink:0}
+.dc-pri-btn{border:none;width:22px;height:22px;border-radius:5px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(--as);color:var(--text2)}
+.dc-pri-btn:hover{background:var(--accent);color:white}
+.pitch-btn{border:none;padding:3px 8px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .2s}
+.pitch-btn.on{background:#059669;color:white}.pitch-btn.off{background:var(--as);color:var(--accent)}
+.bench-task{background:var(--card);border-radius:11px;padding:11px;margin-bottom:5px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;align-items:center;gap:8px;position:relative;overflow:hidden}
+.bench-task.done{opacity:.5}.bench-pbar{width:3px;height:100%;position:absolute;left:0;top:0;border-radius:11px 0 0 11px}
+.bench-cb{width:18px;height:18px;border-radius:5px;border:2px solid var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s}
+.bench-cb.checked{background:var(--accent);border-color:var(--accent)}
+.bench-cb.checked::after{content:'✓';color:white;font-size:10px;font-weight:700}
+.bench-info{flex:1;min-width:0}.bench-title{font-size:12px;font-weight:500}.bench-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.bench-tag{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px}
+
+/* ==== CATEGORY DETAIL VIEW ==== */
+.cat-detail{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.cat-detail.show{display:flex;animation:ovIn .3s ease}
+.cat-panel{background:var(--bg);border-radius:20px;width:94%;max-width:480px;max-height:88vh;overflow-y:auto;padding:20px;box-shadow:0 16px 64px rgba(0,0,0,.25);animation:panUp .35s ease}
+.cat-top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.cat-back{border:none;background:var(--card);width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.1);color:var(--text);flex-shrink:0}
+.cat-badge{font-size:8px;font-weight:700;padding:2px 8px;border-radius:6px;color:white}
+.cat-badge.atk{background:#DC2626}.cat-badge.mid{background:#D97706}.cat-badge.def{background:#7C3AED}
+.cat-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;flex:1}
+.cat-stats{display:flex;gap:12px;margin-bottom:16px}
+.cat-stat{background:var(--card);border-radius:10px;padding:10px 14px;flex:1;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.cat-stat-num{font-size:20px;font-weight:700;color:var(--accent)}.cat-stat-lbl{font-size:9px;color:var(--text2);margin-top:2px}
+/* Add new task */
+.cat-add{display:flex;gap:8px;margin-bottom:16px}
+.cat-add-input{flex:1;border:1.5px solid var(--as);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none}
+.cat-add-input:focus{border-color:var(--accent)}
+.cat-add-btn{border:none;background:var(--accent);color:white;padding:10px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+/* Search uncat */
+.cat-search{width:100%;border:1.5px solid var(--as);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;margin-bottom:8px}
+.cat-search:focus{border-color:var(--accent)}
+.cat-search-item{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:8px;padding:8px 10px;margin-bottom:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.cat-search-name{flex:1;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-pull-btn{border:none;background:var(--accent);color:white;padding:3px 10px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer}
+
+/* New category modal */
+.cat-modal-ov{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
+.cat-modal-ov.show{display:flex}
+.cat-modal{background:var(--bg);border-radius:16px;padding:20px;width:90%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.cat-modal h3{font-family:'Fraunces',serif;font-size:16px;margin-bottom:12px}
+.cat-modal input,.cat-modal select{width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;margin-bottom:8px}
+.cat-modal-btns{display:flex;gap:8px;margin-top:6px}
+.cat-modal-btns button{flex:1;padding:8px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none}
+.cat-modal-btns .save{background:var(--accent);color:white}.cat-modal-btns .cancel{background:var(--as);color:var(--text2)}
+
+/* Lock/break/nudge */
 .lock-ov{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}
 .lock-ov.show{display:flex;animation:lockIn .6s ease}
 @keyframes lockIn{from{opacity:0}to{opacity:1}}
@@ -97,25 +163,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .lock-sub{font-size:13px;color:rgba(255,255,255,.85);margin-bottom:22px;max-width:280px;line-height:1.5;position:relative;z-index:1}
 .lock-tasks{display:flex;flex-direction:column;gap:7px;margin-bottom:20px;width:100%;max-width:340px;position:relative;z-index:1}
 .lock-task{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);padding:12px 14px;border-radius:11px;color:white;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
-.lock-task:hover{background:rgba(255,255,255,.2)}
 .lock-task.checked{opacity:.6}.lock-task.checked .lt-text{text-decoration:line-through}
 .lt-cb{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,.5);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .3s}
-.lt-cb.checked{background:white;border-color:white}
-.lt-cb.checked::after{content:'✓';font-size:12px;font-weight:700}
-.lock-ov.mid-m .lt-cb.checked::after{color:#B45309}
-.lock-ov.mid-l .lt-cb.checked::after{color:#059669}
-.lock-ov.def-e .lt-cb.checked::after{color:#7C3AED}
+.lt-cb.checked{background:white;border-color:white}.lt-cb.checked::after{content:'✓';font-size:12px;font-weight:700}
+.lock-ov.mid-m .lt-cb.checked::after{color:#B45309}.lock-ov.mid-l .lt-cb.checked::after{color:#059669}.lock-ov.def-e .lt-cb.checked::after{color:#7C3AED}
 .lt-text{flex:1;text-align:left}.lt-icon{font-size:18px;flex-shrink:0}
 .lock-timer{position:relative;z-index:1;margin-bottom:10px}
 .lock-timer-text{font-size:34px;font-weight:700;color:white;font-family:'DM Sans',sans-serif}
 .lock-timer-lbl{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
 .lock-btn{border:none;padding:11px 26px;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;position:relative;z-index:1}
-.lock-btn.ready{background:white;color:#1a1a1a;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.lock-btn.ready:hover{transform:scale(1.03)}
-.lock-btn.waiting{background:rgba(255,255,255,.15);color:rgba(255,255,255,.4);cursor:not-allowed}
+.lock-btn.ready{background:white;color:#1a1a1a;box-shadow:0 4px 16px rgba(0,0,0,.2)}.lock-btn.waiting{background:rgba(255,255,255,.15);color:rgba(255,255,255,.4);cursor:not-allowed}
 .lock-status{font-size:10px;color:rgba(255,255,255,.5);margin-top:6px;position:relative;z-index:1}
-.skip-btn{margin-top:14px;background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.6);padding:7px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;position:relative;z-index:1;transition:all .3s}
-.skip-btn:hover{border-color:rgba(255,255,255,.6);color:white}
+.skip-btn{margin-top:14px;background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.6);padding:7px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;position:relative;z-index:1}
 .break-ov{display:none;position:fixed;inset:0;z-index:9998;background:linear-gradient(145deg,#064E3B,#065F46,#047857);color:white;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}
 .break-ov.show{display:flex;animation:lockIn .6s ease}
 .break-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:4px;position:relative;z-index:1}
@@ -126,8 +185,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes tipSlide{to{opacity:1;transform:translateX(0)}}
 .break-ring{width:90px;height:90px;position:relative;z-index:1}
 .break-ring svg{transform:rotate(-90deg);width:90px;height:90px}
-.break-ring circle{fill:none;stroke-width:4}
-.br-bg{stroke:rgba(255,255,255,.2)}.br-fill{stroke:white;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.break-ring circle{fill:none;stroke-width:4}.br-bg{stroke:rgba(255,255,255,.2)}.br-fill{stroke:white;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
 .break-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700}
 .nudge{display:none;position:fixed;top:0;left:0;right:0;z-index:300;padding:10px 16px}
 .nudge.show{display:block;animation:slideD .4s ease}
@@ -135,77 +193,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .nudge-inner{max-width:488px;margin:0 auto;background:linear-gradient(135deg,#F59E0B,#D97706);color:white;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(245,158,11,.3)}
 .nudge-icon{font-size:20px;flex-shrink:0}.nudge-text{flex:1;font-size:12px;font-weight:500}
 .nudge-x{border:none;background:rgba(255,255,255,.25);color:white;padding:5px 10px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0}
-.drawer-ov{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.4)}
-.drawer-ov.show{display:block}
-.drawer{position:fixed;right:-100%;top:0;bottom:0;width:90%;max-width:420px;background:var(--bg);z-index:401;transition:right .35s ease;overflow-y:auto;padding:16px;box-shadow:-4px 0 24px rgba(0,0,0,.15)}
-.drawer.open{right:0}
-.drawer-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.drawer-close{border:none;background:var(--card);width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.1);color:var(--text)}
-.drawer-tabs{display:flex;background:var(--card);border-radius:12px;padding:3px;margin-bottom:14px}
-.dr-tab{flex:1;border:none;background:transparent;padding:8px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .3s;text-align:center}
-.dr-tab.active{background:var(--accent);color:white}
-.dr-section{margin-bottom:16px}
-.dr-sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.dr-sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text2)}
-.dr-sec-count{font-size:10px;background:var(--as);color:var(--accent);padding:1px 7px;border-radius:12px;font-weight:600}
-.dr-task{background:var(--card);border-radius:11px;padding:11px;margin-bottom:5px;box-shadow:0 1px 3px rgba(0,0,0,.05);display:flex;align-items:center;gap:8px;position:relative;overflow:hidden}
-.dr-task.done{opacity:.5}.dr-task.done .dr-task-title{text-decoration:line-through}
-.dr-task-pbar{width:3px;height:100%;position:absolute;left:0;top:0;border-radius:11px 0 0 11px}
-.dr-task-cb{width:18px;height:18px;border-radius:5px;border:2px solid var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s}
-.dr-task-cb.checked{background:var(--accent);border-color:var(--accent)}
-.dr-task-cb.checked::after{content:'✓';color:white;font-size:10px;font-weight:700}
-.dr-task-info{flex:1;min-width:0}
-.dr-task-title{font-size:12px;font-weight:500}
-.dr-task-meta{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:2px}
-.dr-tag{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px}
-.pitch-btn{border:none;padding:3px 8px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .2s}
-.pitch-btn.on{background:#059669;color:white}
-.pitch-btn.off{background:var(--as);color:var(--accent)}
-.dc-zone{margin-bottom:14px}
-.dc-zone-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.dc-zl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:4px}
-.dc-zl.lc{color:#DC2626}.dc-zl.lh{color:#E8722A}.dc-zl.ln{color:var(--text2)}
-.dc-bd{width:14px;height:14px;border-radius:3px;font-size:8px;font-weight:700;color:white;display:inline-flex;align-items:center;justify-content:center}
-.dc-bd.bc{background:#DC2626}.dc-bd.bh{background:#E8722A}.dc-bd.bn{background:var(--text2)}
-.dc-list{display:flex;flex-direction:column;gap:3px;min-height:30px}
-.dc-item{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:8px;padding:8px 10px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-.dc-item-info{flex:1}.dc-item-n{font-size:11px;font-weight:500}.dc-item-c{font-size:8px;color:var(--text2)}
-.dc-empty{text-align:center;padding:10px;font-size:10px;color:var(--text2);opacity:.5;border:2px dashed var(--as);border-radius:8px}
-.dc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
-.dc-chip{padding:5px 10px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--as);background:var(--card);color:var(--text);display:flex;align-items:center;gap:4px}
-.dc-chip.expanded{border-color:var(--accent);background:var(--as)}
-.dc-chip-count{font-size:9px;background:var(--as);color:var(--accent);padding:0 5px;border-radius:6px;font-weight:700}
-.dc-chip-tasks{margin-top:6px;margin-bottom:8px}
-.dc-pri-btns{display:flex;gap:3px;flex-shrink:0}
-.dc-pri-btn{border:none;width:22px;height:22px;border-radius:5px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(--as);color:var(--text2)}
-.dc-pri-btn:hover{background:var(--accent);color:white}
-.dc-pri-btn.up{color:#DC2626}.dc-pri-btn.down{color:#95a5a6}
-/* Player sections */
-.player-sec{margin-bottom:16px;border-radius:12px;padding:12px;border:1.5px solid var(--as)}
-.player-sec.atk{background:rgba(220,38,38,.03);border-color:rgba(220,38,38,.15)}
-.player-sec.mid{background:rgba(245,158,11,.03);border-color:rgba(245,158,11,.15)}
-.player-sec.def{background:rgba(139,92,246,.03);border-color:rgba(139,92,246,.15)}
-.player-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.player-icon{font-size:16px}.player-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
-.player-hdr.atk .player-name{color:#DC2626}.player-hdr.mid .player-name{color:#D97706}.player-hdr.def .player-name{color:#7C3AED}
-.player-add-btn{margin-left:auto;border:none;background:var(--as);color:var(--accent);padding:3px 8px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-/* Uncategorized search */
-.uncat-sec{margin-top:16px;border-top:2px dashed var(--as);padding-top:14px}
-.uncat-search{width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;margin-bottom:8px}
-.uncat-search:focus{border-color:var(--accent)}
-.uncat-task{background:var(--card);border-radius:8px;padding:8px 10px;margin-bottom:4px;box-shadow:0 1px 2px rgba(0,0,0,.05);display:flex;align-items:center;gap:6px}
-.uncat-task-name{flex:1;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cat-assign-sel{border:1px solid var(--as);border-radius:5px;padding:2px 4px;font-family:'DM Sans',sans-serif;font-size:9px;background:var(--card);color:var(--text);cursor:pointer;max-width:100px}
-/* New category modal */
-.cat-modal-ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
-.cat-modal-ov.show{display:flex}
-.cat-modal{background:var(--bg);border-radius:16px;padding:20px;width:90%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
-.cat-modal h3{font-family:'Fraunces',serif;font-size:16px;margin-bottom:12px}
-.cat-modal input,.cat-modal select{width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;margin-bottom:8px}
-.cat-modal-btns{display:flex;gap:8px;margin-top:6px}
-.cat-modal-btns button{flex:1;padding:8px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none}
-.cat-modal-btns .save{background:var(--accent);color:white}
-.cat-modal-btns .cancel{background:var(--as);color:var(--text2)}
+.sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:4px}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -213,69 +201,56 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="app">
   <div class="loading" id="loadingView"><div class="loading-spinner"></div><div class="loading-text">Loading from Supabase...</div></div>
   <div class="pitch" id="pitch" style="display:none">
-    <div class="pitch-top">
-      <div class="pitch-name">ContextFlow</div>
-      <div class="pitch-r"><span class="day-badge" id="dayB"></span><button class="hol-btn" id="holB" onclick="toggleHol()">🎌</button><div class="pitch-time" id="timeD"></div></div>
-    </div>
-    <div class="loc-bar"><div class="loc-g" id="locG">
-      <button class="loc-b active" data-l="home" onclick="setLoc('home')">🏠 Home</button>
-      <button class="loc-b" data-l="office" onclick="setLoc('office')">🏢 Office</button>
-      <button class="loc-b" data-l="outside" onclick="setLoc('outside')">🌳 Outside</button>
-    </div></div>
-    <div id="possStrip"></div>
-    <div class="pitch-field" id="pitchField"></div>
+    <div class="pitch-top"><div class="pitch-name">ContextFlow</div><div class="pitch-r"><span class="day-badge" id="dayB"></span><button class="hol-btn" id="holB" onclick="toggleHol()">🎌</button><div class="pitch-time" id="timeD"></div></div></div>
+    <div class="loc-bar"><div class="loc-g" id="locG"><button class="loc-b active" data-l="home" onclick="setLoc('home')">🏠 Home</button><button class="loc-b" data-l="office" onclick="setLoc('office')">🏢 Office</button><button class="loc-b" data-l="outside" onclick="setLoc('outside')">🌳 Outside</button></div></div>
+    <div id="possStrip"></div><div class="pitch-field" id="pitchField"></div>
   </div>
 </div>
-<button class="corner-btn" id="cornerBtn" onclick="openDrawer()" style="display:none">☰</button>
-<div class="drawer-ov" id="drawerOv" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-top"><div style="font-family:'Fraunces',serif;font-size:16px;font-weight:700">Locker Room</div><button class="drawer-close" onclick="closeDrawer()">✕</button></div>
-  <div class="drawer-tabs"><button class="dr-tab active" id="drTabT" onclick="switchDrTab('tasks')">📋 Bench</button><button class="dr-tab" id="drTabD" onclick="switchDrTab('dc')">🎯 Decision Centre</button></div>
-  <div id="drContent"></div>
+<button class="corner-btn" id="cornerBtn" onclick="openOv()" style="display:none">☰</button>
+
+<!-- CENTERED OVERLAY -->
+<div class="ov-bg" id="ovBg" onclick="if(event.target===this)closeOv()">
+  <div class="ov-panel"><div class="ov-top"><div class="ov-title">Locker Room</div><div class="ov-close" onclick="closeOv()">✕</div></div>
+    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabD" onclick="switchOvTab('dc')">🎯 Decision Centre</button></div>
+    <div id="ovContent"></div>
+  </div>
 </div>
-<div class="lock-ov mid-m" id="lockM"><div class="lock-icon">☕</div><div class="lock-title">Morning Kickoff</div><div class="lock-sub">Midfield has the ball.</div><div class="lock-tasks" id="lockMT"></div><button class="lock-btn waiting" id="lockMB" onclick="unlockM()">⚔️ Pass to Attackers</button><div class="lock-status" id="lockMS">Check at least one</div><button class="skip-btn" onclick="skipLock('morning')">Skip for now</button></div>
-<div class="lock-ov mid-l" id="lockL"><div class="lock-icon">🍱</div><div class="lock-title">Lunch Break</div><div class="lock-sub">Midfield intervenes. Fuel up.</div><div class="lock-tasks" id="lockLT"></div><div class="lock-timer"><div class="lock-timer-text" id="lunchT">60:00</div><div class="lock-timer-lbl">minimum break</div></div><button class="lock-btn waiting" id="lockLB" onclick="unlockL()">⚔️ Pass back</button><div class="lock-status" id="lockLS">Check one + wait</div><button class="skip-btn" onclick="skipLock('lunch')">Skip for now</button></div>
-<div class="lock-ov def-e" id="lockD"><div class="lock-icon">🪞</div><div class="lock-title">Defenders' Time</div><div class="lock-sub">Self-care mode.</div><div class="lock-tasks" id="lockDT"></div><div class="lock-timer"><div class="lock-timer-text" id="defT">30:00</div><div class="lock-timer-lbl">minimum self-care</div></div><button class="lock-btn waiting" id="lockDB" onclick="unlockD()">✅ Done</button><div class="lock-status" id="lockDS">Check one + wait</div><button class="skip-btn" onclick="skipLock('defender')">Skip for now</button></div>
+
+<!-- CATEGORY DETAIL -->
+<div class="cat-detail" id="catDetail" onclick="if(event.target===this)closeCatDetail()">
+  <div class="cat-panel" id="catPanel"></div>
+</div>
+
+<!-- MODALS -->
+<div class="cat-modal-ov" id="catModal"><div class="cat-modal"><h3 id="catModalTitle">New Category</h3><input id="catModalInput" placeholder="Category name..."><select id="catModalPlayer"><option value="attacker">⚔️ Attacker</option><option value="midfielder">🍱 Midfielder</option><option value="defender">🪞 Defender</option></select><div class="cat-modal-btns"><button class="cancel" onclick="closeCatModal()">Cancel</button><button class="save" onclick="saveCatModal()">Save</button></div></div></div>
+
+<!-- LOCKS -->
+<div class="lock-ov mid-m" id="lockM"><div class="lock-icon">☕</div><div class="lock-title">Morning Kickoff</div><div class="lock-sub">Midfield has the ball.</div><div class="lock-tasks" id="lockMT"></div><button class="lock-btn waiting" id="lockMB" onclick="unlockM()">⚔️ Pass to Attackers</button><div class="lock-status" id="lockMS">Check at least one</div><button class="skip-btn" onclick="skipLock('morning')">Skip</button></div>
+<div class="lock-ov mid-l" id="lockL"><div class="lock-icon">🍱</div><div class="lock-title">Lunch Break</div><div class="lock-sub">Midfield intervenes.</div><div class="lock-tasks" id="lockLT"></div><div class="lock-timer"><div class="lock-timer-text" id="lunchT">60:00</div><div class="lock-timer-lbl">minimum break</div></div><button class="lock-btn waiting" id="lockLB" onclick="unlockL()">⚔️ Pass back</button><div class="lock-status" id="lockLS">Check one + wait</div><button class="skip-btn" onclick="skipLock('lunch')">Skip</button></div>
+<div class="lock-ov def-e" id="lockD"><div class="lock-icon">🪞</div><div class="lock-title">Defenders' Time</div><div class="lock-sub">Self-care mode.</div><div class="lock-tasks" id="lockDT"></div><div class="lock-timer"><div class="lock-timer-text" id="defT">30:00</div><div class="lock-timer-lbl">minimum self-care</div></div><button class="lock-btn waiting" id="lockDB" onclick="unlockD()">✅ Done</button><div class="lock-status" id="lockDS">Check one + wait</div><button class="skip-btn" onclick="skipLock('defender')">Skip</button></div>
 <div class="break-ov" id="breakOv"><div class="lock-icon" id="breakIcon">🌿</div><div class="break-title">5-Minute Break</div><div class="break-sub">Rest before next session</div><div class="break-tips" id="breakTips"></div><div class="break-ring"><svg viewBox="0 0 100 100"><circle class="br-bg" cx="50" cy="50" r="44"/><circle class="br-fill" id="bRing" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="break-time" id="bTime">5:00</div></div><button class="skip-btn" onclick="skipBreak()">Skip</button></div>
 <div class="nudge" id="nudge"><div class="nudge-inner"><span class="nudge-icon">💧</span><span class="nudge-text" id="nudgeT">Drink water!</span><button class="nudge-x" onclick="dismissNudge()">Got it</button></div></div>
 
-<!-- New Category / Assign Player Modal -->
-<div class="cat-modal-ov" id="catModal">
-  <div class="cat-modal">
-    <h3 id="catModalTitle">New Category</h3>
-    <input id="catModalInput" placeholder="Category name...">
-    <select id="catModalPlayer">
-      <option value="attacker">⚔️ Attacker</option>
-      <option value="midfielder">🍱 Midfielder</option>
-      <option value="defender">🪞 Defender</option>
-    </select>
-    <div class="cat-modal-btns">
-      <button class="cancel" onclick="closeCatModal()">Cancel</button>
-      <button class="save" onclick="saveCatModal()">Save</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ===== SUPABASE =====
 const sb=window.supabase.createClient('https://wylxvmkcrexwfpjpbhyy.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bHh2bWtjcmV4d2ZwanBiaHl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzkxMDYsImV4cCI6MjA4NDIxNTEwNn0.6Bxo42hx4jwlJGWnfjiTpiDUsYfc1QLTN3YtrU1efak');
 
-// ===== IN-MEMORY =====
-let allTags=[],tagMap={},allTasks=[],taskTags={},pitchSet=new Set();
-let playerMap={}; // categoryName → 'attacker'|'midfielder'|'defender'
-let loc='home',mood='Energetic',drTab='tasks',manHol=false,possession='mid_morning';
+let allTags=[],tagMap={},allTasks=[],taskTags={},pitchSet=new Set(),playerMap={};
+let loc='home',mood='Energetic',ovTab='bench',manHol=false,possession='mid_morning';
 let lunchRem=3600,defRem=1800,lunchInt=null,defInt=null;
 let morningCk=new Set(),lunchCk=new Set(),defCk=new Set();
 let lastNudge=0,nudgeInt=null;
 let studyTimerActive=false,studyTimerRem=0,studyTimerTotal=0,studyTimerInt=null,currentStudyId=null;
 let breakRem=300,breakInt=null;
+let catDetailSearch='',catDetailName='';
 
-// ===== LOCATION MAP =====
 const LOC_MAP={home:['Room','Share house'],office:['Company'],outside:['Train','Park','Cafe','Anywhere']};
 const STUDY_CATS=['Paper study','Quick study','Reading'];
 const DEV_CATS=['Coding','App generation'];
+const PLAYER_INFO={attacker:{icon:'⚔️',name:'Attackers',cl:'atk'},midfielder:{icon:'🍱',name:'Midfield',cl:'mid'},defender:{icon:'🪞',name:'Defenders',cl:'def'}};
+const PRI_ORDER=['critical','high','medium','low','someday'];
+const PITCH_LIMIT=3;
 
-// ===== HELPERS =====
+// Helpers
 function todayK(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function isWknd(){const d=new Date().getDay();return d===0||d===6}
 const JP_HOL={'2025-01-01':1,'2025-01-13':1,'2025-02-11':1,'2025-02-23':1,'2025-02-24':1,'2025-03-20':1,'2025-04-29':1,'2025-05-03':1,'2025-05-04':1,'2025-05-05':1,'2025-05-06':1,'2025-07-21':1,'2025-08-11':1,'2025-09-15':1,'2025-09-23':1,'2025-10-13':1,'2025-11-03':1,'2025-11-23':1,'2025-11-24':1,'2026-01-01':1,'2026-01-12':1,'2026-02-11':1,'2026-02-23':1,'2026-03-20':1,'2026-04-29':1,'2026-05-03':1,'2026-05-04':1,'2026-05-05':1,'2026-05-06':1,'2026-07-20':1,'2026-08-11':1,'2026-09-21':1,'2026-09-23':1,'2026-10-12':1,'2026-11-03':1,'2026-11-23':1};
@@ -283,8 +258,8 @@ function dayType(){if(manHol)return'holiday';if(JP_HOL[todayK()])return'holiday'
 function isOff(){return dayType()!=='weekday'}
 function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
 
-// ===== TAG HELPERS =====
-function tTagNames(taskId,type){return(taskTags[taskId]||[]).map(id=>tagMap[id]).filter(Boolean).filter(t=>t.type===type).map(t=>t.name)}
+// Tag helpers
+function tTagNames(id,type){return(taskTags[id]||[]).map(i=>tagMap[i]).filter(Boolean).filter(t=>t.type===type).map(t=>t.name)}
 function tPriority(t){const p=tTagNames(t.id,'priority');if(p.includes('Critical'))return'critical';if(p.includes('High'))return'high';if(p.includes('Low'))return'low';if(p.includes('Someday'))return'someday';return'medium'}
 function tCategory(t){return tTagNames(t.id,'category')[0]||''}
 function tDuration(t){const d=tTagNames(t.id,'duration');if(d.includes('5min'))return 5;if(d.includes('15min'))return 15;if(d.includes('30min'))return 30;if(d.includes('1hour'))return 60;if(d.includes('2hours+'))return 120;return t.estimated_minutes||25}
@@ -295,62 +270,170 @@ function isDev(t){return DEV_CATS.includes(tCategory(t))}
 function priColor(p){return{critical:'#c0392b',high:'#e74c3c',medium:'#f39c12',low:'#95a5a6',someday:'#bdc3c7'}[p]||'#f39c12'}
 function locTasks(){return allTasks.filter(t=>t.status!=='done'&&tInLoc(t,loc))}
 function pitched(){return allTasks.filter(t=>pitchSet.has(t.id)&&t.status!=='done')}
+function catPlayer(c){return playerMap[c]||''}
+function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
+function canPitch(t){const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
 
-// ===== SUPABASE LOAD =====
+// ===== SUPABASE =====
 async function loadAll(){
-  const[tR,taR,ttR]=await Promise.all([
-    sb.from('mind_map_app_tasks').select('*'),
-    sb.from('mind_map_app_tags').select('*'),
-    sb.from('mind_map_app_task_tags').select('task_id,tag_id')
-  ]);
+  const[tR,taR,ttR]=await Promise.all([sb.from('mind_map_app_tasks').select('*'),sb.from('mind_map_app_tags').select('*'),sb.from('mind_map_app_task_tags').select('task_id,tag_id')]);
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
-  allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,notes:r.notes,links:r.links,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at}));
+  allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  // Load pitch + possession + player map from chat_memory
   const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players']);
-  pitchSet=new Set();
-  const defaultPlayers={'Paper study':'attacker','Quick study':'attacker','Coding':'attacker','App generation':'attacker','Reading':'attacker','Documentation':'attacker','Exercise':'midfielder','Errands':'midfielder'};
-  playerMap={...defaultPlayers};
-  (mem||[]).forEach(m=>{
-    if(m.key==='cf_pitch'){try{pitchSet=new Set(JSON.parse(m.value))}catch{}}
-    if(m.key==='cf_possession'){try{const p=JSON.parse(m.value);if(p.date===todayK())possession=p.state||'mid_morning'}catch{}}
-    if(m.key==='cf_players'){try{playerMap={...defaultPlayers,...JSON.parse(m.value)}}catch{}}
-  });
-  console.log('✅',allTasks.length,'tasks,',allTags.length,'tags loaded');
+  pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
+  playerMap={...dp};
+  (mem||[]).forEach(m=>{if(m.key==='cf_pitch')try{pitchSet=new Set(JSON.parse(m.value))}catch{};if(m.key==='cf_possession')try{const p=JSON.parse(m.value);if(p.date===todayK())possession=p.state||'mid_morning'}catch{};if(m.key==='cf_players')try{playerMap={...dp,...JSON.parse(m.value)}}catch{}});
 }
-
-// ===== SUPABASE WRITE =====
-async function savePitch(){
-  const val=JSON.stringify([...pitchSet]),now=new Date().toISOString();
-  try{
-    const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_pitch').maybeSingle();
-    if(data){const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_pitch');if(error)console.error('savePitch update:',error)}
-    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_pitch',value:val,updated_at:now});if(error)console.error('savePitch insert:',error)}
-  }catch(e){console.error('savePitch:',e)}
+async function memSave(key,val){
+  const now=new Date().toISOString();try{const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key',key).maybeSingle();
+  if(data){await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key',key)}
+  else{await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key,value:val,updated_at:now})}}catch(e){console.error('memSave:',key,e)}
 }
-async function savePoss(){
-  const val=JSON.stringify({date:todayK(),state:possession}),now=new Date().toISOString();
-  try{
-    const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_possession').maybeSingle();
-    if(data){const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_possession');if(error)console.error('savePoss update:',error)}
-    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_possession',value:val,updated_at:now});if(error)console.error('savePoss insert:',error)}
-  }catch(e){console.error('savePoss:',e)}
-}
+async function savePitch(){await memSave('cf_pitch',JSON.stringify([...pitchSet]))}
+async function savePoss(){await memSave('cf_possession',JSON.stringify({date:todayK(),state:possession}))}
+async function savePlayerMap(){await memSave('cf_players',JSON.stringify(playerMap))}
 async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='done';await sb.from('mind_map_app_tasks').update({status:'done',updated_at:new Date().toISOString()}).eq('id',id)}
 async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='in_progress';await sb.from('mind_map_app_tasks').update({status:'in_progress',updated_at:new Date().toISOString()}).eq('id',id)}
 
-// ===== PITCH =====
-function addPitch(id){const t=allTasks.find(x=>x.id===id);if(t&&!canPitch(t))return;pitchSet.add(id);savePitch();renderPitch();renderDrawer()}
-function rmPitch(id){pitchSet.delete(id);savePitch();if(currentStudyId===id)stopTimer();renderPitch();renderDrawer()}
-async function toggleTask(id){const t=allTasks.find(x=>x.id===id);if(!t)return;if(t.status==='done'){await markActive(id)}else{await markDone(id);pitchSet.delete(id);savePitch()}renderPitch();renderDrawer()}
+// Pitch
+function addPitch(id){const t=allTasks.find(x=>x.id===id);if(t&&!canPitch(t))return;pitchSet.add(id);savePitch();renderAll()}
+function rmPitch(id){pitchSet.delete(id);savePitch();if(currentStudyId===id)stopTimer();renderAll()}
+async function toggleTask(id){const t=allTasks.find(x=>x.id===id);if(!t)return;if(t.status==='done'){await markActive(id)}else{await markDone(id);pitchSet.delete(id);savePitch()}renderAll()}
+function renderAll(){renderPitch();if(document.getElementById('ovBg').classList.contains('show'))renderOv();if(document.getElementById('catDetail').classList.contains('show'))renderCatDetail()}
 
-// ===== THEME / UI =====
-function applyTheme(l){const r=document.documentElement,p='--'+l;['bg','accent','as','card','text','text2'].forEach(k=>{r.style.setProperty('--'+k,getComputedStyle(r).getPropertyValue(p+'-'+k))})}
+// Priority
+async function changePriority(taskId,newPri){
+  const priTags=allTags.filter(t=>t.type==='priority');const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);if(!newTag)return;
+  const oldIds=priTags.map(t=>t.id);const cur=taskTags[taskId]||[];
+  for(const id of cur.filter(i=>oldIds.includes(i)))await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',id);
+  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:newTag.id,created_at:new Date().toISOString()});
+  taskTags[taskId]=cur.filter(i=>!oldIds.includes(i)).concat([newTag.id]);renderAll();
+}
+function promoteTask(id){const c=tPriority(allTasks.find(t=>t.id===id)),i=PRI_ORDER.indexOf(c);if(i>0)changePriority(id,PRI_ORDER[i-1])}
+function demoteTask(id){const c=tPriority(allTasks.find(t=>t.id===id)),i=PRI_ORDER.indexOf(c);if(i<PRI_ORDER.length-1)changePriority(id,PRI_ORDER[i+1])}
+
+// Category assign
+async function assignCat(taskId,catName){
+  const catTag=allTags.find(t=>t.type==='category'&&t.name===catName);if(!catTag)return;
+  const oldCatIds=allTags.filter(t=>t.type==='category').map(t=>t.id);const cur=taskTags[taskId]||[];
+  for(const id of cur.filter(i=>oldCatIds.includes(i)))await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',id);
+  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:catTag.id,created_at:new Date().toISOString()});
+  taskTags[taskId]=cur.filter(i=>!oldCatIds.includes(i)).concat([catTag.id]);renderAll();
+}
+
+// Create new task
+async function createTask(name,catName){
+  const newId=crypto.randomUUID();const now=new Date().toISOString();
+  const{data,error}=await sb.from('mind_map_app_tasks').insert({id:newId,name,status:'not_started',created_at:now,updated_at:now}).select().single();
+  if(error){alert('Error: '+error.message);return}
+  allTasks.push({id:newId,name,status:'not_started',created_at:now});
+  if(catName){const catTag=allTags.find(t=>t.type==='category'&&t.name===catName);if(catTag){
+    await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:newId,tag_id:catTag.id,created_at:now});
+    taskTags[newId]=[catTag.id];
+  }}
+  renderAll();
+}
+
+// Theme/UI
+function applyTheme(l){const r=document.documentElement,p='--'+l;['bg','accent','as','card','text','text2'].forEach(k=>r.style.setProperty('--'+k,getComputedStyle(r).getPropertyValue(p+'-'+k)))}
 function setLoc(l){loc=l;applyTheme(l);document.querySelectorAll('#locG .loc-b').forEach(b=>b.classList.toggle('active',b.dataset.l===l));checkPoss();renderPitch()}
 function setMood(m){mood=m;renderPitch()}
 function toggleHol(){manHol=!manHol;updateBadge();checkPoss();renderPitch()}
 function updateBadge(){const dt=dayType(),b=document.getElementById('dayB');b.textContent=dt==='holiday'?'Holiday':dt==='weekend'?'Weekend':'Weekday';b.className='day-badge '+dt;document.getElementById('holB').classList.toggle('active',manHol)}
 function updateClock(){document.getElementById('timeD').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}
+
+// ===== OVERLAY =====
+function openOv(){document.getElementById('ovBg').classList.add('show');renderOv()}
+function closeOv(){document.getElementById('ovBg').classList.remove('show')}
+function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabD').classList.toggle('active',t==='dc');renderOv()}
+function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():renderDC()}
+
+// ===== BENCH =====
+function renderBench(){
+  const lt=locTasks(),done=allTasks.filter(t=>t.status==='done'&&tInLoc(t,loc)).slice(0,15);
+  const tagged=lt.filter(hasCategory),untagged=lt.filter(t=>!hasCategory(t));
+  const groups={};tagged.forEach(t=>{const c=tCategory(t);if(!groups[c])groups[c]=[];groups[c].push(t)});
+  let h='';for(const[cat,list]of Object.entries(groups)){h+=`<div style="margin-bottom:14px"><div class="sec-hdr">${cat} <span style="background:var(--as);color:var(--accent);padding:0 6px;border-radius:8px;font-size:9px">${list.length}</span></div>${list.map(benchHTML).join('')}</div>`}
+  if(untagged.length)h+=`<div style="margin-bottom:14px"><div class="sec-hdr" style="cursor:pointer" onclick="document.getElementById('uncL').style.display=document.getElementById('uncL').style.display==='none'?'block':'none'">📦 Uncategorized (${untagged.length}) ▸</div><div id="uncL" style="display:none">${untagged.map(benchHTML).join('')}</div></div>`;
+  if(done.length)h+=`<div><div class="sec-hdr" style="cursor:pointer" onclick="document.getElementById('doneL').style.display=document.getElementById('doneL').style.display==='none'?'block':'none'">✅ Done (${done.length}) ▸</div><div id="doneL" style="display:none">${done.map(benchHTML).join('')}</div></div>`;
+  return h||'<div style="text-align:center;padding:24px;color:var(--text2);font-size:12px">No tasks for this location</div>';
+}
+function benchHTML(t){
+  const pri=tPriority(t),onP=pitchSet.has(t.id),cat=tCategory(t),isDone=t.status==='done';
+  return`<div class="bench-task ${isDone?'done':''}"><div class="bench-pbar" style="background:${priColor(pri)}"></div><div class="bench-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}')"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta">${cat?`<span class="bench-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone?`<button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':'▶ Pitch'}</button>`:''}</div>`;
+}
+
+// ===== DECISION CENTRE =====
+function renderDC(){
+  const lt=locTasks();const players={attacker:{},midfielder:{},defender:{}};
+  lt.filter(hasCategory).forEach(t=>{const cat=tCategory(t),pl=catPlayer(cat);if(pl&&players[pl]){if(!players[pl][cat])players[pl][cat]=[];players[pl][cat].push(t)}});
+  let h='';
+  ['attacker','midfielder','defender'].forEach(pl=>{
+    const info=PLAYER_INFO[pl];const cats=Object.entries(players[pl]);
+    const assigned=Object.entries(playerMap).filter(([,p])=>p===pl).map(([c])=>c);
+    const allCats=[...new Set([...cats.map(([c])=>c),...assigned])];
+    const total=cats.reduce((s,[,l])=>s+l.length,0);
+    h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} (${total})</span><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:auto">+ New</button></div>`;
+    if(allCats.length){h+=`<div class="dc-chips">${allCats.map(cat=>{
+      const list=players[pl][cat]||[];const onP=list.filter(t=>pitchSet.has(t.id)).length;
+      return`<div class="dc-chip" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
+    }).join('')}</div>`}else{h+=`<div style="font-size:10px;color:var(--text2);opacity:.5;padding:4px">No categories assigned</div>`}
+    h+=`</div>`;
+  });
+  return h;
+}
+
+// ===== CATEGORY DETAIL =====
+function openCatDetail(cat){catDetailName=cat;catDetailSearch='';document.getElementById('catDetail').classList.add('show');renderCatDetail()}
+function closeCatDetail(){document.getElementById('catDetail').classList.remove('show')}
+function renderCatDetail(){
+  const cat=catDetailName;const pl=catPlayer(cat);const info=pl?PLAYER_INFO[pl]:null;
+  const tasksInCat=allTasks.filter(t=>t.status!=='done'&&tCategory(t)===cat);
+  const doneInCat=allTasks.filter(t=>t.status==='done'&&tCategory(t)===cat);
+  const onPitch=tasksInCat.filter(t=>pitchSet.has(t.id)).length;
+  const uncategorized=allTasks.filter(t=>t.status!=='done'&&!hasCategory(t));
+  const filtered=catDetailSearch?uncategorized.filter(t=>t.name.toLowerCase().includes(catDetailSearch.toLowerCase())):[];
+
+  let h=`<div class="cat-top"><div class="cat-back" onclick="closeCatDetail()">←</div><div class="cat-name">${esc(cat)}</div>${info?`<div class="cat-badge ${info.cl}">${info.icon} ${info.name}</div>`:''}</div>`;
+  h+=`<div class="cat-stats"><div class="cat-stat"><div class="cat-stat-num">${tasksInCat.length}</div><div class="cat-stat-lbl">Active</div></div><div class="cat-stat"><div class="cat-stat-num">${onPitch}</div><div class="cat-stat-lbl">On Pitch</div></div><div class="cat-stat"><div class="cat-stat-num">${doneInCat.length}</div><div class="cat-stat-lbl">Done</div></div></div>`;
+
+  // Add new task
+  h+=`<div class="cat-add"><input class="cat-add-input" id="catNewTask" placeholder="Add new task to ${esc(cat)}..." onkeydown="if(event.key==='Enter')addTaskToCat()"><button class="cat-add-btn" onclick="addTaskToCat()">+ Add</button></div>`;
+
+  // Search uncategorized
+  h+=`<div class="sec-hdr" style="margin-top:8px">🔍 Pull from uncategorized (${uncategorized.length})</div>`;
+  h+=`<input class="cat-search" id="catSearchInput" placeholder="Search tasks to add to ${esc(cat)}..." value="${esc(catDetailSearch)}" oninput="catDetailSearch=this.value;renderCatDetail()">`;
+  if(catDetailSearch&&filtered.length){h+=filtered.slice(0,15).map(t=>`<div class="cat-search-item"><div class="cat-search-name">${esc(t.name)}</div><button class="cat-pull-btn" onclick="assignCat('${t.id}','${cat.replace(/'/g,"\\'")}')">+ Pull in</button></div>`).join('');
+    if(filtered.length>15)h+=`<div style="font-size:9px;color:var(--text2);text-align:center;padding:4px">${filtered.length-15} more...</div>`}
+  else if(catDetailSearch&&!filtered.length){h+=`<div style="font-size:10px;color:var(--text2);padding:8px;text-align:center">No matches</div>`}
+
+  // Existing tasks
+  if(tasksInCat.length){
+    h+=`<div class="sec-hdr" style="margin-top:16px">📋 Tasks in ${esc(cat)} (${tasksInCat.length})</div>`;
+    h+=tasksInCat.map(t=>{
+      const pri=tPriority(t),onP=pitchSet.has(t.id),dur=isStudy(t)?tDuration(t):null,full=!onP&&!canPitch(t);
+      return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">↑</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c"><span style="color:${priColor(pri)}">${pri}</span>${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
+    }).join('');
+  }
+
+  document.getElementById('catPanel').innerHTML=h;
+  // Restore focus on search
+  if(catDetailSearch){const inp=document.getElementById('catSearchInput');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}}
+}
+async function addTaskToCat(){const inp=document.getElementById('catNewTask');const name=inp.value.trim();if(!name)return;await createTask(name,catDetailName);inp.value='';renderCatDetail()}
+
+// ===== NEW CATEGORY MODAL =====
+let catModalForPlayer='attacker';
+function openNewCatModal(pl){catModalForPlayer=pl;document.getElementById('catModalTitle').textContent='New Category';document.getElementById('catModalInput').value='';document.getElementById('catModalPlayer').value=pl;document.getElementById('catModal').classList.add('show')}
+function closeCatModal(){document.getElementById('catModal').classList.remove('show')}
+async function saveCatModal(){
+  const player=document.getElementById('catModalPlayer').value;
+  const name=document.getElementById('catModalInput').value.trim();if(!name){alert('Enter a name');return}
+  let catTag=allTags.find(t=>t.type==='category'&&t.name.toLowerCase()===name.toLowerCase());
+  if(!catTag){const{data,error}=await sb.from('mind_map_app_tags').insert({id:crypto.randomUUID(),name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();if(error){alert('Error: '+error.message);return}if(data){allTags.push(data);tagMap[data.id]=data;catTag=data}}
+  playerMap[catTag?catTag.name:name]=player;await savePlayerMap();closeCatModal();renderOv();
+}
 
 // ===== POSSESSION =====
 const M_T=[{id:'mc',t:'Make coffee / tea',i:'☕'},{id:'mw',t:'Drink water',i:'💧'},{id:'mf',t:'Face wash',i:'🧼'}];
@@ -361,7 +444,7 @@ function applyPoss(){hideAllLocks();clearNudge();if(possession==='mid_morning')s
 function hideAllLocks(){['lockM','lockL','lockD'].forEach(id=>document.getElementById(id).classList.remove('show'))}
 function showLock(ov,tid,bid,sid,list,set){set.clear();document.getElementById(tid).innerHTML=list.map(t=>`<div class="lock-task" id="lk_${t.id}" onclick="tglLock('${t.id}','${ov}')"><div class="lt-cb" id="lcb_${t.id}"></div><span class="lt-text">${t.t}</span><span class="lt-icon">${t.i}</span></div>`).join('');updLockBtn(bid,sid,set,ov==='lockM');document.getElementById(ov).classList.add('show')}
 function tglLock(id,ov){const set=ov==='lockM'?morningCk:ov==='lockL'?lunchCk:defCk;set.has(id)?set.delete(id):set.add(id);const list=ov==='lockM'?M_T:ov==='lockL'?L_T:D_T;list.forEach(t=>{document.getElementById('lk_'+t.id)?.classList.toggle('checked',set.has(t.id));document.getElementById('lcb_'+t.id)?.classList.toggle('checked',set.has(t.id))});const td=ov==='lockM'?true:ov==='lockL'?lunchRem<=0:defRem<=0;updLockBtn(ov==='lockM'?'lockMB':ov==='lockL'?'lockLB':'lockDB',ov==='lockM'?'lockMS':ov==='lockL'?'lockLS':'lockDS',set,td)}
-function updLockBtn(b,s,set,td){const r=set.size>=1&&td;document.getElementById(b).className='lock-btn '+(r?'ready':'waiting');document.getElementById(s).textContent=r?'Ready! ⚽':set.size<1?'Check at least one':'✅ Checked — wait for timer'}
+function updLockBtn(b,s,set,td){const r=set.size>=1&&td;document.getElementById(b).className='lock-btn '+(r?'ready':'waiting');document.getElementById(s).textContent=r?'Ready! ⚽':set.size<1?'Check at least one':'✅ Checked — wait'}
 function unlockM(){if(morningCk.size<1)return;possession='attacker';savePoss();hideAllLocks();startNudge();renderPitch()}
 function showLunchLock(){lunchCk.clear();lunchRem=3600;showLock('lockL','lockLT','lockLB','lockLS',L_T,lunchCk);clearInterval(lunchInt);lunchInt=setInterval(()=>{lunchRem--;document.getElementById('lunchT').textContent=`${String(Math.floor(lunchRem/60)).padStart(2,'0')}:${String(lunchRem%60).padStart(2,'0')}`;updLockBtn('lockLB','lockLS',lunchCk,lunchRem<=0);if(lunchRem<=0)clearInterval(lunchInt)},1000)}
 function unlockL(){if(lunchCk.size<1||lunchRem>0)return;clearInterval(lunchInt);possession='attacker2';savePoss();hideAllLocks();startNudge();renderPitch()}
@@ -370,8 +453,6 @@ function unlockD(){if(defCk.size<1||defRem>0)return;clearInterval(defInt);posses
 function triggerDef(){possession='defender';savePoss();clearNudge();stopTimer();showDefLock();renderPitch()}
 function skipLock(type){hideAllLocks();clearInterval(lunchInt);clearInterval(defInt);if(type==='morning')possession='attacker';else if(type==='lunch')possession='attacker2';else possession='done';savePoss();if(possession==='attacker'||possession==='attacker2')startNudge();renderPitch()}
 setInterval(()=>{if(isOff()&&loc==='home'&&possession==='attacker'&&new Date().getHours()>=13){possession='mid_lunch';savePoss();stopTimer();applyPoss();renderPitch()}},60000);
-
-// Nudges
 const NUDGES=[{i:'💧',t:'Drink water!'},{i:'🧘',t:'Quick stretch'},{i:'👀',t:'Look away 20s'},{i:'🫁',t:'3 deep breaths'},{i:'🚶',t:'Stand up'}];
 function startNudge(){clearNudge();lastNudge=Date.now();nudgeInt=setInterval(()=>{if(Date.now()-lastNudge>=3600000){const n=NUDGES[Math.floor(Math.random()*NUDGES.length)];document.getElementById('nudgeT').textContent=n.t;document.querySelector('.nudge-icon').textContent=n.i;document.getElementById('nudge').classList.add('show');lastNudge=Date.now();setTimeout(dismissNudge,30000)}},60000)}
 function dismissNudge(){document.getElementById('nudge').classList.remove('show')}
@@ -383,8 +464,7 @@ function pauseStudy(){studyTimerActive=false;clearInterval(studyTimerInt);render
 function resumeStudy(){if(!currentStudyId||studyTimerRem<=0)return;studyTimerActive=true;studyTimerInt=setInterval(()=>{studyTimerRem--;renderPitch();if(studyTimerRem<=0){studyTimerActive=false;clearInterval(studyTimerInt);triggerBreak()}},1000);renderPitch()}
 async function completeStudy(){studyTimerActive=false;clearInterval(studyTimerInt);await markDone(currentStudyId);pitchSet.delete(currentStudyId);savePitch();currentStudyId=null;studyTimerRem=0;renderPitch()}
 function stopTimer(){studyTimerActive=false;clearInterval(studyTimerInt);currentStudyId=null;studyTimerRem=0}
-
-const TIPS=[{i:'💧',t:'Drink water'},{i:'🍙',t:'Grab a snack'},{i:'🧘',t:'Stretch'},{i:'👀',t:'Rest eyes'},{i:'🚶',t:'Walk'},{i:'🫁',t:'Deep breaths'},{i:'🎵',t:'Song'}];
+const TIPS=[{i:'💧',t:'Drink water'},{i:'🍙',t:'Snack'},{i:'🧘',t:'Stretch'},{i:'👀',t:'Rest eyes'},{i:'🚶',t:'Walk'},{i:'🫁',t:'Deep breaths'},{i:'🎵',t:'Song'}];
 function triggerBreak(){breakRem=300;document.getElementById('breakOv').classList.add('show');document.getElementById('breakIcon').textContent=['🌿','🌊','☀️','🍃'][Math.floor(Math.random()*4)];document.getElementById('breakTips').innerHTML=[...TIPS].sort(()=>Math.random()-.5).slice(0,3).map(t=>`<div class="break-tip"><span style="font-size:18px">${t.i}</span><span>${t.t}</span></div>`).join('');breakInt=setInterval(()=>{breakRem--;document.getElementById('bTime').textContent=`${Math.floor(breakRem/60)}:${String(breakRem%60).padStart(2,'0')}`;document.getElementById('bRing').style.strokeDashoffset=276.46*(1-breakRem/300);if(breakRem<=0)endBreak()},1000)}
 async function endBreak(){clearInterval(breakInt);document.getElementById('breakOv').classList.remove('show');await markDone(currentStudyId);pitchSet.delete(currentStudyId);savePitch();currentStudyId=null;const next=pitched().filter(isStudy);if(next.length)startStudy(next[0].id);else renderPitch()}
 function skipBreak(){endBreak()}
@@ -392,243 +472,17 @@ function skipBreak(){endBreak()}
 // ===== RENDER PITCH =====
 function renderPitch(){
   const field=document.getElementById('pitchField'),strip=document.getElementById('possStrip');
-  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else{strip.innerHTML=''}
-
-  if(loc==='outside'){
-    let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;
-    if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span class="link-i">📺</span><div><div class="link-t">YouTube</div></div></a><a class="link-c" href="https://chess.com" target="_blank"><span class="link-i">♟️</span><div><div class="link-t">Chess</div></div></a>`;
-    const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');
-    field.innerHTML=h;return;
-  }
-
-  const pt=pitched();
-  if(!pt.length){field.innerHTML=`<div style="text-align:center;color:var(--text2);padding:60px 20px"><div style="font-size:52px;margin-bottom:14px;opacity:.4">⚽</div><div style="font-family:'Fraunces',serif;font-size:18px;color:var(--text);opacity:.5;margin-bottom:6px">The pitch is empty</div><div style="font-size:12px;line-height:1.6;opacity:.6">Open ☰ and select tasks<br>to put them on the field</div></div>`;return}
-
-  let h='';const CIRC=2*Math.PI*78;
-  const st=pt.filter(isStudy),dv=pt.filter(isDev),ot=pt.filter(t=>!isStudy(t)&&!isDev(t));
-
-  if(st.length){
-    const act=currentStudyId?st.find(t=>t.id===currentStudyId):null;
-    if(act&&(studyTimerActive||studyTimerRem>0)){const pct=studyTimerTotal>0?studyTimerRem/studyTimerTotal:1,off=CIRC*(1-pct),m=Math.floor(studyTimerRem/60),s=studyTimerRem%60;h+=`<div class="study-focus"><div class="study-label">📓 NOW STUDYING</div><div class="study-title">${esc(act.name)}</div><div class="study-tag">${tCategory(act)}</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/><circle class="tr-fill" cx="90" cy="90" r="78" stroke-dasharray="${CIRC}" stroke-dashoffset="${off}"/></svg><div class="timer-center"><div class="timer-digits">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div><div class="timer-label">${studyTimerActive?'studying':'paused'}</div></div></div><div class="study-controls">${studyTimerActive?`<button class="study-ctrl pause" onclick="pauseStudy()">⏸ Pause</button>`:`<button class="study-ctrl start" onclick="resumeStudy()">▶ Resume</button>`}<button class="study-ctrl done" onclick="completeStudy()">✓ Done</button></div></div>`}
-    else{const nx=st[0],dur=tDuration(nx);h+=`<div class="study-focus"><div class="study-label">📓 NEXT STUDY</div><div class="study-title">${esc(nx.name)}</div><div class="study-tag">${tCategory(nx)} · ${dur} min</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/></svg><div class="timer-center"><div class="timer-digits">${dur}:00</div><div class="timer-label">ready</div></div></div><div class="study-controls"><button class="study-ctrl start" onclick="startStudy('${nx.id}')">▶ Start</button></div></div>`;const rest=st.slice(1);if(rest.length)h+=`<div class="dev-tasks" style="margin-top:10px"><div class="dev-header" style="color:#DC2626">📓 QUEUED</div>${rest.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tDuration(t)}m</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`}
-  }
+  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML='';
+  if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
+  const pt=pitched();if(!pt.length){field.innerHTML=`<div style="text-align:center;color:var(--text2);padding:60px 20px"><div style="font-size:52px;margin-bottom:14px;opacity:.4">⚽</div><div style="font-family:'Fraunces',serif;font-size:18px;color:var(--text);opacity:.5;margin-bottom:6px">The pitch is empty</div><div style="font-size:12px;line-height:1.6;opacity:.6">Open ☰ and select tasks</div></div>`;return}
+  let h='';const CIRC=2*Math.PI*78;const st=pt.filter(isStudy),dv=pt.filter(isDev),ot=pt.filter(t=>!isStudy(t)&&!isDev(t));
+  if(st.length){const act=currentStudyId?st.find(t=>t.id===currentStudyId):null;if(act&&(studyTimerActive||studyTimerRem>0)){const pct=studyTimerTotal>0?studyTimerRem/studyTimerTotal:1,off=CIRC*(1-pct),m=Math.floor(studyTimerRem/60),s=studyTimerRem%60;h+=`<div class="study-focus"><div class="study-label">📓 NOW STUDYING</div><div class="study-title">${esc(act.name)}</div><div class="study-tag">${tCategory(act)}</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/><circle class="tr-fill" cx="90" cy="90" r="78" stroke-dasharray="${CIRC}" stroke-dashoffset="${off}"/></svg><div class="timer-center"><div class="timer-digits">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div><div class="timer-label">${studyTimerActive?'studying':'paused'}</div></div></div><div class="study-controls">${studyTimerActive?`<button class="study-ctrl pause" onclick="pauseStudy()">⏸ Pause</button>`:`<button class="study-ctrl start" onclick="resumeStudy()">▶ Resume</button>`}<button class="study-ctrl done" onclick="completeStudy()">✓ Done</button></div></div>`}else{const nx=st[0],dur=tDuration(nx);h+=`<div class="study-focus"><div class="study-label">📓 NEXT STUDY</div><div class="study-title">${esc(nx.name)}</div><div class="study-tag">${tCategory(nx)} · ${dur} min</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/></svg><div class="timer-center"><div class="timer-digits">${dur}:00</div><div class="timer-label">ready</div></div></div><div class="study-controls"><button class="study-ctrl start" onclick="startStudy('${nx.id}')">▶ Start</button></div></div>`;const rest=st.slice(1);if(rest.length)h+=`<div class="dev-tasks" style="margin-top:10px"><div class="dev-header" style="color:#DC2626">📓 QUEUED</div>${rest.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tDuration(t)}m</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`}}
   if(dv.length)h+=`<div class="dev-tasks"${st.length?' style="margin-top:16px"':''}><div class="dev-header" style="color:#7C3AED">💻 APP DEV</div>${dv.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`;
   if(ot.length)h+=`<div class="dev-tasks" style="margin-top:12px"><div class="dev-header" style="color:var(--accent)">📌 OTHER</div>${ot.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`;
   field.innerHTML=h;
 }
 
-// ===== DRAWER =====
-function openDrawer(){document.getElementById('drawerOv').classList.add('show');setTimeout(()=>document.getElementById('drawer').classList.add('open'),10);renderDrawer()}
-function closeDrawer(){document.getElementById('drawer').classList.remove('open');setTimeout(()=>document.getElementById('drawerOv').classList.remove('show'),350)}
-function switchDrTab(t){drTab=t;document.getElementById('drTabT').classList.toggle('active',t==='tasks');document.getElementById('drTabD').classList.toggle('active',t==='dc');renderDrawer()}
-function renderDrawer(){document.getElementById('drContent').innerHTML=drTab==='tasks'?renderBench():renderDC()}
-
-function renderBench(){
-  const lt=locTasks(),done=allTasks.filter(t=>t.status==='done'&&tInLoc(t,loc)).slice(0,15);
-  const tagged=lt.filter(hasCategory),untagged=lt.filter(t=>!hasCategory(t));
-  const groups={};tagged.forEach(t=>{const c=tCategory(t);if(!groups[c])groups[c]=[];groups[c].push(t)});
-  let h='';for(const[cat,list]of Object.entries(groups))h+=`<div class="dr-section"><div class="dr-sec-hdr"><div class="dr-sec-title">${cat}</div><div class="dr-sec-count">${list.length}</div></div>${list.map(benchHTML).join('')}</div>`;
-  if(untagged.length)h+=`<div class="dr-section"><div class="dr-sec-hdr" style="cursor:pointer" onclick="document.getElementById('uncatList').style.display=document.getElementById('uncatList').style.display==='none'?'block':'none';this.querySelector('.dr-sec-arrow').textContent=document.getElementById('uncatList').style.display==='none'?'▸':'▾'"><div class="dr-sec-title">📦 Uncategorized <span class="dr-sec-arrow">▸</span></div><div class="dr-sec-count">${untagged.length}</div></div><div id="uncatList" style="display:none">${untagged.map(benchHTML).join('')}</div></div>`;
-  if(done.length)h+=`<div class="dr-section"><div class="dr-sec-hdr" style="cursor:pointer" onclick="document.getElementById('doneList').style.display=document.getElementById('doneList').style.display==='none'?'block':'none'"><div class="dr-sec-title">✅ Done</div><div class="dr-sec-count">${done.length}</div></div><div id="doneList" style="display:none">${done.map(benchHTML).join('')}</div></div>`;
-  return h||'<div style="text-align:center;padding:24px;color:var(--text2);font-size:12px">No tasks for this location</div>';
-}
-
-function benchHTML(t){
-  const pri=tPriority(t),onP=pitchSet.has(t.id),cat=tCategory(t),isDone=t.status==='done';
-  return`<div class="dr-task ${isDone?'done':''}"><div class="dr-task-pbar" style="background:${priColor(pri)}"></div><div class="dr-task-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}');setTimeout(renderDrawer,100)"></div><div class="dr-task-info"><div class="dr-task-title">${esc(t.name)}</div><div class="dr-task-meta">${cat?`<span class="dr-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="dr-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone?`<button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':'▶ Pitch'}</button>`:''}</div>`;
-}
-
-// ===== PLAYER MAP =====
-async function savePlayerMap(){
-  const val=JSON.stringify(playerMap),now=new Date().toISOString();
-  try{
-    const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_players').maybeSingle();
-    if(data){
-      const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_players');
-      if(error){console.error('❌ savePlayerMap update error:',error);alert('Player map update failed: '+error.message)}
-      else console.log('✅ playerMap updated',playerMap);
-    } else {
-      const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_players',value:val,updated_at:now});
-      if(error){console.error('❌ savePlayerMap insert error:',error);alert('Player map insert failed: '+error.message)}
-      else console.log('✅ playerMap inserted',playerMap);
-    }
-  }catch(e){console.error('❌ savePlayerMap exception:',e);alert('Player map save exception: '+e.message)}
-}
-function catPlayer(cat){return playerMap[cat]||''}
-const PLAYER_INFO={attacker:{icon:'⚔️',name:'Attackers',cl:'atk'},midfielder:{icon:'🍱',name:'Midfield',cl:'mid'},defender:{icon:'🪞',name:'Defenders',cl:'def'}};
-
-// ===== PRIORITY CHANGE =====
-const PRI_ORDER=['critical','high','medium','low','someday'];
-async function changePriority(taskId,newPri){
-  const priTags=allTags.filter(t=>t.type==='priority');
-  const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);if(!newTag)return;
-  const oldPriTagIds=priTags.map(t=>t.id);const currentTags=taskTags[taskId]||[];
-  for(const tagId of currentTags.filter(id=>oldPriTagIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
-  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:newTag.id,created_at:new Date().toISOString()});
-  taskTags[taskId]=currentTags.filter(id=>!oldPriTagIds.includes(id)).concat([newTag.id]);
-  renderDrawer();renderPitch();
-}
-function promoteTask(id){const c=tPriority(allTasks.find(t=>t.id===id)),i=PRI_ORDER.indexOf(c);if(i>0)changePriority(id,PRI_ORDER[i-1])}
-function demoteTask(id){const c=tPriority(allTasks.find(t=>t.id===id)),i=PRI_ORDER.indexOf(c);if(i<PRI_ORDER.length-1)changePriority(id,PRI_ORDER[i+1])}
-
-// ===== CATEGORY ASSIGNMENT =====
-async function assignCategoryToTask(taskId,catName){
-  const catTag=allTags.find(t=>t.type==='category'&&t.name===catName);if(!catTag){console.error('Tag not found:',catName);return}
-  const oldCatIds=allTags.filter(t=>t.type==='category').map(t=>t.id);
-  const current=taskTags[taskId]||[];
-  for(const tagId of current.filter(id=>oldCatIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
-  const{error}=await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:catTag.id,created_at:new Date().toISOString()});
-  if(error){console.error('Assign error:',error);return}
-  taskTags[taskId]=current.filter(id=>!oldCatIds.includes(id)).concat([catTag.id]);
-  renderDrawer();
-}
-
-// ===== NEW CATEGORY CREATION =====
-let catModalMode='new'; // 'new' or 'assign'
-let catModalForPlayer='attacker';
-function openNewCatModal(player){catModalMode='new';catModalForPlayer=player;document.getElementById('catModalTitle').textContent='New Category';document.getElementById('catModalInput').value='';document.getElementById('catModalInput').style.display='';document.getElementById('catModalPlayer').value=player;document.getElementById('catModal').classList.add('show')}
-function openAssignCatModal(player){
-  catModalMode='assign';catModalForPlayer=player;
-  document.getElementById('catModalTitle').textContent='Assign Category';
-  // Replace input with select of unassigned categories
-  const unassigned=allTags.filter(t=>t.type==='category'&&!playerMap[t.name]);
-  const inp=document.getElementById('catModalInput');
-  if(unassigned.length){inp.style.display='none';
-    // Build a temp select
-    let sel=document.getElementById('catAssignSel');
-    if(!sel){sel=document.createElement('select');sel.id='catAssignSel';sel.className='cat-assign-sel';sel.style.cssText='width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:DM Sans,sans-serif;font-size:12px;background:var(--card);color:var(--text);margin-bottom:8px';inp.parentNode.insertBefore(sel,inp.nextSibling)}
-    sel.innerHTML=unassigned.map(t=>`<option value="${esc(t.name)}">${t.name}</option>`).join('');sel.style.display='';
-  }
-  document.getElementById('catModalPlayer').value=player;document.getElementById('catModal').classList.add('show');
-}
-function closeCatModal(){document.getElementById('catModal').classList.remove('show');const s=document.getElementById('catAssignSel');if(s)s.style.display='none';document.getElementById('catModalInput').style.display=''}
-async function saveCatModal(){
-  const player=document.getElementById('catModalPlayer').value;
-  if(catModalMode==='new'){
-    const name=document.getElementById('catModalInput').value.trim();if(!name){alert('Enter a name');return}
-    // Check if tag already exists
-    let catTag=allTags.find(t=>t.type==='category'&&t.name.toLowerCase()===name.toLowerCase());
-    if(!catTag){
-      const newId=crypto.randomUUID();
-      const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();
-      if(error){console.error('Create category error:',error);alert('Error: '+error.message);return}
-      if(data){allTags.push(data);tagMap[data.id]=data;catTag=data}
-    }
-    playerMap[catTag?catTag.name:name]=player;
-  } else {
-    const sel=document.getElementById('catAssignSel');
-    const name=sel?sel.value:'';if(!name)return;
-    playerMap[name]=player;
-  }
-  await savePlayerMap();closeCatModal();renderDrawer();
-}
-
-// ===== PITCH LIMITS =====
-const PITCH_LIMIT=3;
-function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
-function canPitch(t){const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
-
-// ===== CHIP STATE =====
-let expandedChips=new Set();
-let uncatSearch='';
-
-// ===== RENDER DC =====
-function renderDC(){
-  const lt=locTasks();
-  // Group tasks by player → category
-  const players={attacker:{},midfielder:{},defender:{}};
-  const unassignedCats={};
-
-  lt.filter(hasCategory).forEach(t=>{
-    const cat=tCategory(t);const pl=catPlayer(cat);
-    if(pl&&players[pl]){if(!players[pl][cat])players[pl][cat]=[];players[pl][cat].push(t)}
-    else{if(!unassignedCats[cat])unassignedCats[cat]=[];unassignedCats[cat].push(t)}
-  });
-
-  let h='';
-
-  // Player sections
-  ['attacker','midfielder','defender'].forEach(pl=>{
-    const info=PLAYER_INFO[pl];const cats=Object.entries(players[pl]);
-    // Also include assigned categories with no tasks currently
-    const assignedCats=Object.entries(playerMap).filter(([c,p])=>p===pl).map(([c])=>c);
-    const allCatsForPlayer=[...new Set([...cats.map(([c])=>c),...assignedCats])];
-    const totalTasks=cats.reduce((s,[,l])=>s+l.length,0);
-    h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} (${totalTasks})</span><button class="player-add-btn" onclick="openAssignCatModal('${pl}')">+ Assign</button><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:4px">+ New</button></div>`;
-
-    if(allCatsForPlayer.length){
-      h+=`<div class="dc-chips">${allCatsForPlayer.map(cat=>{
-        const list=players[pl][cat]||[];
-        const key=pl+':'+cat;const exp=expandedChips.has(key);
-        const onP=list.filter(t=>pitchSet.has(t.id)).length;
-        return`<div class="dc-chip ${exp?'expanded':''}" onclick="toggleChip('${pl}','${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
-      }).join('')}</div>`;
-
-      allCatsForPlayer.forEach(cat=>{
-        const list=players[pl][cat]||[];
-        const key=pl+':'+cat;
-        if(expandedChips.has(key)){
-          if(list.length===0){
-            h+=`<div class="dc-chip-tasks"><div style="font-size:10px;color:var(--text2);padding:8px;text-align:center">No tasks tagged "${cat}" in this location yet</div></div>`;
-          } else {
-            const cp=pitchCountForCat(cat);
-            h+=`<div class="dc-chip-tasks"><div style="font-size:9px;color:var(--text2);margin-bottom:4px;font-weight:600">${cat} <span style="color:${cp>=PITCH_LIMIT?'#DC2626':'var(--text2)'}">⚽ ${cp}/${PITCH_LIMIT}</span></div>`;
-            h+=list.map(t=>{
-              const pri=tPriority(t);const onP=pitchSet.has(t.id);const dur=isStudy(t)?tDuration(t):null;const full=!onP&&!canPitch(t);
-              return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn up" onclick="event.stopPropagation();promoteTask('${t.id}')" title="↑ Priority">↑</button><button class="dc-pri-btn down" onclick="event.stopPropagation();demoteTask('${t.id}')" title="↓ Priority">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c"><span style="color:${priColor(pri)}">${pri}</span>${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
-            }).join('');
-            h+=`</div>`;
-          }
-        }
-      });
-    } else {
-      h+=`<div style="font-size:10px;color:var(--text2);opacity:.5;padding:4px 0">No categories assigned</div>`;
-    }
-    h+=`</div>`;
-  });
-
-  // Unassigned categories section
-  const unCats=Object.entries(unassignedCats);
-  if(unCats.length){
-    h+=`<div style="margin-top:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px">❓ Unassigned Categories</div><div class="dc-chips">${unCats.map(([cat,list])=>{
-      return`<div class="dc-chip" onclick="openQuickAssign('${cat.replace(/'/g,"\\'")}')" title="Click to assign player"><span>${cat}</span><span class="dc-chip-count">${list.length}</span></div>`
-    }).join('')}</div></div>`;
-  }
-
-  // Uncategorized tasks section
-  const allActive=allTasks.filter(t=>t.status!=='done');
-  const uncategorized=allActive.filter(t=>!hasCategory(t));
-  if(uncategorized.length){
-    const filtered=uncatSearch?uncategorized.filter(t=>t.name.toLowerCase().includes(uncatSearch.toLowerCase())):uncategorized.slice(0,20);
-    h+=`<div class="uncat-sec"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px">📦 Uncategorized (${uncategorized.length})</div>`;
-    h+=`<input class="uncat-search" placeholder="Search uncategorized tasks..." value="${esc(uncatSearch)}" oninput="uncatSearch=this.value;renderDrawer()">`;
-    const catOptions=allTags.filter(t=>t.type==='category').map(t=>t.name);
-    h+=filtered.map(t=>`<div class="uncat-task"><div class="uncat-task-name">${esc(t.name)}</div><select class="cat-assign-sel" onchange="if(this.value)assignCategoryToTask('${t.id}',this.value)"><option value="">assign...</option>${catOptions.map(c=>`<option value="${esc(c)}">${c}</option>`).join('')}</select></div>`).join('');
-    if(!uncatSearch&&uncategorized.length>20)h+=`<div style="font-size:9px;color:var(--text2);text-align:center;padding:6px">Use search to find more...</div>`;
-    h+=`</div>`;
-  }
-
-  // Debug section
-  h+=`<div style="margin-top:20px;padding:10px;background:var(--card);border-radius:8px;border:1px dashed var(--as)"><div style="font-size:9px;font-weight:700;color:var(--text2);margin-bottom:4px">🔧 DEBUG — Player Map</div><pre style="font-size:8px;color:var(--text2);white-space:pre-wrap;word-break:break-all">${JSON.stringify(playerMap,null,1)}</pre><div style="font-size:8px;color:var(--text2);margin-top:4px">Categories in DB: ${allTags.filter(t=>t.type==='category').map(t=>t.name).join(', ')}</div></div>`;
-
-  return h;
-}
-
-function toggleChip(zone,cat){const key=zone+':'+cat;expandedChips.has(key)?expandedChips.delete(key):expandedChips.add(key);renderDrawer()}
-function openQuickAssign(cat){catModalMode='assign';document.getElementById('catModalTitle').textContent='Assign '+cat+' to player';document.getElementById('catModalInput').style.display='none';document.getElementById('catModalInput').value=cat;const sel=document.getElementById('catAssignSel');if(sel)sel.style.display='none';document.getElementById('catModal').classList.add('show');
-  // Override save for this case
-  document.querySelector('.cat-modal-btns .save').onclick=async function(){const pl=document.getElementById('catModalPlayer').value;playerMap[cat]=pl;await savePlayerMap();closeCatModal();renderDrawer()}}
-
-
-// ===== INIT =====
-async function init(){
-  applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);
-  await loadAll();
-  document.getElementById('loadingView').style.display='none';
-  document.getElementById('pitch').style.display='';
-  document.getElementById('cornerBtn').style.display='';
-  checkPoss();renderPitch();
-}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';checkPoss();renderPitch()}
 init();
 </script>
 </body>
