@@ -194,6 +194,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .nudge-icon{font-size:20px;flex-shrink:0}.nudge-text{flex:1;font-size:12px;font-weight:500}
 .nudge-x{border:none;background:rgba(255,255,255,.25);color:white;padding:5px 10px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0}
 .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+/* Pitch player sections */
+.pitch-sec{margin-bottom:16px;width:100%;max-width:420px}
+.pitch-sec-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.pitch-sec-icon{font-size:14px}.pitch-sec-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.pitch-sec-hdr.atk .pitch-sec-name{color:#DC2626}.pitch-sec-hdr.mid .pitch-sec-name{color:#D97706}.pitch-sec-hdr.def .pitch-sec-name{color:#7C3AED}
+.pitch-sec.blurred{position:relative;pointer-events:none}
+.pitch-sec.blurred>*:not(.pitch-sec-hdr){filter:blur(6px);opacity:.4}
+.pitch-sec.blurred::after{content:'Complete a Mid/Defender task to unlock';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:var(--text2);background:var(--bg);padding:8px 16px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.1);pointer-events:none;white-space:nowrap;z-index:2}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -242,6 +250,7 @@ let lastNudge=0,nudgeInt=null;
 let studyTimerActive=false,studyTimerRem=0,studyTimerTotal=0,studyTimerInt=null,currentStudyId=null;
 let breakRem=300,breakInt=null;
 let catDetailSearch='',catDetailName='';
+let pitchRotation='free'; // 'free' or 'cooldown_atk' (attackers blurred after completing attacker task)
 
 const LOC_MAP={home:['Room','Share house'],office:['Company'],outside:['Train','Park','Cafe','Anywhere']};
 const STUDY_CATS=['Paper study','Quick study','Reading'];
@@ -271,6 +280,7 @@ function priColor(p){return{critical:'#c0392b',high:'#e74c3c',medium:'#f39c12',l
 function locTasks(){return allTasks.filter(t=>t.status!=='done'&&tInLoc(t,loc))}
 function pitched(){return allTasks.filter(t=>pitchSet.has(t.id)&&t.status!=='done')}
 function catPlayer(c){return playerMap[c]||''}
+function taskPlayer(t){return catPlayer(tCategory(t))}
 function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
 function canPitch(t){const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
 
@@ -299,7 +309,7 @@ async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status=
 // Pitch
 function addPitch(id){const t=allTasks.find(x=>x.id===id);if(t&&!canPitch(t))return;pitchSet.add(id);savePitch();renderAll()}
 function rmPitch(id){pitchSet.delete(id);savePitch();if(currentStudyId===id)stopTimer();renderAll()}
-async function toggleTask(id){const t=allTasks.find(x=>x.id===id);if(!t)return;if(t.status==='done'){await markActive(id)}else{await markDone(id);pitchSet.delete(id);savePitch()}renderAll()}
+async function toggleTask(id){const t=allTasks.find(x=>x.id===id);if(!t)return;if(t.status==='done'){await markActive(id)}else{const pl=taskPlayer(t);await markDone(id);pitchSet.delete(id);savePitch();if(pl==='attacker')pitchRotation='cooldown_atk';else if(pitchRotation==='cooldown_atk'&&(pl==='midfielder'||pl==='defender'))pitchRotation='free'}renderAll()}
 function renderAll(){renderPitch();if(document.getElementById('ovBg').classList.contains('show'))renderOv();if(document.getElementById('catDetail').classList.contains('show'))renderCatDetail()}
 
 // Priority
@@ -366,8 +376,8 @@ function benchHTML(t){
 
 // ===== DECISION CENTRE =====
 function renderDC(){
-  const lt=locTasks();const players={attacker:{},midfielder:{},defender:{}};
-  lt.filter(hasCategory).forEach(t=>{const cat=tCategory(t),pl=catPlayer(cat);if(pl&&players[pl]){if(!players[pl][cat])players[pl][cat]=[];players[pl][cat].push(t)}});
+  const allActive=allTasks.filter(t=>t.status!=='done');const players={attacker:{},midfielder:{},defender:{}};
+  allActive.filter(hasCategory).forEach(t=>{const cat=tCategory(t),pl=catPlayer(cat);if(pl&&players[pl]){if(!players[pl][cat])players[pl][cat]=[];players[pl][cat].push(t)}});
   let h='';
   ['attacker','midfielder','defender'].forEach(pl=>{
     const info=PLAYER_INFO[pl];const cats=Object.entries(players[pl]);
@@ -472,11 +482,11 @@ function clearNudge(){clearInterval(nudgeInt);dismissNudge()}
 function startStudy(id){const t=allTasks.find(x=>x.id===id);if(!t)return;studyTimerTotal=tDuration(t)*60;studyTimerRem=studyTimerTotal;currentStudyId=id;studyTimerActive=true;clearInterval(studyTimerInt);studyTimerInt=setInterval(()=>{studyTimerRem--;renderPitch();if(studyTimerRem<=0){studyTimerActive=false;clearInterval(studyTimerInt);triggerBreak()}},1000);renderPitch()}
 function pauseStudy(){studyTimerActive=false;clearInterval(studyTimerInt);renderPitch()}
 function resumeStudy(){if(!currentStudyId||studyTimerRem<=0)return;studyTimerActive=true;studyTimerInt=setInterval(()=>{studyTimerRem--;renderPitch();if(studyTimerRem<=0){studyTimerActive=false;clearInterval(studyTimerInt);triggerBreak()}},1000);renderPitch()}
-async function completeStudy(){studyTimerActive=false;clearInterval(studyTimerInt);await markDone(currentStudyId);pitchSet.delete(currentStudyId);savePitch();currentStudyId=null;studyTimerRem=0;renderPitch()}
+async function completeStudy(){studyTimerActive=false;clearInterval(studyTimerInt);const t=allTasks.find(x=>x.id===currentStudyId);if(t){const pl=taskPlayer(t);if(pl==='attacker')pitchRotation='cooldown_atk';else if(pitchRotation==='cooldown_atk'&&(pl==='midfielder'||pl==='defender'))pitchRotation='free'}await markDone(currentStudyId);pitchSet.delete(currentStudyId);savePitch();currentStudyId=null;studyTimerRem=0;renderPitch()}
 function stopTimer(){studyTimerActive=false;clearInterval(studyTimerInt);currentStudyId=null;studyTimerRem=0}
 const TIPS=[{i:'💧',t:'Drink water'},{i:'🍙',t:'Snack'},{i:'🧘',t:'Stretch'},{i:'👀',t:'Rest eyes'},{i:'🚶',t:'Walk'},{i:'🫁',t:'Deep breaths'},{i:'🎵',t:'Song'}];
 function triggerBreak(){breakRem=300;document.getElementById('breakOv').classList.add('show');document.getElementById('breakIcon').textContent=['🌿','🌊','☀️','🍃'][Math.floor(Math.random()*4)];document.getElementById('breakTips').innerHTML=[...TIPS].sort(()=>Math.random()-.5).slice(0,3).map(t=>`<div class="break-tip"><span style="font-size:18px">${t.i}</span><span>${t.t}</span></div>`).join('');breakInt=setInterval(()=>{breakRem--;document.getElementById('bTime').textContent=`${Math.floor(breakRem/60)}:${String(breakRem%60).padStart(2,'0')}`;document.getElementById('bRing').style.strokeDashoffset=276.46*(1-breakRem/300);if(breakRem<=0)endBreak()},1000)}
-async function endBreak(){clearInterval(breakInt);document.getElementById('breakOv').classList.remove('show');await markDone(currentStudyId);pitchSet.delete(currentStudyId);savePitch();currentStudyId=null;const next=pitched().filter(isStudy);if(next.length)startStudy(next[0].id);else renderPitch()}
+async function endBreak(){clearInterval(breakInt);document.getElementById('breakOv').classList.remove('show');const t=allTasks.find(x=>x.id===currentStudyId);if(t){const pl=taskPlayer(t);if(pl==='attacker')pitchRotation='cooldown_atk';else if(pitchRotation==='cooldown_atk'&&(pl==='midfielder'||pl==='defender'))pitchRotation='free'}await markDone(currentStudyId);pitchSet.delete(currentStudyId);savePitch();currentStudyId=null;const next=pitched().filter(isStudy);if(next.length)startStudy(next[0].id);else renderPitch()}
 function skipBreak(){endBreak()}
 
 // ===== RENDER PITCH =====
@@ -485,10 +495,47 @@ function renderPitch(){
   if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML='';
   if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
   const pt=pitched();if(!pt.length){field.innerHTML=`<div style="text-align:center;color:var(--text2);padding:60px 20px"><div style="font-size:52px;margin-bottom:14px;opacity:.4">⚽</div><div style="font-family:'Fraunces',serif;font-size:18px;color:var(--text);opacity:.5;margin-bottom:6px">The pitch is empty</div><div style="font-size:12px;line-height:1.6;opacity:.6">Open ☰ and select tasks</div></div>`;return}
-  let h='';const CIRC=2*Math.PI*78;const st=pt.filter(isStudy),dv=pt.filter(isDev),ot=pt.filter(t=>!isStudy(t)&&!isDev(t));
-  if(st.length){const act=currentStudyId?st.find(t=>t.id===currentStudyId):null;if(act&&(studyTimerActive||studyTimerRem>0)){const pct=studyTimerTotal>0?studyTimerRem/studyTimerTotal:1,off=CIRC*(1-pct),m=Math.floor(studyTimerRem/60),s=studyTimerRem%60;h+=`<div class="study-focus"><div class="study-label">📓 NOW STUDYING</div><div class="study-title">${esc(act.name)}</div><div class="study-tag">${tCategory(act)}</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/><circle class="tr-fill" cx="90" cy="90" r="78" stroke-dasharray="${CIRC}" stroke-dashoffset="${off}"/></svg><div class="timer-center"><div class="timer-digits">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div><div class="timer-label">${studyTimerActive?'studying':'paused'}</div></div></div><div class="study-controls">${studyTimerActive?`<button class="study-ctrl pause" onclick="pauseStudy()">⏸ Pause</button>`:`<button class="study-ctrl start" onclick="resumeStudy()">▶ Resume</button>`}<button class="study-ctrl done" onclick="completeStudy()">✓ Done</button></div></div>`}else{const nx=st[0],dur=tDuration(nx);h+=`<div class="study-focus"><div class="study-label">📓 NEXT STUDY</div><div class="study-title">${esc(nx.name)}</div><div class="study-tag">${tCategory(nx)} · ${dur} min</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/></svg><div class="timer-center"><div class="timer-digits">${dur}:00</div><div class="timer-label">ready</div></div></div><div class="study-controls"><button class="study-ctrl start" onclick="startStudy('${nx.id}')">▶ Start</button></div></div>`;const rest=st.slice(1);if(rest.length)h+=`<div class="dev-tasks" style="margin-top:10px"><div class="dev-header" style="color:#DC2626">📓 QUEUED</div>${rest.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tDuration(t)}m</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`}}
-  if(dv.length)h+=`<div class="dev-tasks"${st.length?' style="margin-top:16px"':''}><div class="dev-header" style="color:#7C3AED">💻 APP DEV</div>${dv.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`;
-  if(ot.length)h+=`<div class="dev-tasks" style="margin-top:12px"><div class="dev-header" style="color:var(--accent)">📌 OTHER</div>${ot.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('')}</div>`;
+  
+  // Group pitched tasks by player type
+  const groups={attacker:[],midfielder:[],defender:[],other:[]};
+  pt.forEach(t=>{const pl=taskPlayer(t);if(pl&&groups[pl])groups[pl].push(t);else groups.other.push(t)});
+  
+  const CIRC=2*Math.PI*78;
+  let h='';
+  const atkBlurred=pitchRotation==='cooldown_atk';
+
+  // Check if there's an active study timer
+  const activeStudy=currentStudyId?pt.find(t=>t.id===currentStudyId):null;
+  if(activeStudy&&(studyTimerActive||studyTimerRem>0)){
+    const pct=studyTimerTotal>0?studyTimerRem/studyTimerTotal:1,off=CIRC*(1-pct),m=Math.floor(studyTimerRem/60),s=studyTimerRem%60;
+    h+=`<div class="study-focus"><div class="study-label">📓 NOW STUDYING</div><div class="study-title">${esc(activeStudy.name)}</div><div class="study-tag">${tCategory(activeStudy)}</div><div class="timer-ring-wrap"><svg viewBox="0 0 180 180"><circle class="tr-bg" cx="90" cy="90" r="78"/><circle class="tr-fill" cx="90" cy="90" r="78" stroke-dasharray="${CIRC}" stroke-dashoffset="${off}"/></svg><div class="timer-center"><div class="timer-digits">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div><div class="timer-label">${studyTimerActive?'studying':'paused'}</div></div></div><div class="study-controls">${studyTimerActive?`<button class="study-ctrl pause" onclick="pauseStudy()">⏸ Pause</button>`:`<button class="study-ctrl start" onclick="resumeStudy()">▶ Resume</button>`}<button class="study-ctrl done" onclick="completeStudy()">✓ Done</button></div></div>`;
+    field.innerHTML=h;return;
+  }
+
+  // Render each player section
+  [['attacker','⚔️','Attackers','atk',atkBlurred],['midfielder','🍱','Midfield','mid',false],['defender','🪞','Defenders','def',false]].forEach(([pl,icon,name,cl,blur])=>{
+    const list=groups[pl];if(!list.length)return;
+    h+=`<div class="pitch-sec ${blur?'blurred':''}"><div class="pitch-sec-hdr ${cl}"><span class="pitch-sec-icon">${icon}</span><span class="pitch-sec-name">${name} (${list.length})</span></div>`;
+    list.forEach(t=>{
+      const cat=tCategory(t),dur=isStudy(t)?tDuration(t):null;
+      if(isStudy(t)&&!blur){
+        h+=`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${cat}${dur?' · '+dur+'m':''}</div><button class="study-ctrl start" style="padding:5px 12px;font-size:10px" onclick="startStudy('${t.id}')">▶ ${dur}m</button><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`;
+      } else {
+        h+=`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${cat}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`;
+      }
+    });
+    h+=`</div>`;
+  });
+  // Other (no player assigned)
+  if(groups.other.length){
+    h+=`<div class="pitch-sec"><div class="pitch-sec-hdr"><span class="pitch-sec-icon">📌</span><span class="pitch-sec-name" style="color:var(--text2)">Other (${groups.other.length})</span></div>`;
+    groups.other.forEach(t=>{h+=`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`});
+    h+=`</div>`;
+  }
+
+  // Rotation indicator
+  if(atkBlurred)h+=`<div style="text-align:center;margin-top:8px;font-size:10px;color:var(--text2)">🔄 Complete a Midfield or Defender task to unlock Attackers</div>`;
+
   field.innerHTML=h;
 }
 
