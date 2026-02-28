@@ -171,16 +171,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dc-item{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:8px;padding:8px 10px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
 .dc-item-info{flex:1}.dc-item-n{font-size:11px;font-weight:500}.dc-item-c{font-size:8px;color:var(--text2)}
 .dc-empty{text-align:center;padding:10px;font-size:10px;color:var(--text2);opacity:.5;border:2px dashed var(--as);border-radius:8px}
-.dc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
-.dc-chip{padding:5px 10px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--as);background:var(--card);color:var(--text);display:flex;align-items:center;gap:4px}
-.dc-chip.expanded{border-color:var(--accent);background:var(--as)}
-.dc-chip-count{font-size:9px;background:var(--as);color:var(--accent);padding:0 5px;border-radius:6px;font-weight:700}
-.dc-chip-tasks{margin-top:6px;margin-bottom:8px}
-.dc-pri-btns{display:flex;gap:3px;flex-shrink:0}
-.dc-pri-btn{border:none;width:22px;height:22px;border-radius:5px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(--as);color:var(--text2)}
-.dc-pri-btn:hover{background:var(--accent);color:white}
-.dc-pri-btn.up{color:#DC2626}.dc-pri-btn.down{color:#95a5a6}
-.pitch-limit{font-size:8px;color:var(--text2);margin-left:2px}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -280,7 +270,7 @@ async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='d
 async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='in_progress';await sb.from('mind_map_app_tasks').update({status:'in_progress',updated_at:new Date().toISOString()}).eq('id',id)}
 
 // ===== PITCH =====
-function addPitch(id){const t=allTasks.find(x=>x.id===id);if(t&&!canPitch(t))return;pitchSet.add(id);savePitch();renderPitch();renderDrawer()}
+function addPitch(id){pitchSet.add(id);savePitch();renderPitch();renderDrawer()}
 function rmPitch(id){pitchSet.delete(id);savePitch();if(currentStudyId===id)stopTimer();renderPitch();renderDrawer()}
 async function toggleTask(id){const t=allTasks.find(x=>x.id===id);if(!t)return;if(t.status==='done'){await markActive(id)}else{await markDone(id);pitchSet.delete(id);savePitch()}renderPitch();renderDrawer()}
 
@@ -378,84 +368,13 @@ function benchHTML(t){
   return`<div class="dr-task ${isDone?'done':''}"><div class="dr-task-pbar" style="background:${priColor(pri)}"></div><div class="dr-task-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}');setTimeout(renderDrawer,100)"></div><div class="dr-task-info"><div class="dr-task-title">${esc(t.name)}</div><div class="dr-task-meta">${cat?`<span class="dr-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="dr-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone?`<button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':'▶ Pitch'}</button>`:''}</div>`;
 }
 
-// ===== PRIORITY CHANGE =====
-const PRI_ORDER=['critical','high','medium','low','someday'];
-async function changePriority(taskId,newPri){
-  // Find tag IDs
-  const priTags=allTags.filter(t=>t.type==='priority');
-  const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);
-  if(!newTag)return;
-  // Remove old priority tags from task
-  const oldPriTagIds=priTags.map(t=>t.id);
-  const currentTags=taskTags[taskId]||[];
-  const oldPriLinks=currentTags.filter(id=>oldPriTagIds.includes(id));
-  // Remove old from DB
-  for(const tagId of oldPriLinks){
-    await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId);
-  }
-  // Add new
-  await sb.from('mind_map_app_task_tags').insert({task_id:taskId,tag_id:newTag.id});
-  // Update in-memory
-  taskTags[taskId]=currentTags.filter(id=>!oldPriTagIds.includes(id)).concat([newTag.id]);
-  renderDrawer();renderPitch();
-}
-function promoteTask(taskId){
-  const cur=tPriority(allTasks.find(t=>t.id===taskId));
-  const idx=PRI_ORDER.indexOf(cur);
-  if(idx>0)changePriority(taskId,PRI_ORDER[idx-1]);
-}
-function demoteTask(taskId){
-  const cur=tPriority(allTasks.find(t=>t.id===taskId));
-  const idx=PRI_ORDER.indexOf(cur);
-  if(idx<PRI_ORDER.length-1)changePriority(taskId,PRI_ORDER[idx+1]);
-}
-
-// ===== PITCH LIMITS =====
-const PITCH_LIMIT=3; // max tasks per category on pitch
-function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
-function canPitch(t){const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
-
-// ===== CHIP STATE =====
-let expandedChips=new Set(); // "zone:category" keys
-
 function renderDC(){
   const lt=locTasks(),zones={critical:[],high:[],normal:[]};
   lt.forEach(t=>{const p=tPriority(t);if(p==='critical')zones.critical.push(t);else if(p==='high')zones.high.push(t);else zones.normal.push(t)});
-
-  return[['critical','CRITICAL','lc','bc','!'],['high','HIGH','lh','bh','↑'],['normal','NORMAL','ln','bn','—']].map(([z,l,lc,bc,i])=>{
-    // Group by category within zone
-    const catGroups={};zones[z].forEach(t=>{const c=tCategory(t)||'Other';if(!catGroups[c])catGroups[c]=[];catGroups[c].push(t)});
-    const cats=Object.entries(catGroups);
-
-    let content='';
-    if(cats.length){
-      // Category chips
-      content+=`<div class="dc-chips">${cats.map(([cat,list])=>{
-        const key=z+':'+cat;const exp=expandedChips.has(key);
-        const onPitchCount=list.filter(t=>pitchSet.has(t.id)).length;
-        return`<div class="dc-chip ${exp?'expanded':''}" onclick="toggleChip('${z}','${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onPitchCount?`<span style="font-size:8px;color:#059669">⚽${onPitchCount}</span>`:''}</div>`
-      }).join('')}</div>`;
-
-      // Expanded task lists
-      cats.forEach(([cat,list])=>{
-        const key=z+':'+cat;
-        if(expandedChips.has(key)){
-          const catPitchCount=pitchCountForCat(cat);
-          content+=`<div class="dc-chip-tasks"><div style="font-size:9px;color:var(--text2);margin-bottom:4px;font-weight:600">${cat} <span style="color:${catPitchCount>=PITCH_LIMIT?'#DC2626':'var(--text2)'}">⚽ ${catPitchCount}/${PITCH_LIMIT}</span></div>${list.map(t=>{
-            const onP=pitchSet.has(t.id);const dur=isStudy(t)?tDuration(t):null;const full=!onP&&!canPitch(t);
-            return`<div class="dc-item"><div class="dc-pri-btns">${z!=='critical'?`<button class="dc-pri-btn up" onclick="event.stopPropagation();promoteTask('${t.id}')" title="Promote">↑</button>`:''}${z!=='normal'?`<button class="dc-pri-btn down" onclick="event.stopPropagation();demoteTask('${t.id}')" title="Demote">↓</button>`:''}</div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${dur?dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':full?'off':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
-          }).join('')}</div>`;
-        }
-      });
-    } else {
-      content=`<div class="dc-empty">No ${z} tasks</div>`;
-    }
-
-    return`<div class="dc-zone"><div class="dc-zone-hdr"><div class="dc-zl ${lc}"><span class="dc-bd ${bc}">${i}</span> ${l} (${zones[z].length})</div></div><div class="dc-list">${content}</div></div>`;
-  }).join('');
+  return[['critical','CRITICAL','lc','bc','!'],['high','HIGH','lh','bh','↑'],['normal','NORMAL','ln','bn','—']].map(([z,l,lc,bc,i])=>
+    `<div class="dc-zone"><div class="dc-zone-hdr"><div class="dc-zl ${lc}"><span class="dc-bd ${bc}">${i}</span> ${l} (${zones[z].length})</div></div><div class="dc-list">${zones[z].length?zones[z].map(t=>{const onP=pitchSet.has(t.id),dur=isStudy(t)?tDuration(t):null;return`<div class="dc-item"><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${tCategory(t)}${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':'▶ Pitch'}</button></div>`}).join(''):`<div class="dc-empty">No ${z} tasks</div>`}</div></div>`
+  ).join('');
 }
-
-function toggleChip(zone,cat){const key=zone+':'+cat;expandedChips.has(key)?expandedChips.delete(key):expandedChips.add(key);renderDrawer()}
 
 // ===== INIT =====
 async function init(){
