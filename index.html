@@ -180,7 +180,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dc-pri-btn{border:none;width:22px;height:22px;border-radius:5px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(--as);color:var(--text2)}
 .dc-pri-btn:hover{background:var(--accent);color:white}
 .dc-pri-btn.up{color:#DC2626}.dc-pri-btn.down{color:#95a5a6}
-.pitch-limit{font-size:8px;color:var(--text2);margin-left:2px}
+/* Player sections */
+.player-sec{margin-bottom:16px;border-radius:12px;padding:12px;border:1.5px solid var(--as)}
+.player-sec.atk{background:rgba(220,38,38,.03);border-color:rgba(220,38,38,.15)}
+.player-sec.mid{background:rgba(245,158,11,.03);border-color:rgba(245,158,11,.15)}
+.player-sec.def{background:rgba(139,92,246,.03);border-color:rgba(139,92,246,.15)}
+.player-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.player-icon{font-size:16px}.player-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.player-hdr.atk .player-name{color:#DC2626}.player-hdr.mid .player-name{color:#D97706}.player-hdr.def .player-name{color:#7C3AED}
+.player-add-btn{margin-left:auto;border:none;background:var(--as);color:var(--accent);padding:3px 8px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* Uncategorized search */
+.uncat-sec{margin-top:16px;border-top:2px dashed var(--as);padding-top:14px}
+.uncat-search{width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;margin-bottom:8px}
+.uncat-search:focus{border-color:var(--accent)}
+.uncat-task{background:var(--card);border-radius:8px;padding:8px 10px;margin-bottom:4px;box-shadow:0 1px 2px rgba(0,0,0,.05);display:flex;align-items:center;gap:6px}
+.uncat-task-name{flex:1;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-assign-sel{border:1px solid var(--as);border-radius:5px;padding:2px 4px;font-family:'DM Sans',sans-serif;font-size:9px;background:var(--card);color:var(--text);cursor:pointer;max-width:100px}
+/* New category modal */
+.cat-modal-ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
+.cat-modal-ov.show{display:flex}
+.cat-modal{background:var(--bg);border-radius:16px;padding:20px;width:90%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.cat-modal h3{font-family:'Fraunces',serif;font-size:16px;margin-bottom:12px}
+.cat-modal input,.cat-modal select{width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;margin-bottom:8px}
+.cat-modal-btns{display:flex;gap:8px;margin-top:6px}
+.cat-modal-btns button{flex:1;padding:8px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none}
+.cat-modal-btns .save{background:var(--accent);color:white}
+.cat-modal-btns .cancel{background:var(--as);color:var(--text2)}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -214,12 +239,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="break-ov" id="breakOv"><div class="lock-icon" id="breakIcon">🌿</div><div class="break-title">5-Minute Break</div><div class="break-sub">Rest before next session</div><div class="break-tips" id="breakTips"></div><div class="break-ring"><svg viewBox="0 0 100 100"><circle class="br-bg" cx="50" cy="50" r="44"/><circle class="br-fill" id="bRing" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="break-time" id="bTime">5:00</div></div><button class="skip-btn" onclick="skipBreak()">Skip</button></div>
 <div class="nudge" id="nudge"><div class="nudge-inner"><span class="nudge-icon">💧</span><span class="nudge-text" id="nudgeT">Drink water!</span><button class="nudge-x" onclick="dismissNudge()">Got it</button></div></div>
 
+<!-- New Category / Assign Player Modal -->
+<div class="cat-modal-ov" id="catModal">
+  <div class="cat-modal">
+    <h3 id="catModalTitle">New Category</h3>
+    <input id="catModalInput" placeholder="Category name...">
+    <select id="catModalPlayer">
+      <option value="attacker">⚔️ Attacker</option>
+      <option value="midfielder">🍱 Midfielder</option>
+      <option value="defender">🪞 Defender</option>
+    </select>
+    <div class="cat-modal-btns">
+      <button class="cancel" onclick="closeCatModal()">Cancel</button>
+      <button class="save" onclick="saveCatModal()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===== SUPABASE =====
 const sb=window.supabase.createClient('https://wylxvmkcrexwfpjpbhyy.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bHh2bWtjcmV4d2ZwanBiaHl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzkxMDYsImV4cCI6MjA4NDIxNTEwNn0.6Bxo42hx4jwlJGWnfjiTpiDUsYfc1QLTN3YtrU1efak');
 
 // ===== IN-MEMORY =====
 let allTags=[],tagMap={},allTasks=[],taskTags={},pitchSet=new Set();
+let playerMap={}; // categoryName → 'attacker'|'midfielder'|'defender'
 let loc='home',mood='Energetic',drTab='tasks',manHol=false,possession='mid_morning';
 let lunchRem=3600,defRem=1800,lunchInt=null,defInt=null;
 let morningCk=new Set(),lunchCk=new Set(),defCk=new Set();
@@ -263,12 +306,15 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,notes:r.notes,links:r.links,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  // Load pitch + possession from chat_memory
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession']);
+  // Load pitch + possession + player map from chat_memory
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players']);
   pitchSet=new Set();
+  const defaultPlayers={'Paper study':'attacker','Quick study':'attacker','Coding':'attacker','App generation':'attacker','Reading':'attacker','Documentation':'attacker','Exercise':'midfielder','Errands':'midfielder'};
+  playerMap={...defaultPlayers};
   (mem||[]).forEach(m=>{
     if(m.key==='cf_pitch'){try{pitchSet=new Set(JSON.parse(m.value))}catch{}}
     if(m.key==='cf_possession'){try{const p=JSON.parse(m.value);if(p.date===todayK())possession=p.state||'mid_morning'}catch{}}
+    if(m.key==='cf_players'){try{playerMap={...defaultPlayers,...JSON.parse(m.value)}}catch{}}
   });
   console.log('✅',allTasks.length,'tasks,',allTags.length,'tags loaded');
 }
@@ -378,84 +424,155 @@ function benchHTML(t){
   return`<div class="dr-task ${isDone?'done':''}"><div class="dr-task-pbar" style="background:${priColor(pri)}"></div><div class="dr-task-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}');setTimeout(renderDrawer,100)"></div><div class="dr-task-info"><div class="dr-task-title">${esc(t.name)}</div><div class="dr-task-meta">${cat?`<span class="dr-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="dr-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone?`<button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':'▶ Pitch'}</button>`:''}</div>`;
 }
 
+// ===== PLAYER MAP =====
+async function savePlayerMap(){await sb.from('mind_map_app_chat_memory').upsert({key:'cf_players',value:JSON.stringify(playerMap),updated_at:new Date().toISOString()},{onConflict:'key'}).catch(e=>console.error(e))}
+function catPlayer(cat){return playerMap[cat]||''}
+const PLAYER_INFO={attacker:{icon:'⚔️',name:'Attackers',cl:'atk'},midfielder:{icon:'🍱',name:'Midfield',cl:'mid'},defender:{icon:'🪞',name:'Defenders',cl:'def'}};
+
 // ===== PRIORITY CHANGE =====
 const PRI_ORDER=['critical','high','medium','low','someday'];
 async function changePriority(taskId,newPri){
-  // Find tag IDs
   const priTags=allTags.filter(t=>t.type==='priority');
-  const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);
-  if(!newTag)return;
-  // Remove old priority tags from task
-  const oldPriTagIds=priTags.map(t=>t.id);
-  const currentTags=taskTags[taskId]||[];
-  const oldPriLinks=currentTags.filter(id=>oldPriTagIds.includes(id));
-  // Remove old from DB
-  for(const tagId of oldPriLinks){
-    await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId);
-  }
-  // Add new
+  const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);if(!newTag)return;
+  const oldPriTagIds=priTags.map(t=>t.id);const currentTags=taskTags[taskId]||[];
+  for(const tagId of currentTags.filter(id=>oldPriTagIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
   await sb.from('mind_map_app_task_tags').insert({task_id:taskId,tag_id:newTag.id});
-  // Update in-memory
   taskTags[taskId]=currentTags.filter(id=>!oldPriTagIds.includes(id)).concat([newTag.id]);
   renderDrawer();renderPitch();
 }
-function promoteTask(taskId){
-  const cur=tPriority(allTasks.find(t=>t.id===taskId));
-  const idx=PRI_ORDER.indexOf(cur);
-  if(idx>0)changePriority(taskId,PRI_ORDER[idx-1]);
+function promoteTask(id){const c=tPriority(allTasks.find(t=>t.id===id)),i=PRI_ORDER.indexOf(c);if(i>0)changePriority(id,PRI_ORDER[i-1])}
+function demoteTask(id){const c=tPriority(allTasks.find(t=>t.id===id)),i=PRI_ORDER.indexOf(c);if(i<PRI_ORDER.length-1)changePriority(id,PRI_ORDER[i+1])}
+
+// ===== CATEGORY ASSIGNMENT =====
+async function assignCategoryToTask(taskId,catName){
+  const catTag=allTags.find(t=>t.type==='category'&&t.name===catName);if(!catTag)return;
+  const oldCatIds=allTags.filter(t=>t.type==='category').map(t=>t.id);
+  const current=taskTags[taskId]||[];
+  for(const tagId of current.filter(id=>oldCatIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
+  await sb.from('mind_map_app_task_tags').insert({task_id:taskId,tag_id:catTag.id});
+  taskTags[taskId]=current.filter(id=>!oldCatIds.includes(id)).concat([catTag.id]);
+  renderDrawer();
 }
-function demoteTask(taskId){
-  const cur=tPriority(allTasks.find(t=>t.id===taskId));
-  const idx=PRI_ORDER.indexOf(cur);
-  if(idx<PRI_ORDER.length-1)changePriority(taskId,PRI_ORDER[idx+1]);
+
+// ===== NEW CATEGORY CREATION =====
+let catModalMode='new'; // 'new' or 'assign'
+let catModalForPlayer='attacker';
+function openNewCatModal(player){catModalMode='new';catModalForPlayer=player;document.getElementById('catModalTitle').textContent='New Category';document.getElementById('catModalInput').value='';document.getElementById('catModalInput').style.display='';document.getElementById('catModalPlayer').value=player;document.getElementById('catModal').classList.add('show')}
+function openAssignCatModal(player){
+  catModalMode='assign';catModalForPlayer=player;
+  document.getElementById('catModalTitle').textContent='Assign Category';
+  // Replace input with select of unassigned categories
+  const unassigned=allTags.filter(t=>t.type==='category'&&!playerMap[t.name]);
+  const inp=document.getElementById('catModalInput');
+  if(unassigned.length){inp.style.display='none';
+    // Build a temp select
+    let sel=document.getElementById('catAssignSel');
+    if(!sel){sel=document.createElement('select');sel.id='catAssignSel';sel.className='cat-assign-sel';sel.style.cssText='width:100%;border:1.5px solid var(--as);border-radius:9px;padding:8px 12px;font-family:DM Sans,sans-serif;font-size:12px;background:var(--card);color:var(--text);margin-bottom:8px';inp.parentNode.insertBefore(sel,inp.nextSibling)}
+    sel.innerHTML=unassigned.map(t=>`<option value="${esc(t.name)}">${t.name}</option>`).join('');sel.style.display='';
+  }
+  document.getElementById('catModalPlayer').value=player;document.getElementById('catModal').classList.add('show');
+}
+function closeCatModal(){document.getElementById('catModal').classList.remove('show');const s=document.getElementById('catAssignSel');if(s)s.style.display='none';document.getElementById('catModalInput').style.display=''}
+async function saveCatModal(){
+  const player=document.getElementById('catModalPlayer').value;
+  if(catModalMode==='new'){
+    const name=document.getElementById('catModalInput').value.trim();if(!name)return;
+    // Create tag in DB
+    const{data}=await sb.from('mind_map_app_tags').insert({name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0}).select().single();
+    if(data){allTags.push(data);tagMap[data.id]=data}
+    playerMap[name]=player;
+  } else {
+    const sel=document.getElementById('catAssignSel');
+    const name=sel?sel.value:'';if(!name)return;
+    playerMap[name]=player;
+  }
+  await savePlayerMap();closeCatModal();renderDrawer();
 }
 
 // ===== PITCH LIMITS =====
-const PITCH_LIMIT=3; // max tasks per category on pitch
+const PITCH_LIMIT=3;
 function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
 function canPitch(t){const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
 
 // ===== CHIP STATE =====
-let expandedChips=new Set(); // "zone:category" keys
+let expandedChips=new Set();
+let uncatSearch='';
 
+// ===== RENDER DC =====
 function renderDC(){
-  const lt=locTasks(),zones={critical:[],high:[],normal:[]};
-  lt.forEach(t=>{const p=tPriority(t);if(p==='critical')zones.critical.push(t);else if(p==='high')zones.high.push(t);else zones.normal.push(t)});
+  const lt=locTasks();
+  // Group tasks by player → category
+  const players={attacker:{},midfielder:{},defender:{}};
+  const unassignedCats={};
 
-  return[['critical','CRITICAL','lc','bc','!'],['high','HIGH','lh','bh','↑'],['normal','NORMAL','ln','bn','—']].map(([z,l,lc,bc,i])=>{
-    // Group by category within zone
-    const catGroups={};zones[z].forEach(t=>{const c=tCategory(t)||'Other';if(!catGroups[c])catGroups[c]=[];catGroups[c].push(t)});
-    const cats=Object.entries(catGroups);
+  lt.filter(hasCategory).forEach(t=>{
+    const cat=tCategory(t);const pl=catPlayer(cat);
+    if(pl&&players[pl]){if(!players[pl][cat])players[pl][cat]=[];players[pl][cat].push(t)}
+    else{if(!unassignedCats[cat])unassignedCats[cat]=[];unassignedCats[cat].push(t)}
+  });
 
-    let content='';
+  let h='';
+
+  // Player sections
+  ['attacker','midfielder','defender'].forEach(pl=>{
+    const info=PLAYER_INFO[pl];const cats=Object.entries(players[pl]);
+    const totalTasks=cats.reduce((s,[,l])=>s+l.length,0);
+    h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} (${totalTasks})</span><button class="player-add-btn" onclick="openAssignCatModal('${pl}')">+ Assign</button><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:4px">+ New</button></div>`;
+
     if(cats.length){
-      // Category chips
-      content+=`<div class="dc-chips">${cats.map(([cat,list])=>{
-        const key=z+':'+cat;const exp=expandedChips.has(key);
-        const onPitchCount=list.filter(t=>pitchSet.has(t.id)).length;
-        return`<div class="dc-chip ${exp?'expanded':''}" onclick="toggleChip('${z}','${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onPitchCount?`<span style="font-size:8px;color:#059669">⚽${onPitchCount}</span>`:''}</div>`
+      h+=`<div class="dc-chips">${cats.map(([cat,list])=>{
+        const key=pl+':'+cat;const exp=expandedChips.has(key);
+        const onP=list.filter(t=>pitchSet.has(t.id)).length;
+        return`<div class="dc-chip ${exp?'expanded':''}" onclick="toggleChip('${pl}','${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
       }).join('')}</div>`;
 
-      // Expanded task lists
       cats.forEach(([cat,list])=>{
-        const key=z+':'+cat;
+        const key=pl+':'+cat;
         if(expandedChips.has(key)){
-          const catPitchCount=pitchCountForCat(cat);
-          content+=`<div class="dc-chip-tasks"><div style="font-size:9px;color:var(--text2);margin-bottom:4px;font-weight:600">${cat} <span style="color:${catPitchCount>=PITCH_LIMIT?'#DC2626':'var(--text2)'}">⚽ ${catPitchCount}/${PITCH_LIMIT}</span></div>${list.map(t=>{
-            const onP=pitchSet.has(t.id);const dur=isStudy(t)?tDuration(t):null;const full=!onP&&!canPitch(t);
-            return`<div class="dc-item"><div class="dc-pri-btns">${z!=='critical'?`<button class="dc-pri-btn up" onclick="event.stopPropagation();promoteTask('${t.id}')" title="Promote">↑</button>`:''}${z!=='normal'?`<button class="dc-pri-btn down" onclick="event.stopPropagation();demoteTask('${t.id}')" title="Demote">↓</button>`:''}</div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${dur?dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':full?'off':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
-          }).join('')}</div>`;
+          const cp=pitchCountForCat(cat);
+          h+=`<div class="dc-chip-tasks"><div style="font-size:9px;color:var(--text2);margin-bottom:4px;font-weight:600">${cat} <span style="color:${cp>=PITCH_LIMIT?'#DC2626':'var(--text2)'}">⚽ ${cp}/${PITCH_LIMIT}</span></div>`;
+          h+=list.map(t=>{
+            const pri=tPriority(t);const onP=pitchSet.has(t.id);const dur=isStudy(t)?tDuration(t):null;const full=!onP&&!canPitch(t);
+            return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn up" onclick="event.stopPropagation();promoteTask('${t.id}')" title="↑ Priority">↑</button><button class="dc-pri-btn down" onclick="event.stopPropagation();demoteTask('${t.id}')" title="↓ Priority">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c"><span style="color:${priColor(pri)}">${pri}</span>${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
+          }).join('');
+          h+=`</div>`;
         }
       });
     } else {
-      content=`<div class="dc-empty">No ${z} tasks</div>`;
+      h+=`<div style="font-size:10px;color:var(--text2);opacity:.5;padding:4px 0">No categories assigned</div>`;
     }
+    h+=`</div>`;
+  });
 
-    return`<div class="dc-zone"><div class="dc-zone-hdr"><div class="dc-zl ${lc}"><span class="dc-bd ${bc}">${i}</span> ${l} (${zones[z].length})</div></div><div class="dc-list">${content}</div></div>`;
-  }).join('');
+  // Unassigned categories section
+  const unCats=Object.entries(unassignedCats);
+  if(unCats.length){
+    h+=`<div style="margin-top:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px">❓ Unassigned Categories</div><div class="dc-chips">${unCats.map(([cat,list])=>{
+      return`<div class="dc-chip" onclick="openQuickAssign('${cat.replace(/'/g,"\\'")}')" title="Click to assign player"><span>${cat}</span><span class="dc-chip-count">${list.length}</span></div>`
+    }).join('')}</div></div>`;
+  }
+
+  // Uncategorized tasks section
+  const allActive=allTasks.filter(t=>t.status!=='done');
+  const uncategorized=allActive.filter(t=>!hasCategory(t));
+  if(uncategorized.length){
+    const filtered=uncatSearch?uncategorized.filter(t=>t.name.toLowerCase().includes(uncatSearch.toLowerCase())):uncategorized.slice(0,20);
+    h+=`<div class="uncat-sec"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px">📦 Uncategorized (${uncategorized.length})</div>`;
+    h+=`<input class="uncat-search" placeholder="Search uncategorized tasks..." value="${esc(uncatSearch)}" oninput="uncatSearch=this.value;renderDrawer()">`;
+    const catOptions=allTags.filter(t=>t.type==='category').map(t=>t.name);
+    h+=filtered.map(t=>`<div class="uncat-task"><div class="uncat-task-name">${esc(t.name)}</div><select class="cat-assign-sel" onchange="if(this.value)assignCategoryToTask('${t.id}',this.value)"><option value="">assign...</option>${catOptions.map(c=>`<option value="${esc(c)}">${c}</option>`).join('')}</select></div>`).join('');
+    if(!uncatSearch&&uncategorized.length>20)h+=`<div style="font-size:9px;color:var(--text2);text-align:center;padding:6px">Use search to find more...</div>`;
+    h+=`</div>`;
+  }
+
+  return h;
 }
 
 function toggleChip(zone,cat){const key=zone+':'+cat;expandedChips.has(key)?expandedChips.delete(key):expandedChips.add(key);renderDrawer()}
+function openQuickAssign(cat){catModalMode='assign';document.getElementById('catModalTitle').textContent='Assign '+cat+' to player';document.getElementById('catModalInput').style.display='none';document.getElementById('catModalInput').value=cat;const sel=document.getElementById('catAssignSel');if(sel)sel.style.display='none';document.getElementById('catModal').classList.add('show');
+  // Override save for this case
+  document.querySelector('.cat-modal-btns .save').onclick=async function(){const pl=document.getElementById('catModalPlayer').value;playerMap[cat]=pl;await savePlayerMap();closeCatModal();renderDrawer()}}
+
 
 // ===== INIT =====
 async function init(){
