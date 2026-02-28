@@ -325,7 +325,7 @@ async function savePitch(){
   try{
     const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_pitch').maybeSingle();
     if(data){const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_pitch');if(error)console.error('savePitch update:',error)}
-    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_pitch',value:val,updated_at:now,user_id:'default-user'});if(error)console.error('savePitch insert:',error)}
+    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_pitch',value:val,updated_at:now});if(error)console.error('savePitch insert:',error)}
   }catch(e){console.error('savePitch:',e)}
 }
 async function savePoss(){
@@ -333,7 +333,7 @@ async function savePoss(){
   try{
     const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_possession').maybeSingle();
     if(data){const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_possession');if(error)console.error('savePoss update:',error)}
-    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_possession',value:val,updated_at:now,user_id:'default-user'});if(error)console.error('savePoss insert:',error)}
+    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_possession',value:val,updated_at:now});if(error)console.error('savePoss insert:',error)}
   }catch(e){console.error('savePoss:',e)}
 }
 async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='done';await sb.from('mind_map_app_tasks').update({status:'done',updated_at:new Date().toISOString()}).eq('id',id)}
@@ -448,7 +448,7 @@ async function savePlayerMap(){
       if(error){console.error('❌ savePlayerMap update error:',error);alert('Player map update failed: '+error.message)}
       else console.log('✅ playerMap updated',playerMap);
     } else {
-      const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_players',value:val,updated_at:now,user_id:'default-user'});
+      const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_players',value:val,updated_at:now});
       if(error){console.error('❌ savePlayerMap insert error:',error);alert('Player map insert failed: '+error.message)}
       else console.log('✅ playerMap inserted',playerMap);
     }
@@ -464,7 +464,7 @@ async function changePriority(taskId,newPri){
   const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);if(!newTag)return;
   const oldPriTagIds=priTags.map(t=>t.id);const currentTags=taskTags[taskId]||[];
   for(const tagId of currentTags.filter(id=>oldPriTagIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
-  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:newTag.id,user_id:'default-user',created_at:new Date().toISOString()});
+  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:newTag.id,created_at:new Date().toISOString()});
   taskTags[taskId]=currentTags.filter(id=>!oldPriTagIds.includes(id)).concat([newTag.id]);
   renderDrawer();renderPitch();
 }
@@ -477,7 +477,7 @@ async function assignCategoryToTask(taskId,catName){
   const oldCatIds=allTags.filter(t=>t.type==='category').map(t=>t.id);
   const current=taskTags[taskId]||[];
   for(const tagId of current.filter(id=>oldCatIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
-  const{error}=await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:catTag.id,user_id:'default-user',created_at:new Date().toISOString()});
+  const{error}=await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:catTag.id,created_at:new Date().toISOString()});
   if(error){console.error('Assign error:',error);return}
   taskTags[taskId]=current.filter(id=>!oldCatIds.includes(id)).concat([catTag.id]);
   renderDrawer();
@@ -510,7 +510,7 @@ async function saveCatModal(){
     let catTag=allTags.find(t=>t.type==='category'&&t.name.toLowerCase()===name.toLowerCase());
     if(!catTag){
       const newId=crypto.randomUUID();
-      const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,user_id:'default-user',created_at:new Date().toISOString()}).select().single();
+      const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();
       if(error){console.error('Create category error:',error);alert('Error: '+error.message);return}
       if(data){allTags.push(data);tagMap[data.id]=data;catTag=data}
     }
