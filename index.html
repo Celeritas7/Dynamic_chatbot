@@ -374,10 +374,12 @@ function renderDC(){
     const assigned=Object.entries(playerMap).filter(([,p])=>p===pl).map(([c])=>c);
     const allCats=[...new Set([...cats.map(([c])=>c),...assigned])];
     const total=cats.reduce((s,[,l])=>s+l.length,0);
-    h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} (${total})</span><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:auto">+ New</button></div>`;
+    const totalCrit=cats.reduce((s,[,l])=>s+l.filter(t=>tPriority(t)==='critical').length,0);
+    h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} ${totalCrit?'(🔴'+totalCrit+')':'('+total+')'}</span><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:auto">+ New</button></div>`;
     if(allCats.length){h+=`<div class="dc-chips">${allCats.map(cat=>{
       const list=players[pl][cat]||[];const onP=list.filter(t=>pitchSet.has(t.id)).length;
-      return`<div class="dc-chip" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
+      const critCount=list.filter(t=>tPriority(t)==='critical').length;
+      return`<div class="dc-chip" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span>${critCount?`<span class="dc-chip-count" style="background:#DC262622;color:#DC2626">🔴${critCount}</span>`:`<span class="dc-chip-count">${list.length}</span>`}${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
     }).join('')}</div>`}else{h+=`<div style="font-size:10px;color:var(--text2);opacity:.5;padding:4px">No categories assigned</div>`}
     h+=`</div>`;
   });
