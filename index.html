@@ -408,13 +408,21 @@ function renderCatDetail(){
     if(filtered.length>15)h+=`<div style="font-size:9px;color:var(--text2);text-align:center;padding:4px">${filtered.length-15} more...</div>`}
   else if(catDetailSearch&&!filtered.length){h+=`<div style="font-size:10px;color:var(--text2);padding:8px;text-align:center">No matches</div>`}
 
-  // Existing tasks
+  // Existing tasks grouped by priority
   if(tasksInCat.length){
-    h+=`<div class="sec-hdr" style="margin-top:16px">📋 Tasks in ${esc(cat)} (${tasksInCat.length})</div>`;
-    h+=tasksInCat.map(t=>{
-      const pri=tPriority(t),onP=pitchSet.has(t.id),dur=isStudy(t)?tDuration(t):null,full=!onP&&!canPitch(t);
-      return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">↑</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c"><span style="color:${priColor(pri)}">${pri}</span>${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
-    }).join('');
+    const priGroups={critical:[],high:[],medium:[],low:[],someday:[]};
+    tasksInCat.forEach(t=>priGroups[tPriority(t)].push(t));
+    const priLabels={critical:{l:'🔴 Critical',c:'#DC2626'},high:{l:'🟠 High',c:'#E8722A'},medium:{l:'🟡 Medium',c:'#F59E0B'},low:{l:'🔵 Low',c:'#95a5a6'},someday:{l:'💭 Someday',c:'#bdc3c7'}};
+    h+=`<div style="margin-top:16px">`;
+    for(const[pri,list]of Object.entries(priGroups)){
+      if(!list.length)continue;const lb=priLabels[pri];
+      h+=`<div class="sec-hdr" style="margin-top:10px;color:${lb.c}">${lb.l} (${list.length})</div>`;
+      h+=list.map(t=>{
+        const onP=pitchSet.has(t.id),dur=isStudy(t)?tDuration(t):null,full=!onP&&!canPitch(t);
+        return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">↑</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${dur?dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
+      }).join('');
+    }
+    h+=`</div>`;
   }
 
   document.getElementById('catPanel').innerHTML=h;
