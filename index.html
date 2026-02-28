@@ -235,12 +235,13 @@ function tTagNames(taskId,type){return(taskTags[taskId]||[]).map(id=>tagMap[id])
 function tPriority(t){const p=tTagNames(t.id,'priority');if(p.includes('Critical'))return'critical';if(p.includes('High'))return'high';if(p.includes('Low'))return'low';if(p.includes('Someday'))return'someday';return'medium'}
 function tCategory(t){return tTagNames(t.id,'category')[0]||''}
 function tDuration(t){const d=tTagNames(t.id,'duration');if(d.includes('5min'))return 5;if(d.includes('15min'))return 15;if(d.includes('30min'))return 30;if(d.includes('1hour'))return 60;if(d.includes('2hours+'))return 120;return t.estimated_minutes||25}
-function tInLoc(t,lk){const locs=tTagNames(t.id,'location');if(!locs.length)return true;const names=LOC_MAP[lk]||[];return locs.some(l=>names.includes(l))||locs.includes('Anywhere')}
+function tInLoc(t,lk){const locs=tTagNames(t.id,'location');if(!locs.length)return false;const names=LOC_MAP[lk]||[];return locs.some(l=>names.includes(l))||locs.includes('Anywhere')}
+function hasCategory(t){return tCategory(t)!==''}
 function isStudy(t){return STUDY_CATS.includes(tCategory(t))}
 function isDev(t){return DEV_CATS.includes(tCategory(t))}
 function priColor(p){return{critical:'#c0392b',high:'#e74c3c',medium:'#f39c12',low:'#95a5a6',someday:'#bdc3c7'}[p]||'#f39c12'}
 function locTasks(){return allTasks.filter(t=>t.status!=='done'&&tInLoc(t,loc))}
-function pitched(){return allTasks.filter(t=>pitchSet.has(t.id)&&t.status!=='done'&&tInLoc(t,loc))}
+function pitched(){return allTasks.filter(t=>pitchSet.has(t.id)&&t.status!=='done')}
 
 // ===== SUPABASE LOAD =====
 async function loadAll(){
@@ -354,9 +355,11 @@ function renderDrawer(){document.getElementById('drContent').innerHTML=drTab==='
 
 function renderBench(){
   const lt=locTasks(),done=allTasks.filter(t=>t.status==='done'&&tInLoc(t,loc)).slice(0,15);
-  const groups={};lt.forEach(t=>{const c=tCategory(t)||'Other';if(!groups[c])groups[c]=[];groups[c].push(t)});
+  const tagged=lt.filter(hasCategory),untagged=lt.filter(t=>!hasCategory(t));
+  const groups={};tagged.forEach(t=>{const c=tCategory(t);if(!groups[c])groups[c]=[];groups[c].push(t)});
   let h='';for(const[cat,list]of Object.entries(groups))h+=`<div class="dr-section"><div class="dr-sec-hdr"><div class="dr-sec-title">${cat}</div><div class="dr-sec-count">${list.length}</div></div>${list.map(benchHTML).join('')}</div>`;
-  if(done.length)h+=`<div class="dr-section"><div class="dr-sec-hdr"><div class="dr-sec-title">✅ Done</div><div class="dr-sec-count">${done.length}</div></div>${done.map(t=>benchHTML(t)).join('')}</div>`;
+  if(untagged.length)h+=`<div class="dr-section"><div class="dr-sec-hdr" style="cursor:pointer" onclick="document.getElementById('uncatList').style.display=document.getElementById('uncatList').style.display==='none'?'block':'none';this.querySelector('.dr-sec-arrow').textContent=document.getElementById('uncatList').style.display==='none'?'▸':'▾'"><div class="dr-sec-title">📦 Uncategorized <span class="dr-sec-arrow">▸</span></div><div class="dr-sec-count">${untagged.length}</div></div><div id="uncatList" style="display:none">${untagged.map(benchHTML).join('')}</div></div>`;
+  if(done.length)h+=`<div class="dr-section"><div class="dr-sec-hdr" style="cursor:pointer" onclick="document.getElementById('doneList').style.display=document.getElementById('doneList').style.display==='none'?'block':'none'"><div class="dr-sec-title">✅ Done</div><div class="dr-sec-count">${done.length}</div></div><div id="doneList" style="display:none">${done.map(benchHTML).join('')}</div></div>`;
   return h||'<div style="text-align:center;padding:24px;color:var(--text2);font-size:12px">No tasks for this location</div>';
 }
 
