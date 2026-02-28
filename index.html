@@ -322,15 +322,19 @@ async function loadAll(){
 // ===== SUPABASE WRITE =====
 async function savePitch(){
   const val=JSON.stringify([...pitchSet]),now=new Date().toISOString();
-  const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_pitch').maybeSingle();
-  if(data){await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_pitch')}
-  else{await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_pitch',value:val,updated_at:now})}
+  try{
+    const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_pitch').maybeSingle();
+    if(data){const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_pitch');if(error)console.error('savePitch update:',error)}
+    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_pitch',value:val,updated_at:now,user_id:'default-user'});if(error)console.error('savePitch insert:',error)}
+  }catch(e){console.error('savePitch:',e)}
 }
 async function savePoss(){
   const val=JSON.stringify({date:todayK(),state:possession}),now=new Date().toISOString();
-  const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_possession').maybeSingle();
-  if(data){await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_possession')}
-  else{await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_possession',value:val,updated_at:now})}
+  try{
+    const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_possession').maybeSingle();
+    if(data){const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_possession');if(error)console.error('savePoss update:',error)}
+    else{const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_possession',value:val,updated_at:now,user_id:'default-user'});if(error)console.error('savePoss insert:',error)}
+  }catch(e){console.error('savePoss:',e)}
 }
 async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='done';await sb.from('mind_map_app_tasks').update({status:'done',updated_at:new Date().toISOString()}).eq('id',id)}
 async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='in_progress';await sb.from('mind_map_app_tasks').update({status:'in_progress',updated_at:new Date().toISOString()}).eq('id',id)}
@@ -437,9 +441,18 @@ function benchHTML(t){
 // ===== PLAYER MAP =====
 async function savePlayerMap(){
   const val=JSON.stringify(playerMap),now=new Date().toISOString();
-  const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_players').maybeSingle();
-  if(data){await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_players')}
-  else{await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_players',value:val,updated_at:now})}
+  try{
+    const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key','cf_players').maybeSingle();
+    if(data){
+      const{error}=await sb.from('mind_map_app_chat_memory').update({value:val,updated_at:now}).eq('key','cf_players');
+      if(error){console.error('❌ savePlayerMap update error:',error);alert('Player map update failed: '+error.message)}
+      else console.log('✅ playerMap updated',playerMap);
+    } else {
+      const{error}=await sb.from('mind_map_app_chat_memory').insert({id:crypto.randomUUID(),key:'cf_players',value:val,updated_at:now,user_id:'default-user'});
+      if(error){console.error('❌ savePlayerMap insert error:',error);alert('Player map insert failed: '+error.message)}
+      else console.log('✅ playerMap inserted',playerMap);
+    }
+  }catch(e){console.error('❌ savePlayerMap exception:',e);alert('Player map save exception: '+e.message)}
 }
 function catPlayer(cat){return playerMap[cat]||''}
 const PLAYER_INFO={attacker:{icon:'⚔️',name:'Attackers',cl:'atk'},midfielder:{icon:'🍱',name:'Midfield',cl:'mid'},defender:{icon:'🪞',name:'Defenders',cl:'def'}};
@@ -451,7 +464,7 @@ async function changePriority(taskId,newPri){
   const newTag=priTags.find(t=>t.name.toLowerCase()===newPri);if(!newTag)return;
   const oldPriTagIds=priTags.map(t=>t.id);const currentTags=taskTags[taskId]||[];
   for(const tagId of currentTags.filter(id=>oldPriTagIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
-  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:newTag.id,created_at:new Date().toISOString()});
+  await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:newTag.id,user_id:'default-user',created_at:new Date().toISOString()});
   taskTags[taskId]=currentTags.filter(id=>!oldPriTagIds.includes(id)).concat([newTag.id]);
   renderDrawer();renderPitch();
 }
@@ -464,7 +477,7 @@ async function assignCategoryToTask(taskId,catName){
   const oldCatIds=allTags.filter(t=>t.type==='category').map(t=>t.id);
   const current=taskTags[taskId]||[];
   for(const tagId of current.filter(id=>oldCatIds.includes(id))){await sb.from('mind_map_app_task_tags').delete().eq('task_id',taskId).eq('tag_id',tagId)}
-  const{error}=await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:catTag.id,created_at:new Date().toISOString()});
+  const{error}=await sb.from('mind_map_app_task_tags').insert({id:crypto.randomUUID(),task_id:taskId,tag_id:catTag.id,user_id:'default-user',created_at:new Date().toISOString()});
   if(error){console.error('Assign error:',error);return}
   taskTags[taskId]=current.filter(id=>!oldCatIds.includes(id)).concat([catTag.id]);
   renderDrawer();
@@ -497,7 +510,7 @@ async function saveCatModal(){
     let catTag=allTags.find(t=>t.type==='category'&&t.name.toLowerCase()===name.toLowerCase());
     if(!catTag){
       const newId=crypto.randomUUID();
-      const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();
+      const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,user_id:'default-user',created_at:new Date().toISOString()}).select().single();
       if(error){console.error('Create category error:',error);alert('Error: '+error.message);return}
       if(data){allTags.push(data);tagMap[data.id]=data;catTag=data}
     }
@@ -537,26 +550,35 @@ function renderDC(){
   // Player sections
   ['attacker','midfielder','defender'].forEach(pl=>{
     const info=PLAYER_INFO[pl];const cats=Object.entries(players[pl]);
+    // Also include assigned categories with no tasks currently
+    const assignedCats=Object.entries(playerMap).filter(([c,p])=>p===pl).map(([c])=>c);
+    const allCatsForPlayer=[...new Set([...cats.map(([c])=>c),...assignedCats])];
     const totalTasks=cats.reduce((s,[,l])=>s+l.length,0);
     h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} (${totalTasks})</span><button class="player-add-btn" onclick="openAssignCatModal('${pl}')">+ Assign</button><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:4px">+ New</button></div>`;
 
-    if(cats.length){
-      h+=`<div class="dc-chips">${cats.map(([cat,list])=>{
+    if(allCatsForPlayer.length){
+      h+=`<div class="dc-chips">${allCatsForPlayer.map(cat=>{
+        const list=players[pl][cat]||[];
         const key=pl+':'+cat;const exp=expandedChips.has(key);
         const onP=list.filter(t=>pitchSet.has(t.id)).length;
         return`<div class="dc-chip ${exp?'expanded':''}" onclick="toggleChip('${pl}','${cat.replace(/'/g,"\\'")}')"><span>${cat}</span><span class="dc-chip-count">${list.length}</span>${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
       }).join('')}</div>`;
 
-      cats.forEach(([cat,list])=>{
+      allCatsForPlayer.forEach(cat=>{
+        const list=players[pl][cat]||[];
         const key=pl+':'+cat;
         if(expandedChips.has(key)){
-          const cp=pitchCountForCat(cat);
-          h+=`<div class="dc-chip-tasks"><div style="font-size:9px;color:var(--text2);margin-bottom:4px;font-weight:600">${cat} <span style="color:${cp>=PITCH_LIMIT?'#DC2626':'var(--text2)'}">⚽ ${cp}/${PITCH_LIMIT}</span></div>`;
-          h+=list.map(t=>{
-            const pri=tPriority(t);const onP=pitchSet.has(t.id);const dur=isStudy(t)?tDuration(t):null;const full=!onP&&!canPitch(t);
-            return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn up" onclick="event.stopPropagation();promoteTask('${t.id}')" title="↑ Priority">↑</button><button class="dc-pri-btn down" onclick="event.stopPropagation();demoteTask('${t.id}')" title="↓ Priority">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c"><span style="color:${priColor(pri)}">${pri}</span>${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
-          }).join('');
-          h+=`</div>`;
+          if(list.length===0){
+            h+=`<div class="dc-chip-tasks"><div style="font-size:10px;color:var(--text2);padding:8px;text-align:center">No tasks tagged "${cat}" in this location yet</div></div>`;
+          } else {
+            const cp=pitchCountForCat(cat);
+            h+=`<div class="dc-chip-tasks"><div style="font-size:9px;color:var(--text2);margin-bottom:4px;font-weight:600">${cat} <span style="color:${cp>=PITCH_LIMIT?'#DC2626':'var(--text2)'}">⚽ ${cp}/${PITCH_LIMIT}</span></div>`;
+            h+=list.map(t=>{
+              const pri=tPriority(t);const onP=pitchSet.has(t.id);const dur=isStudy(t)?tDuration(t):null;const full=!onP&&!canPitch(t);
+              return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn up" onclick="event.stopPropagation();promoteTask('${t.id}')" title="↑ Priority">↑</button><button class="dc-pri-btn down" onclick="event.stopPropagation();demoteTask('${t.id}')" title="↓ Priority">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c"><span style="color:${priColor(pri)}">${pri}</span>${dur?' · '+dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`};setTimeout(renderDrawer,50)">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button></div>`
+            }).join('');
+            h+=`</div>`;
+          }
         }
       });
     } else {
@@ -585,6 +607,9 @@ function renderDC(){
     if(!uncatSearch&&uncategorized.length>20)h+=`<div style="font-size:9px;color:var(--text2);text-align:center;padding:6px">Use search to find more...</div>`;
     h+=`</div>`;
   }
+
+  // Debug section
+  h+=`<div style="margin-top:20px;padding:10px;background:var(--card);border-radius:8px;border:1px dashed var(--as)"><div style="font-size:9px;font-weight:700;color:var(--text2);margin-bottom:4px">🔧 DEBUG — Player Map</div><pre style="font-size:8px;color:var(--text2);white-space:pre-wrap;word-break:break-all">${JSON.stringify(playerMap,null,1)}</pre><div style="font-size:8px;color:var(--text2);margin-top:4px">Categories in DB: ${allTags.filter(t=>t.type==='category').map(t=>t.name).join(', ')}</div></div>`;
 
   return h;
 }
