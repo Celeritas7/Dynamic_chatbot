@@ -493,12 +493,15 @@ async function saveCatModal(){
   const player=document.getElementById('catModalPlayer').value;
   if(catModalMode==='new'){
     const name=document.getElementById('catModalInput').value.trim();if(!name){alert('Enter a name');return}
-    // Create tag in DB with client-generated UUID
-    const newId=crypto.randomUUID();
-    const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();
-    if(error){console.error('Create category error:',error);alert('Error: '+error.message);return}
-    if(data){allTags.push(data);tagMap[data.id]=data}
-    playerMap[name]=player;
+    // Check if tag already exists
+    let catTag=allTags.find(t=>t.type==='category'&&t.name.toLowerCase()===name.toLowerCase());
+    if(!catTag){
+      const newId=crypto.randomUUID();
+      const{data,error}=await sb.from('mind_map_app_tags').insert({id:newId,name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();
+      if(error){console.error('Create category error:',error);alert('Error: '+error.message);return}
+      if(data){allTags.push(data);tagMap[data.id]=data;catTag=data}
+    }
+    playerMap[catTag?catTag.name:name]=player;
   } else {
     const sel=document.getElementById('catAssignSel');
     const name=sel?sel.value:'';if(!name)return;
