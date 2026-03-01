@@ -248,22 +248,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .nudge-icon{font-size:20px;flex-shrink:0}.nudge-text{flex:1;font-size:12px;font-weight:500}
 .nudge-x{border:none;background:rgba(255,255,255,.25);color:white;padding:5px 10px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0}
 .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:4px}
-/* Rules panel */
-.rule-card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1.5px solid var(--as)}
-.rule-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.rule-name{font-size:13px;font-weight:600;color:var(--text)}
-.rule-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px}
-.rule-status.on{background:#05966922;color:#059669}.rule-status.off{background:#DC262622;color:#DC2626}
-.rule-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.rule-label{font-size:10px;font-weight:600;color:var(--text2)}
-.rule-inputs{display:flex;align-items:center;gap:6px}
-.rule-sel{border:1.5px solid var(--as);border-radius:6px;padding:4px 6px;font-size:10px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;cursor:pointer}
-.rule-toggle{border:1.5px solid var(--as);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;background:var(--card);color:var(--text2);transition:all .2s}
-.rule-toggle.on{background:#05966922;color:#059669;border-color:#05966944}
-.rule-presets{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.rule-preset{border:1px solid var(--as);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;background:transparent;color:var(--text2);transition:all .2s}
-.rule-preset:hover{background:var(--as);color:var(--accent)}
-
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -281,7 +265,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- CENTERED OVERLAY -->
 <div class="ov-bg" id="ovBg" onclick="if(event.target===this)closeOv()">
   <div class="ov-panel"><div class="ov-top"><div class="ov-title">Locker Room</div><div class="ov-close" onclick="closeOv()">✕</div></div>
-    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabD" onclick="switchOvTab('dc')">🎯 DC</button><button class="ov-tab" id="ovTabR" onclick="switchOvTab('rules')">⚙️ Rules</button></div>
+    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabD" onclick="switchOvTab('dc')">🎯 Decision Centre</button></div>
     <div id="ovContent"></div>
   </div>
 </div>
@@ -337,11 +321,9 @@ let breakRem=300,breakInt=null;
 let catDetailSearch='',catDetailName='';
 let pitchRotation='free';
 let expandedDot='';
-let lastDoneAtkCat=''; // individual attacker category that stays blurred after unlock
 let regenDefaults={}; // categoryName → days (default regen for all tasks in category)
 let regenTasks={}; // taskId → {days, done_at} (per-task override + last done timestamp)
 let pendingDoneId=null; // task awaiting regen popup confirmation
-let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weekend:true, holiday:true}
 
 const LOC_MAP={home:['Room','Share house'],office:['Company'],outside:['Train','Park','Cafe','Anywhere']};
 const STUDY_CATS=['Paper study','Quick study','Reading'];
@@ -390,23 +372,6 @@ async function checkAndReactivate(){
   }
   if(changed)renderAll();
 }
-// Time slot check — only applies to attackers
-function isCatAllowedNow(cat){
-  const pl=catPlayer(cat);if(pl!=='attacker')return true; // mid/def always allowed
-  const rule=timeSlotRules[cat];if(!rule)return true; // no rule = always allowed
-  const dt=dayType();const hr=new Date().getHours();
-  if(dt==='weekend'||dt==='holiday')return rule.weekend!==false; // default true
-  // Weekday check
-  const from=rule.weekday_from!=null?rule.weekday_from:0;
-  const to=rule.weekday_to!=null?rule.weekday_to:24;
-  return hr>=from&&hr<to;
-}
-// Attacker blur logic
-function isAtkDotBlurred(cat){
-  if(pitchRotation==='cooldown_atk')return true; // all attackers blurred
-  if(lastDoneAtkCat===cat)return true; // individual cooldown
-  return false;
-}
 
 // ===== SUPABASE =====
 async function loadAll(){
@@ -414,16 +379,15 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
-  playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
+  playerMap={...dp};regenDefaults={};regenTasks={};
   (mem||[]).forEach(m=>{
     if(m.key==='cf_pitch')try{pitchSet=new Set(JSON.parse(m.value))}catch{};
     if(m.key==='cf_possession')try{const p=JSON.parse(m.value);if(p.date===todayK())possession=p.state||'mid_morning'}catch{};
     if(m.key==='cf_players')try{playerMap={...dp,...JSON.parse(m.value)}}catch{};
     if(m.key==='cf_regen_defaults')try{regenDefaults=JSON.parse(m.value)}catch{};
     if(m.key==='cf_regen_tasks')try{regenTasks=JSON.parse(m.value)}catch{};
-    if(m.key==='cf_timeslots')try{timeSlotRules=JSON.parse(m.value)}catch{};
   });
 }
 async function memSave(key,val){
@@ -436,7 +400,6 @@ async function savePoss(){await memSave('cf_possession',JSON.stringify({date:tod
 async function savePlayerMap(){await memSave('cf_players',JSON.stringify(playerMap))}
 async function saveRegenDefaults(){await memSave('cf_regen_defaults',JSON.stringify(regenDefaults))}
 async function saveRegenTasks(){await memSave('cf_regen_tasks',JSON.stringify(regenTasks))}
-async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeSlotRules))}
 async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='done';await sb.from('mind_map_app_tasks').update({status:'done',updated_at:new Date().toISOString()}).eq('id',id)}
 async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='in_progress';await sb.from('mind_map_app_tasks').update({status:'in_progress',updated_at:new Date().toISOString()}).eq('id',id)}
 
@@ -472,13 +435,8 @@ async function confirmRegen(){
   regenTasks[id]={days,done_at:new Date().toISOString()};
   await saveRegenTasks();
   // Mark done + rotation
-  const pl=taskPlayer(t);const cat=tCategory(t);await markDone(id);pitchSet.delete(id);savePitch();
-  if(pl==='attacker'){
-    pitchRotation='cooldown_atk'; // blur ALL attackers
-    lastDoneAtkCat=cat; // this one stays blurred even after unlock
-  } else if(pitchRotation==='cooldown_atk'&&(pl==='midfielder'||pl==='defender')){
-    pitchRotation='free'; // unlock attackers (except lastDoneAtkCat)
-  }
+  const pl=taskPlayer(t);await markDone(id);pitchSet.delete(id);savePitch();
+  if(pl==='attacker')pitchRotation='cooldown_atk';else if(pitchRotation==='cooldown_atk'&&(pl==='midfielder'||pl==='defender'))pitchRotation='free';
   pendingDoneId=null;closeRegenPopup();
   // Auto-start next study if coming from study chain
   const next=pitched().filter(isStudy);
@@ -532,8 +490,8 @@ function updateClock(){document.getElementById('timeD').textContent=new Date().t
 // ===== OVERLAY =====
 function openOv(){document.getElementById('ovBg').classList.add('show');renderOv()}
 function closeOv(){document.getElementById('ovBg').classList.remove('show')}
-function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabD').classList.toggle('active',t==='dc');document.getElementById('ovTabR').classList.toggle('active',t==='rules');renderOv()}
-function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():ovTab==='dc'?renderDC():renderRules()}
+function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabD').classList.toggle('active',t==='dc');renderOv()}
+function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():renderDC()}
 
 // ===== BENCH =====
 function renderBench(){
@@ -693,19 +651,15 @@ function renderPitch(){
   const pt=pitched();
   if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open ☰ and select tasks</div></div></div>`;return}
 
-  // Group pitched tasks by category → player type (filter by timeslot)
+  // Group pitched tasks by category → player type
   const catGroups={};
   pt.forEach(t=>{const cat=tCategory(t)||'Other';if(!catGroups[cat])catGroups[cat]=[];catGroups[cat].push(t)});
   const zones={attacker:[],midfielder:[],defender:[],other:[]};
-  for(const[cat,tasks]of Object.entries(catGroups)){
-    const pl=catPlayer(cat);
-    // Time slot filter: hide attackers outside their allowed window
-    if(pl==='attacker'&&!isCatAllowedNow(cat))continue;
-    if(pl&&zones[pl])zones[pl].push({cat,tasks});else zones.other.push({cat,tasks});
-  }
+  for(const[cat,tasks]of Object.entries(catGroups)){const pl=catPlayer(cat);if(pl&&zones[pl])zones[pl].push({cat,tasks});else zones.other.push({cat,tasks})}
   // Merge other into midfielder
   zones.midfielder.push(...zones.other);zones.other=[];
   
+  const atkBlurred=pitchRotation==='cooldown_atk';
   const CIRC=2*Math.PI*60;
 
   // Position calculator — vertical pitch: attackers top, mid center, def bottom
@@ -727,9 +681,7 @@ function renderPitch(){
   let dots='';
   function renderDots(list,positions,cl){
     list.forEach((g,i)=>{
-      const pos=positions[i]||{x:50,y:50};const isExp=expandedDot===g.cat;const taskCount=g.tasks.length;
-      // Per-category blur for attackers
-      const blur=cl==='atk'&&isAtkDotBlurred(g.cat);
+      const pos=positions[i]||{x:50,y:50};const isExp=expandedDot===g.cat;const blur=cl==='atk'&&atkBlurred;const taskCount=g.tasks.length;
       dots+=`<div class="fp-dot ${isExp?'active':''} ${blur?'blurred':''}" style="left:${pos.x}%;top:${pos.y}%" onclick="${blur?'':`event.stopPropagation();toggleDot('${g.cat.replace(/'/g,"\\'")}')`}"><div class="fp-ball ${cl}" style="position:relative"><span style="font-size:${g.cat.length>6?'7':'8'}px;line-height:1.2">${g.cat.length>10?g.cat.slice(0,9)+'…':g.cat}</span>${taskCount>1?`<div class="fp-count">${taskCount}</div>`:''}</div><div class="fp-lbl">${g.cat}</div>`;
       // Expanded card
       if(isExp&&!blur){
@@ -758,81 +710,11 @@ function renderPitch(){
   }
 
   let lockMsg='';
-  if(pitchRotation==='cooldown_atk')lockMsg=`<div class="fp-lock-msg">🔄 Do a Mid/Defender task to unlock Attackers</div>`;
-  else if(lastDoneAtkCat&&zones.attacker.some(g=>g.cat===lastDoneAtkCat))lockMsg=`<div class="fp-lock-msg">🔒 ${lastDoneAtkCat} resting — use other attackers</div>`;
+  if(atkBlurred)lockMsg=`<div class="fp-lock-msg">🔄 Do a Mid/Defender task to unlock Attackers</div>`;
 
   field.innerHTML=`<div class="fp" onclick="expandedDot='';renderPitch()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}</div>`;
 }
 function toggleDot(cat){expandedDot=expandedDot===cat?'':cat;renderPitch()}
-
-// ===== RULES PANEL =====
-function renderRules(){
-  // Get all attacker categories
-  const atkCats=Object.entries(playerMap).filter(([,p])=>p==='attacker').map(([c])=>c);
-  const hr=new Date().getHours();
-  const dt=dayType();
-
-  let h=`<div style="margin-bottom:16px"><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;margin-bottom:4px">⚔️ Attacker Time Slots</div><div style="font-size:10px;color:var(--text2);line-height:1.5">Set when each attacker can appear on the pitch during weekdays. Mid/Def are always available.</div></div>`;
-
-  if(!atkCats.length){h+=`<div style="font-size:11px;color:var(--text2);text-align:center;padding:20px">No attacker categories assigned yet</div>`;return h}
-
-  atkCats.forEach(cat=>{
-    const rule=timeSlotRules[cat]||{};
-    const wdFrom=rule.weekday_from!=null?rule.weekday_from:0;
-    const wdTo=rule.weekday_to!=null?rule.weekday_to:24;
-    const wkend=rule.weekend!==false;
-    const allowed=isCatAllowedNow(cat);
-
-    h+=`<div class="rule-card"><div class="rule-top"><div class="rule-name">${esc(cat)}</div><div class="rule-status ${allowed?'on':'off'}">${allowed?'● Available':'○ Blocked'}</div></div>`;
-
-    // Weekday hours
-    h+=`<div class="rule-row"><div class="rule-label">Weekday hours</div><div class="rule-inputs"><select class="rule-sel" id="rs_${cat.replace(/\s/g,'_')}_from" onchange="updateTimeSlot('${cat.replace(/'/g,"\\'")}')">`;
-    for(let i=0;i<=23;i++){h+=`<option value="${i}" ${i===wdFrom?'selected':''}>${String(i).padStart(2,'0')}:00</option>`}
-    h+=`</select><span style="font-size:10px;color:var(--text2)">to</span><select class="rule-sel" id="rs_${cat.replace(/\s/g,'_')}_to" onchange="updateTimeSlot('${cat.replace(/'/g,"\\'")}')">`;
-    for(let i=1;i<=24;i++){h+=`<option value="${i}" ${i===wdTo?'selected':''}>${i===24?'24:00':String(i).padStart(2,'0')+':00'}</option>`}
-    h+=`</select></div></div>`;
-
-    // Weekend toggle
-    h+=`<div class="rule-row"><div class="rule-label">Weekends & holidays</div><button class="rule-toggle ${wkend?'on':''}" onclick="toggleWeekend('${cat.replace(/'/g,"\\'")}')">${wkend?'✓ Available':'✕ Blocked'}</button></div>`;
-
-    // Quick presets
-    h+=`<div class="rule-presets"><button class="rule-preset" onclick="setPreset('${cat.replace(/'/g,"\\'")}','always')">Always</button><button class="rule-preset" onclick="setPreset('${cat.replace(/'/g,"\\'")}','evening')">Evening (18+)</button><button class="rule-preset" onclick="setPreset('${cat.replace(/'/g,"\\'")}','morning')">Morning (6-12)</button><button class="rule-preset" onclick="setPreset('${cat.replace(/'/g,"\\'")}','offhours')">Off-hours (20+)</button></div>`;
-
-    h+=`</div>`;
-  });
-
-  // Rotation info
-  h+=`<div style="margin-top:20px;padding:12px;background:var(--card);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)"><div style="font-size:10px;font-weight:700;color:var(--text2);margin-bottom:6px">🔄 ROTATION STATUS</div>`;
-  h+=`<div style="font-size:11px;color:var(--text);line-height:1.6">`;
-  h+=`State: <strong>${pitchRotation==='cooldown_atk'?'All attackers blocked':'Free'}</strong><br>`;
-  h+=`Last completed attacker: <strong>${lastDoneAtkCat||'None'}</strong>${lastDoneAtkCat?' (individually resting)':''}`;
-  h+=`</div>`;
-  if(lastDoneAtkCat||pitchRotation==='cooldown_atk'){h+=`<button onclick="pitchRotation='free';lastDoneAtkCat='';renderAll()" style="margin-top:6px;border:none;background:#DC262622;color:#DC2626;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Reset Rotation</button>`}
-  h+=`</div>`;
-
-  return h;
-}
-async function updateTimeSlot(cat){
-  const safeId=cat.replace(/\s/g,'_');
-  const from=parseInt(document.getElementById('rs_'+safeId+'_from').value);
-  const to=parseInt(document.getElementById('rs_'+safeId+'_to').value);
-  if(!timeSlotRules[cat])timeSlotRules[cat]={};
-  timeSlotRules[cat].weekday_from=from;timeSlotRules[cat].weekday_to=to;
-  await saveTimeSlots();renderOv();
-}
-async function toggleWeekend(cat){
-  if(!timeSlotRules[cat])timeSlotRules[cat]={};
-  timeSlotRules[cat].weekend=timeSlotRules[cat].weekend===false?true:false;
-  await saveTimeSlots();renderOv();
-}
-async function setPreset(cat,preset){
-  if(!timeSlotRules[cat])timeSlotRules[cat]={};
-  if(preset==='always'){timeSlotRules[cat]={weekday_from:0,weekday_to:24,weekend:true}}
-  else if(preset==='evening'){timeSlotRules[cat]={weekday_from:18,weekday_to:24,weekend:true}}
-  else if(preset==='morning'){timeSlotRules[cat]={weekday_from:6,weekday_to:12,weekend:true}}
-  else if(preset==='offhours'){timeSlotRules[cat]={weekday_from:20,weekday_to:24,weekend:true}}
-  await saveTimeSlots();renderOv();
-}
 
 async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';checkPoss();renderPitch()}
 init();
