@@ -260,15 +260,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .del-btn{flex:1;padding:10px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .del-btn.cancel{background:var(--as);color:var(--text2)}
 .del-btn.confirm{background:#DC2626;color:white}
-/* Link edit */
-.link-edit{width:100%;margin-top:4px}
-.link-inp{width:100%;border:1.5px solid var(--as);border-radius:8px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:11px;background:var(--bg);color:var(--text);outline:none}
-.link-inp:focus{border-color:var(--accent)}
-.link-edit-btns{display:flex;gap:4px;margin-top:4px}
-.link-save,.link-rm,.link-cancel{border:none;padding:3px 8px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer}
-.link-save{background:var(--accent);color:white}
-.link-rm{background:#DC262622;color:#DC2626}
-.link-cancel{background:var(--as);color:var(--text2)}
 
 /* Rules panel */
 .rule-card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1.5px solid var(--as)}
@@ -448,7 +439,7 @@ function isAtkDotBlurred(cat){
 async function loadAll(){
   const[tR,taR,ttR]=await Promise.all([sb.from('mind_map_app_tasks').select('*'),sb.from('mind_map_app_tags').select('*'),sb.from('mind_map_app_task_tags').select('task_id,tag_id')]);
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
-  allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
+  allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
   const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
@@ -550,21 +541,6 @@ async function confirmDelete(){
   document.getElementById('delPopup').classList.remove('show');
   renderAll();
 }
-// ===== TASK LINKS =====
-let editingLinkId=null;
-function showLinkEdit(id){editingLinkId=editingLinkId===id?null:id;renderCatDetail()}
-async function saveTaskLink(id){
-  const inp=document.getElementById('linkInp_'+id.replace(/-/g,''));if(!inp)return;
-  const url=inp.value.trim();
-  const t=allTasks.find(x=>x.id===id);if(t)t.links=url;
-  await sb.from('mind_map_app_tasks').update({links:url,updated_at:new Date().toISOString()}).eq('id',id);
-  editingLinkId=null;renderCatDetail();
-}
-async function removeTaskLink(id){
-  const t=allTasks.find(x=>x.id===id);if(t)t.links='';
-  await sb.from('mind_map_app_tasks').update({links:'',updated_at:new Date().toISOString()}).eq('id',id);
-  editingLinkId=null;renderCatDetail();
-}
 function renderAll(){renderPitch();if(document.getElementById('ovBg').classList.contains('show'))renderOv();if(document.getElementById('catDetail').classList.contains('show'))renderCatDetail()}
 
 // Priority
@@ -658,7 +634,7 @@ function renderDC(){
 
 // ===== CATEGORY DETAIL =====
 function openCatDetail(cat){catDetailName=cat;catDetailSearch='';document.getElementById('catDetail').classList.add('show');renderCatDetail()}
-function closeCatDetail(){editingLinkId=null;document.getElementById('catDetail').classList.remove('show')}
+function closeCatDetail(){document.getElementById('catDetail').classList.remove('show')}
 function renderCatDetail(){
   const cat=catDetailName;const pl=catPlayer(cat);const info=pl?PLAYER_INFO[pl]:null;
   const allInCat=allTasks.filter(t=>tCategory(t)===cat);
@@ -706,14 +682,7 @@ function renderCatDetail(){
       h+=`<div class="sec-hdr" style="margin-top:10px;color:${lb.c}">${lb.l} (${list.length})</div>`;
       h+=list.map(t=>{
         const onP=pitchSet.has(t.id),dur=isStudy(t)?tDuration(t):null,full=!onP&&!canPitch(t);
-        const hasLink=t.links&&t.links.trim();const isEditing=editingLinkId===t.id;const sid=t.id.replace(/-/g,'');
-        let linkHtml='';
-        if(isEditing){
-          linkHtml=`<div class="link-edit"><input class="link-inp" id="linkInp_${sid}" value="${esc(t.links||'')}" placeholder="https://..." onkeydown="if(event.key==='Enter'){event.stopPropagation();saveTaskLink('${t.id}')}"><div class="link-edit-btns"><button class="link-save" onclick="event.stopPropagation();saveTaskLink('${t.id}')">Save</button>${hasLink?`<button class="link-rm" onclick="event.stopPropagation();removeTaskLink('${t.id}')">Remove</button>`:''}<button class="link-cancel" onclick="event.stopPropagation();editingLinkId=null;renderCatDetail()">Cancel</button></div></div>`;
-        } else if(hasLink){
-          linkHtml=`<div class="dc-item-c"><a href="${esc(t.links)}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:10px;text-decoration:none">🔗 ${t.links.length>30?t.links.slice(0,30)+'…':t.links}</a> <button style="border:none;background:none;font-size:9px;cursor:pointer;color:var(--text2);opacity:.5" onclick="event.stopPropagation();showLinkEdit('${t.id}')">✏️</button></div>`;
-        }
-        return`<div class="dc-item" style="flex-wrap:wrap"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">↑</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${dur?dur+'m':''}${!hasLink&&!isEditing?` <button style="border:none;background:none;font-size:9px;cursor:pointer;color:var(--text2);opacity:.4" onclick="event.stopPropagation();showLinkEdit('${t.id}')">+ link</button>`:''}</div>${linkHtml}</div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button><button style="border:none;background:none;font-size:12px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0;padding:4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button></div>`
+        return`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">↑</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${dur?dur+'m':''}</div></div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button><button style="border:none;background:none;font-size:12px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0;padding:4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button></div>`
       }).join('');
     }
     h+=`</div>`;
@@ -721,7 +690,6 @@ function renderCatDetail(){
 
   document.getElementById('catPanel').innerHTML=h;
   if(catDetailSearch){const inp=document.getElementById('catSearchInput');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}}
-  if(editingLinkId){const sid=editingLinkId.replace(/-/g,'');const inp=document.getElementById('linkInp_'+sid);if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}}
 }
 async function saveCatRegen(){const v=document.getElementById('catRegenInput').value;const days=v?parseInt(v):null;if(days!=null&&days>0)regenDefaults[catDetailName]=days;else delete regenDefaults[catDetailName];await saveRegenDefaults();renderCatDetail()}
 async function addTaskToCat(){const inp=document.getElementById('catNewTask');const name=inp.value.trim();if(!name)return;await createTask(name,catDetailName);inp.value='';renderCatDetail()}
@@ -825,8 +793,7 @@ function renderPitch(){
         dots+=`<div class="fp-card ${cardDir}" onclick="event.stopPropagation()"><button class="fp-card-close" onclick="event.stopPropagation();expandedDot='';renderPitch()">✕</button><div class="fp-card-cat ${cl}">${g.cat} — ${taskCount} task${taskCount>1?'s':''}</div>`;
         g.tasks.forEach(t=>{
           const dur=tDuration(t);const isSt=isStudy(t);
-          const hasLnk=t.links&&t.links.trim();
-          dots+=`<div class="fp-card-task" style="flex-wrap:wrap"><div class="fp-card-cb" onclick="event.stopPropagation();toggleTask('${t.id}')"></div><div class="fp-card-name">${esc(t.name)}</div>${hasLnk?`<a href="${esc(t.links)}" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;text-decoration:none;flex-shrink:0">🔗</a>`:''}${isSt?`<button class="fp-card-btn timer" onclick="event.stopPropagation();startStudy('${t.id}')">▶ ${dur}m</button>`:`<button class="fp-card-btn check" onclick="event.stopPropagation();toggleTask('${t.id}')">✓</button>`}</div>`;
+          dots+=`<div class="fp-card-task"><div class="fp-card-cb" onclick="event.stopPropagation();toggleTask('${t.id}')"></div><div class="fp-card-name">${esc(t.name)}</div>${isSt?`<button class="fp-card-btn timer" onclick="event.stopPropagation();startStudy('${t.id}')">▶ ${dur}m</button>`:`<button class="fp-card-btn check" onclick="event.stopPropagation();toggleTask('${t.id}')">✓</button>`}</div>`;
         });
         dots+=`</div>`;
       }
