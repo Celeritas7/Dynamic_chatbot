@@ -286,162 +286,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .rule-preset{border:1px solid var(--as);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;background:transparent;color:var(--text2);transition:all .2s}
 .rule-preset:hover{background:var(--as);color:var(--accent)}
 
-/* ===== OFFICE UI ===== */
-.ofc-blocker{position:fixed;inset:0;z-index:998;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
-.ofc-blocker.show{display:flex}
-.ofc-blocker.morning{background:linear-gradient(160deg,#1e3a5f 0%,#2a5298 40%,#3B5BDB 100%)}
-.ofc-blocker.evening{background:linear-gradient(160deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%)}
-.ofc-bl-icon{font-size:56px;margin-bottom:16px;animation:ofcPulse 2s ease infinite}
-@keyframes ofcPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.ofc-bl-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:white;margin-bottom:6px}
-.ofc-bl-sub{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:32px;max-width:320px;line-height:1.5}
-.ofc-bl-card{background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px 20px;margin-bottom:12px;width:100%;max-width:360px;display:flex;align-items:center;gap:14px;transition:all .3s}
-.ofc-bl-card.done{background:rgba(5,150,105,.15);border-color:rgba(5,150,105,.3)}
-.ofc-bl-card-ico{font-size:28px;flex-shrink:0}
-.ofc-bl-card-info{flex:1;text-align:left}
-.ofc-bl-card-name{font-size:14px;font-weight:600;color:white;margin-bottom:2px}
-.ofc-bl-card-desc{font-size:10px;color:rgba(255,255,255,.5)}
-.ofc-bl-btn{border:none;padding:8px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .2s}
-.ofc-bl-btn.go{background:white;color:#3B5BDB}.ofc-bl-btn.go:active{transform:scale(.95)}
-.ofc-bl-btn.confirm{background:#059669;color:white}.ofc-bl-btn.confirm:active{transform:scale(.95)}
-.ofc-bl-btn.dim{background:rgba(255,255,255,.1);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.1)}
-.ofc-bl-btn.ready{background:#059669!important;color:white!important;border-color:#059669!important}
-.ofc-bl-actions{display:flex;gap:8px;width:100%;max-width:360px;margin-top:8px}
-.ofc-bl-actions .ofc-bl-btn{flex:1;padding:10px;text-align:center;cursor:pointer}
-.ofc-bl-hint{font-size:10px;color:rgba(255,255,255,.3);margin-top:24px}
-.ofc-bl-hint.ok{color:rgba(5,150,105,.8)}
-.ofc-bl-skip{border:none;background:none;color:rgba(255,255,255,.25);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:12px;padding:6px 16px;border-radius:8px}
-.ofc-bl-skip:hover{color:rgba(255,255,255,.5);background:rgba(255,255,255,.05)}
-
-/* Office dashboard */
-.ofc-dash{width:100%}
-.ofc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.ofc-hdr-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
-.ofc-badge{font-size:9px;font-weight:700;padding:3px 10px;border-radius:12px;background:var(--accent);color:white;letter-spacing:.5px}
-
-/* Pending office banner (cross-location) */
-.ofc-pending{background:#FEF2F2;border:1.5px solid rgba(220,38,38,.15);border-radius:14px;padding:12px;margin-bottom:14px;animation:ofcPendPulse 3s ease infinite}
-@keyframes ofcPendPulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}50%{box-shadow:0 0 0 4px rgba(220,38,38,.1)}}
-.ofc-pend-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#DC2626;margin-bottom:8px}
-.ofc-pend-task{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(220,38,38,.08)}
-.ofc-pend-task:last-child{border-bottom:none}
-.ofc-pend-ico{font-size:18px;flex-shrink:0}
-.ofc-pend-info{flex:1}.ofc-pend-name{font-size:12px;font-weight:600}.ofc-pend-desc{font-size:9px;color:var(--text2)}
-.ofc-pend-btn{border:none;padding:6px 10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0}
-.ofc-pend-btn.link{background:white;color:#3B5BDB;border:1px solid #E5EAFF}
-.ofc-pend-btn.dn{background:#059669;color:white}
-
-/* Freee banner */
-.ofc-freee{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1.5px solid rgba(217,119,6,.15);border-radius:14px;padding:14px;margin-bottom:14px;position:relative;overflow:hidden}
-.ofc-freee::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#D97706}
-.ofc-freee-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.ofc-freee-title{font-size:13px;font-weight:700}.ofc-freee-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px;background:rgba(217,119,6,.15);color:#D97706}
-.ofc-freee-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:10px}
-.ofc-freee-gen{background:white;border:1.5px dashed #E5EAFF;border-radius:10px;padding:20px;text-align:center;color:var(--text2);font-size:11px;margin-bottom:10px}
-.ofc-freee-actions{display:flex;gap:6px}
-.ofc-freee-btn{border:none;padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
-.ofc-freee-btn.pri{background:#D97706;color:white}.ofc-freee-btn.sec{background:rgba(217,119,6,.1);color:#D97706}
-
-/* Apps dock */
-.ofc-dock{margin-bottom:14px}
-.ofc-dock-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border-radius:14px;cursor:pointer;border:1.5px solid var(--as);user-select:none}
-.ofc-dock-hdr:active{background:var(--as)}
-.ofc-dock-hdr.open{border-radius:14px 14px 0 0;border-bottom-color:transparent}
-.ofc-dock-chev{font-size:10px;color:var(--text2);transition:transform .3s}
-.ofc-dock-hdr.open .ofc-dock-chev{transform:rotate(180deg)}
-.ofc-dock-body{background:var(--card);border:1.5px solid var(--as);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;max-height:0;transition:max-height .3s ease,padding .2s}
-.ofc-dock-body.open{max-height:200px;padding:10px}
-.ofc-app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.ofc-app-tile{background:var(--bg);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;border:1.5px solid transparent;transition:all .15s}
-.ofc-app-tile:active{transform:scale(.94)}
-.ofc-app-ico{font-size:22px;display:block;margin-bottom:3px}
-.ofc-app-nm{font-size:8px;font-weight:600;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* Grouped quick links */
-.ofc-ql{margin-bottom:14px}
-.ofc-ql-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.ofc-ql-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2)}
-.ofc-ql-edit{border:none;background:var(--as);padding:3px 10px;border-radius:6px;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.ofc-ql-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-.ofc-ql-row::-webkit-scrollbar{display:none}
-.ofc-ql-grp{flex-shrink:0;position:relative}
-.ofc-ql-btn{display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--as);border-radius:10px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:all .15s;font-size:10px;font-weight:600;color:var(--text)}
-.ofc-ql-btn:active{transform:scale(.96)}
-.ofc-ql-btn.open{border-color:var(--accent);background:var(--as);border-radius:10px 10px 0 0}
-.ofc-ql-arr{font-size:8px;color:var(--text2);transition:transform .2s;margin-left:2px}
-.ofc-ql-btn.open .ofc-ql-arr{transform:rotate(180deg)}
-.ofc-ql-dd{display:none;position:absolute;top:100%;left:0;min-width:100%;background:var(--card);border:1.5px solid var(--accent);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 8px 24px rgba(59,91,219,.12);z-index:50;overflow:hidden}
-.ofc-ql-dd.show{display:block;animation:ofcSlideD .2s ease}
-.ofc-ql-dd-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;white-space:nowrap;font-size:10px;font-weight:500;color:var(--text)}
-.ofc-ql-dd-item:hover{background:var(--as)}
-.ofc-ql-dd-item:last-child{border-radius:0 0 8px 8px}
-
-/* Quick links edit mode */
-.ofc-ql-ep{background:var(--card);border:1.5px solid var(--as);border-radius:12px;padding:12px;margin-top:4px}
-.ofc-ql-eg{margin-bottom:10px;border-bottom:1px solid #f0f0f0;padding-bottom:10px}
-.ofc-ql-eg:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
-.ofc-ql-eg-hd{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.ofc-ql-eg-nm{font-size:11px;font-weight:700;flex:1}
-.ofc-ql-eg-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.4}
-.ofc-ql-eg-row{display:flex;align-items:center;gap:4px;margin-bottom:4px;padding-left:12px}
-.ofc-ql-eg-inp{flex:1;border:1px solid var(--as);border-radius:5px;padding:4px 6px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text)}
-.ofc-ql-eg-ico{width:26px;border:1px solid var(--as);border-radius:5px;padding:4px 2px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;text-align:center;background:var(--bg)}
-.ofc-ql-eg-xb{border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.3}
-.ofc-ql-addl{font-size:9px;color:var(--accent);cursor:pointer;padding-left:12px;font-weight:500}
-.ofc-ql-addg{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px}
-
-/* Critical surface */
-.ofc-crit{margin-bottom:14px}
-.ofc-crit-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#DC2626;margin-bottom:8px}
-.ofc-crit-card{background:#FEF2F2;border:1.5px solid rgba(220,38,38,.1);border-radius:12px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;position:relative;overflow:hidden}
-.ofc-crit-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
-.ofc-crit-card.s-mgr::before{background:#DC2626}.ofc-crit-card.s-me::before{background:#D97706}.ofc-crit-card.s-ppl::before{background:#5C7CFA}
-.ofc-crit-pri{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.ofc-crit-info{flex:1;min-width:0}
-.ofc-crit-name{font-size:12px;font-weight:600;line-height:1.3}
-.ofc-crit-meta{font-size:9px;color:var(--text2);margin-top:1px}
-.ofc-crit-src{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
-.ofc-crit-src.mgr{background:rgba(220,38,38,.1);color:#DC2626}.ofc-crit-src.me{background:rgba(217,119,6,.1);color:#D97706}.ofc-crit-src.ppl{background:rgba(92,124,250,.1);color:#5C7CFA}
-.ofc-crit-dn{width:26px;height:26px;border-radius:7px;border:1.5px solid rgba(220,38,38,.15);background:white;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;flex-shrink:0;color:var(--text2)}
-
-/* Square box cards */
-.ofc-box-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
-.ofc-box{background:var(--card);border-radius:16px;border:1.5px solid var(--as);padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-.ofc-box:active{transform:scale(.96)}
-.ofc-box.active{border-color:var(--accent);box-shadow:0 4px 20px rgba(59,91,219,.12)}
-.ofc-box-ico{font-size:28px;margin-bottom:6px;display:block}
-.ofc-box-cnt{font-size:20px;font-weight:700;color:var(--accent);font-family:'Fraunces',serif}
-.ofc-box-nm{font-size:11px;font-weight:700;margin-top:2px}
-.ofc-box-badges{position:absolute;top:8px;right:8px;display:flex;gap:2px}
-.ofc-box-bdot{width:8px;height:8px;border-radius:50%}
-
-/* Expanded panel */
-.ofc-panel{background:var(--card);border:1.5px solid var(--as);border-radius:16px;padding:14px;margin-bottom:14px;animation:ofcSlideD .25s ease}
-.ofc-panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.ofc-panel-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
-.ofc-panel-close{border:none;background:var(--as);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ofc-box-add{display:flex;gap:6px;margin-bottom:10px}
-.ofc-box-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:11px;background:var(--bg);color:var(--text);outline:none}
-.ofc-box-sub{border:none;padding:8px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;color:white}
-.ofc-pri-grp{margin-bottom:6px}
-.ofc-pri-hd{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
-.ofc-pri-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.ofc-titem{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f5f5f5}
-.ofc-titem:last-child{border-bottom:none}
-.ofc-titem.cooldown{opacity:.35;filter:blur(.4px)}
-.ofc-titem-cb{width:18px;height:18px;border-radius:5px;border:2px solid var(--as);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.ofc-titem-cb.done{background:#059669;border-color:#059669}
-.ofc-titem-cb.done::after{content:'✓';color:white;font-size:9px;font-weight:700}
-.ofc-titem-info{flex:1;min-width:0}
-.ofc-titem-nm{font-size:11px;font-weight:500}
-.ofc-titem-meta{font-size:8px;color:var(--text2);margin-top:1px}
-.ofc-titem-pri{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0}
-.ofc-titem-del{border:none;background:none;font-size:10px;cursor:pointer;padding:2px;opacity:.25;flex-shrink:0}
-.ofc-from{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
-.ofc-from.mgr{background:rgba(220,38,38,.08);color:#DC2626}.ofc-from.ppl{background:rgba(92,124,250,.08);color:#5C7CFA}
-.ofc-empty{text-align:center;padding:16px;font-size:11px;color:var(--text2);opacity:.5}
-@keyframes ofcSlideD{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -516,24 +360,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="break-ov" id="breakOv"><div class="lock-icon" id="breakIcon">🌿</div><div class="break-title">5-Minute Break</div><div class="break-sub">Rest before next session</div><div class="break-tips" id="breakTips"></div><div class="break-ring"><svg viewBox="0 0 100 100"><circle class="br-bg" cx="50" cy="50" r="44"/><circle class="br-fill" id="bRing" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="break-time" id="bTime">5:00</div></div><button class="skip-btn" onclick="skipBreak()">Skip</button></div>
 <div class="nudge" id="nudge"><div class="nudge-inner"><span class="nudge-icon">💧</span><span class="nudge-text" id="nudgeT">Drink water!</span><button class="nudge-x" onclick="dismissNudge()">Got it</button></div></div>
 
-<!-- OFFICE BLOCKERS -->
-<div class="ofc-blocker morning" id="ofcMorning">
-  <div class="ofc-bl-icon">🌅</div><div class="ofc-bl-title">Good Morning!</div>
-  <div class="ofc-bl-sub">Complete your daily check-in to unlock the app.</div>
-  <div class="ofc-bl-card"><div class="ofc-bl-card-ico">🔐</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Daily Check-in Entry</div><div class="ofc-bl-card-desc">Open login site and mark attendance</div></div><button class="ofc-bl-btn go" onclick="window.open(ofcLinks.checkin||'#','_blank')">Open ↗</button></div>
-  <div class="ofc-bl-card"><div class="ofc-bl-card-ico">✅</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Confirm check-in</div><div class="ofc-bl-card-desc">I've completed my check-in entry</div></div><button class="ofc-bl-btn confirm" onclick="ofcDoCheckin()">Check In ✓</button></div>
-  <div class="ofc-bl-hint">⚠️ App locked until check-in</div>
-</div>
-<div class="ofc-blocker evening" id="ofcEvening">
-  <div class="ofc-bl-icon">🌙</div><div class="ofc-bl-title">Before You Leave</div>
-  <div class="ofc-bl-sub">Complete both tasks. Reappears every 15 min until done.</div>
-  <div class="ofc-bl-card" id="ofcBlCO"><div class="ofc-bl-card-ico">🔐</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Daily Check-out Entry</div><div class="ofc-bl-card-desc">Open login and mark departure</div></div><button class="ofc-bl-btn go" onclick="window.open(ofcLinks.checkin||'#','_blank')">Open ↗</button></div>
-  <div class="ofc-bl-card" id="ofcBlTS"><div class="ofc-bl-card-ico">📋</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Daily Timesheet Entry</div><div class="ofc-bl-card-desc">Log today's hours</div></div><button class="ofc-bl-btn go" onclick="window.open(ofcLinks.timesheet||'#','_blank')">Open ↗</button></div>
-  <div class="ofc-bl-actions"><button class="ofc-bl-btn dim" id="ofcEvBtn0" onclick="ofcEvMark(0)">✓ Checkout done</button><button class="ofc-bl-btn dim" id="ofcEvBtn1" onclick="ofcEvMark(1)">✓ Timesheet done</button></div>
-  <div class="ofc-bl-hint" id="ofcEvHint">⚠️ Complete both to stop reminders</div>
-  <button class="ofc-bl-skip" onclick="ofcEvSkip()">Still working — remind me in 15 min</button>
-</div>
-
 <script>
 const sb=window.supabase.createClient('https://wylxvmkcrexwfpjpbhyy.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bHh2bWtjcmV4d2ZwanBiaHl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzkxMDYsImV4cCI6MjA4NDIxNTEwNn0.6Bxo42hx4jwlJGWnfjiTpiDUsYfc1QLTN3YtrU1efak');
 
@@ -552,53 +378,6 @@ let regenDefaults={}; // categoryName → days (default regen for all tasks in c
 let regenTasks={}; // taskId → {days, done_at} (per-task override + last done timestamp)
 let pendingDoneId=null; // task awaiting regen popup confirmation
 let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weekend:true, holiday:true}
-
-// ===== OFFICE STATE =====
-let ofcCheckedIn=false, ofcCheckoutDone=false, ofcTimesheetDone=false, ofcFreeeDone=false;
-let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='';
-let ofcEvDismissedAt=null, ofcEvMarks=[false,false];
-const ofcLinks={checkin:'',freee:'https://freee.co.jp',timesheet:''};
-let ofcQLGroups=[
-  {id:'login',ico:'🔐',name:'Check-in / Timesheet',items:[
-    {ico:'🔐',name:'Check-in Login',url:''},
-    {ico:'💴',name:'Freee (Transport)',url:'https://freee.co.jp'},
-    {ico:'📋',name:'Timesheet Entry',url:''},
-  ]},
-  {id:'sops',ico:'📄',name:'SOPs',workHours:true,items:[
-    {ico:'🦾',name:'Head SOP',url:''},{ico:'💪',name:'Arm SOP',url:''},{ico:'🤖',name:'Gripper SOP',url:''},
-  ]},
-  {id:'ecn',ico:'📁',name:'ECN Folder',workHours:true,items:[
-    {ico:'📋',name:'ECN 101',url:''},{ico:'📋',name:'ECN 100',url:''},
-  ]},
-  {id:'misc',ico:'📧',name:'Outlook',items:[
-    {ico:'📧',name:'Outlook Web',url:'https://outlook.office.com'},
-  ]},
-];
-let ofcApps=[
-  {ico:'📊',name:'Eagle Eye',url:''},{ico:'🗾',name:'JP Grammar',url:''},
-  {ico:'📝',name:'JLPT N1',url:''},{ico:'🍳',name:'Cooking',url:''},
-  {ico:'💰',name:'Commute Calc',url:''},{ico:'⚽',name:'ContextFlow',url:''},
-];
-// Demo office tasks (will connect to Supabase later)
-let ofcMgrTasks=[
-  {id:'om1',name:'Review Q4 budget proposal',pri:'critical',from:'Manager-san',due:'Today',done:false,doneAt:null},
-  {id:'om2',name:'Prepare slides for Wed standup',pri:'high',from:'Manager-san',due:'Wed',done:false,doneAt:null},
-  {id:'om3',name:'Send commuting expense report',pri:'medium',from:'Manager-san',due:'Fri',done:false,doneAt:null},
-  {id:'om4',name:'Update project timeline',pri:'low',from:'Manager-san',due:'Next week',done:false,doneAt:null},
-];
-let ofcReminders=[
-  {id:'or1',name:'Take medicine after lunch',pri:'critical',time:'12:30 PM',done:false,doneAt:null},
-  {id:'or2',name:'Submit timesheet before 6',pri:'high',time:'5:30 PM',done:false,doneAt:null},
-  {id:'or3',name:'Buy Suica card reload',pri:'medium',time:'After work',done:false,doneAt:null},
-];
-let ofcPplTasks=[
-  {id:'op1',name:'Check Tofes 17 form for errors',pri:'critical',from:'Yamada-san',role:'Team lead',done:false,doneAt:null},
-  {id:'op2',name:'Review pull request #247',pri:'high',from:'Suzuki-san',role:'Dev',done:false,doneAt:null},
-  {id:'op3',name:'Share meeting notes from Fri',pri:'medium',from:'Tanaka-san',role:'PM',done:false,doneAt:null},
-];
-const OFC_PRI={critical:{l:'Critical',c:'#DC2626',bg:'#FEF2F2'},high:{l:'High',c:'#E8722A',bg:'#FFF7ED'},medium:{l:'Medium',c:'#D97706',bg:'#FFFBEB'},low:{l:'Low',c:'#6B7280',bg:'#F9FAFB'}};
-const OFC_PRI_ORD=['critical','high','medium','low'];
-const OFC_BOX={mgr:{ico:'📨',name:'From Manager',color:'#DC2626'},rem:{ico:'⏰',name:'My Reminders',color:'#D97706'},ppl:{ico:'👥',name:'From People',color:'#5C7CFA'}};
 
 const LOC_MAP={home:['Room','Share house'],office:['Company'],outside:['Train','Park','Cafe','Anywhere']};
 const STUDY_CATS=['Paper study','Quick study','Reading'];
@@ -671,7 +450,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -681,7 +460,6 @@ async function loadAll(){
     if(m.key==='cf_regen_defaults')try{regenDefaults=JSON.parse(m.value)}catch{};
     if(m.key==='cf_regen_tasks')try{regenTasks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_timeslots')try{timeSlotRules=JSON.parse(m.value)}catch{};
-    if(m.key==='cf_office')try{const o=JSON.parse(m.value);if(o.date===todayK()){ofcCheckedIn=o.checkedIn||false;ofcCheckoutDone=o.checkoutDone||false;ofcTimesheetDone=o.timesheetDone||false;ofcFreeeDone=o.freeeDone||false}if(o.qlGroups)ofcQLGroups=o.qlGroups;if(o.apps)ofcApps=o.apps}catch{};
   });
 }
 async function memSave(key,val){
@@ -695,171 +473,6 @@ async function savePlayerMap(){await memSave('cf_players',JSON.stringify(playerM
 async function saveRegenDefaults(){await memSave('cf_regen_defaults',JSON.stringify(regenDefaults))}
 async function saveRegenTasks(){await memSave('cf_regen_tasks',JSON.stringify(regenTasks))}
 async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeSlotRules))}
-async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK(),qlGroups:ofcQLGroups,apps:ofcApps}))}
-
-// ===== OFFICE BLOCKER LOGIC =====
-function ofcShouldMorning(){return dayType()==='weekday'&&new Date().getHours()>=9&&(new Date().getHours()>9||new Date().getMinutes()>=50)&&!ofcCheckedIn&&loc==='office'}
-function ofcShouldEvening(){
-  if(ofcCheckoutDone&&ofcTimesheetDone)return false;if(new Date().getHours()<19)return false;
-  if(ofcEvDismissedAt&&(Date.now()-ofcEvDismissedAt)/60000<15)return false;
-  return loc==='office';
-}
-function ofcUpdateBlockers(){
-  const mE=document.getElementById('ofcMorning'),eE=document.getElementById('ofcEvening');
-  if(ofcShouldMorning()){mE.classList.add('show');eE.classList.remove('show')}
-  else if(ofcShouldEvening()){mE.classList.remove('show');eE.classList.add('show');ofcResetEvUI()}
-  else{mE.classList.remove('show');eE.classList.remove('show')}
-}
-function ofcDoCheckin(){ofcCheckedIn=true;saveOfcState();ofcUpdateBlockers();renderPitch()}
-function ofcEvMark(i){
-  ofcEvMarks[i]=true;const btn=document.getElementById('ofcEvBtn'+i);btn.className='ofc-bl-btn ready';btn.textContent='✓ Done!';
-  document.getElementById(i===0?'ofcBlCO':'ofcBlTS').classList.add('done');
-  if(ofcEvMarks[0]&&ofcEvMarks[1]){
-    ofcCheckoutDone=true;ofcTimesheetDone=true;saveOfcState();
-    document.getElementById('ofcEvHint').textContent='✅ All done!';document.getElementById('ofcEvHint').className='ofc-bl-hint ok';
-    setTimeout(()=>{setLoc('home');ofcUpdateBlockers()},800);
-  }
-}
-function ofcEvSkip(){ofcEvDismissedAt=Date.now();ofcUpdateBlockers();renderPitch()}
-function ofcResetEvUI(){
-  ofcEvMarks=[ofcCheckoutDone,ofcTimesheetDone];
-  ['ofcEvBtn0','ofcEvBtn1'].forEach((id,i)=>{const b=document.getElementById(id);if(ofcEvMarks[i]){b.className='ofc-bl-btn ready';b.textContent='✓ Done!'}else{b.className='ofc-bl-btn dim';b.textContent=i===0?'✓ Checkout done':'✓ Timesheet done'}});
-  [['ofcBlCO',0],['ofcBlTS',1]].forEach(([id,i])=>{if(ofcEvMarks[i])document.getElementById(id).classList.add('done');else document.getElementById(id).classList.remove('done')});
-  document.getElementById('ofcEvHint').textContent='⚠️ Complete both to stop reminders';document.getElementById('ofcEvHint').className='ofc-bl-hint';
-}
-function ofcMarkPending(key){
-  if(key==='checkedIn')ofcCheckedIn=true;
-  else if(key==='timesheetDone')ofcTimesheetDone=true;
-  else if(key==='checkoutDone')ofcCheckoutDone=true;
-  saveOfcState();renderPitch();
-}
-function ofcGetPending(){
-  const p=[];const hr=new Date().getHours();
-  if(dayType()==='weekday'&&!ofcCheckedIn&&hr>=9&&(hr>9||new Date().getMinutes()>=50))p.push({id:'ci',ico:'🔐',name:'Daily Check-in Entry',desc:'Haven\'t checked in today',key:'checkedIn'});
-  if(dayType()==='weekday'&&hr>=19&&!ofcCheckoutDone)p.push({id:'co',ico:'🔐',name:'Daily Check-out Entry',desc:'Checkout not completed',key:'checkoutDone'});
-  if(dayType()==='weekday'&&hr>=19&&!ofcTimesheetDone)p.push({id:'ts',ico:'📋',name:'Daily Timesheet Entry',desc:'Timesheet not submitted',key:'timesheetDone'});
-  return p;
-}
-function ofcIsFreeeDay(){
-  const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=new Date(y,m+1,0);
-  let lwd=new Date(last);while(lwd.getDay()===0||lwd.getDay()===6)lwd.setDate(lwd.getDate()-1);
-  let dlwd=new Date(lwd);dlwd.setDate(dlwd.getDate()-1);while(dlwd.getDay()===0||dlwd.getDay()===6)dlwd.setDate(dlwd.getDate()-1);
-  return n.toDateString()===dlwd.toDateString();
-}
-function ofcWorkDays(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=new Date(y,m+1,0).getDate();let c=0;for(let d=1;d<=last;d++){const day=new Date(y,m,d).getDay();if(day>=1&&day<=5)c++}return c}
-
-// Office task helpers
-function ofcGetList(key){return key==='mgr'?ofcMgrTasks:key==='rem'?ofcReminders:ofcPplTasks}
-function ofcToggleDone(key,id){const l=ofcGetList(key),t=l.find(x=>x.id===id);if(!t)return;if(!t.done){t.done=true;t.doneAt=Date.now()}else{const cd=t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7;if(!cd){t.done=false;t.doneAt=null}}renderPitch()}
-function ofcCounts(list){const a=list.filter(t=>!t.done);return{crit:a.filter(t=>t.pri==='critical').length,high:a.filter(t=>t.pri==='high').length,total:a.length}}
-function ofcTopPri(){
-  const all=[];
-  ofcMgrTasks.filter(t=>!t.done&&(t.pri==='critical'||t.pri==='high')).forEach(t=>all.push({...t,src:'mgr',srcLabel:'Manager',bk:'mgr'}));
-  ofcReminders.filter(t=>!t.done&&(t.pri==='critical'||t.pri==='high')).forEach(t=>all.push({...t,src:'me',srcLabel:'Reminder',bk:'rem'}));
-  ofcPplTasks.filter(t=>!t.done&&(t.pri==='critical'||t.pri==='high')).forEach(t=>all.push({...t,src:'ppl',srcLabel:t.from,bk:'ppl'}));
-  all.sort((a,b)=>OFC_PRI_ORD.indexOf(a.pri)-OFC_PRI_ORD.indexOf(b.pri));return all;
-}
-function ofcPriTag(p){return`<span class="ofc-titem-pri" style="background:${OFC_PRI[p].bg};color:${OFC_PRI[p].c}">${OFC_PRI[p].l}</span>`}
-
-// 15-min evening re-check
-setInterval(()=>{if(loc==='office')ofcUpdateBlockers()},60000);
-// Close QL dropdowns on outside click
-document.addEventListener('click',e=>{if(!e.target.closest('.ofc-ql-grp')&&ofcOpenQL){ofcOpenQL='';if(loc==='office')renderPitch()}});
-
-// ===== OFFICE RENDER =====
-function renderOffice(){
-  const field=document.getElementById('pitchField'),strip=document.getElementById('possStrip');
-  strip.innerHTML='';ofcUpdateBlockers();
-  const hr=new Date().getHours(),isWork=ofcCheckedIn&&hr>=10&&hr<20;
-  const showFreee=ofcIsFreeeDay()&&!ofcFreeeDone;
-  const topTasks=ofcTopPri();
-  const mgrC=ofcCounts(ofcMgrTasks),remC=ofcCounts(ofcReminders),pplC=ofcCounts(ofcPplTasks);
-  let h='<div class="ofc-dash">';
-
-  // Header
-  h+=`<div class="ofc-hdr"><div class="ofc-hdr-title">🏢 Office <span class="ofc-badge">${dayType().toUpperCase()}</span></div></div>`;
-
-  // Freee banner
-  if(showFreee){const wd=ofcWorkDays();
-    h+=`<div class="ofc-freee"><div class="ofc-freee-hdr"><span style="font-size:20px">💴</span><div class="ofc-freee-title">Transport Reimbursement</div><span class="ofc-freee-badge">Due tomorrow</span></div>`;
-    h+=`<div class="ofc-freee-desc">This month has <strong>${wd} working days</strong>. Prepare your Freee application.</div>`;
-    h+=`<div class="ofc-freee-gen">📝 Application format generation<br><span style="font-size:9px;color:var(--text2)">(${wd} working days × ¥ rate — logic placeholder)</span></div>`;
-    h+=`<div class="ofc-freee-actions"><button class="ofc-freee-btn pri" onclick="window.open('${ofcLinks.freee}','_blank')">Open Freee ↗</button><button class="ofc-freee-btn sec" onclick="ofcFreeeDone=true;saveOfcState();renderPitch()">✓ Done</button></div></div>`;
-  }
-
-  // Apps dock
-  h+=`<div class="ofc-dock"><div class="ofc-dock-hdr ${ofcDockOpen?'open':''}" onclick="ofcDockOpen=!ofcDockOpen;renderPitch()"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📱</span><span style="font-size:12px;font-weight:600">My Apps</span></div><div class="ofc-dock-chev">▼</div></div>`;
-  h+=`<div class="ofc-dock-body ${ofcDockOpen?'open':''}"><div class="ofc-app-grid">`;
-  ofcApps.forEach(a=>{h+=`<div class="ofc-app-tile"${a.url?` onclick="window.open('${esc(a.url)}','_blank')"`:``}><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div>`});
-  h+=`<div class="ofc-app-tile" style="border:1.5px dashed var(--as);opacity:.5"><span class="ofc-app-ico">➕</span><div class="ofc-app-nm">Add</div></div></div></div></div>`;
-
-  // Grouped quick links
-  const visGroups=ofcQLGroups.filter(g=>g.workHours?isWork:true);
-  h+=`<div class="ofc-ql"><div class="ofc-ql-hdr"><div class="ofc-ql-title">🔗 Quick Links</div><button class="ofc-ql-edit" onclick="ofcQLEdit=!ofcQLEdit;ofcOpenQL='';renderPitch()">${ofcQLEdit?'✓ Done':'✏️ Edit'}</button></div>`;
-  if(!ofcQLEdit){
-    h+=`<div class="ofc-ql-row">`;
-    visGroups.forEach(g=>{
-      const isO=ofcOpenQL===g.id;
-      if(g.items.length===1){h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn" onclick="window.open('${esc(g.items[0].url)||'#'}','_blank')"><span>${g.ico}</span> ${esc(g.name)}</div></div>`}
-      else{h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn ${isO?'open':''}" onclick="event.stopPropagation();ofcOpenQL=ofcOpenQL==='${g.id}'?'':'${g.id}';renderPitch()"><span>${g.ico}</span> ${esc(g.name)} <span class="ofc-ql-arr">▾</span></div>`;
-        if(isO){h+=`<div class="ofc-ql-dd show">`;g.items.forEach(it=>{h+=`<div class="ofc-ql-dd-item" onclick="window.open('${esc(it.url)||'#'}','_blank')"><span>${it.ico}</span> ${esc(it.name)}</div>`});h+=`</div>`}
-        h+=`</div>`}
-    });
-    h+=`</div>`;
-  } else {
-    h+=`<div class="ofc-ql-ep">`;
-    ofcQLGroups.forEach((g,gi)=>{
-      h+=`<div class="ofc-ql-eg"><div class="ofc-ql-eg-hd"><span style="font-size:14px">${g.ico}</span><span class="ofc-ql-eg-nm">${esc(g.name)}</span><button class="ofc-ql-eg-del" onclick="ofcQLGroups.splice(${gi},1);saveOfcState();renderPitch()">🗑️</button></div>`;
-      g.items.forEach((it,ii)=>{h+=`<div class="ofc-ql-eg-row"><input class="ofc-ql-eg-ico" value="${esc(it.ico)}" onchange="ofcQLGroups[${gi}].items[${ii}].ico=this.value;saveOfcState()"><input class="ofc-ql-eg-inp" value="${esc(it.name)}" onchange="ofcQLGroups[${gi}].items[${ii}].name=this.value;saveOfcState()"><input class="ofc-ql-eg-inp" value="${esc(it.url)}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].url=this.value;saveOfcState()"><button class="ofc-ql-eg-xb" onclick="ofcQLGroups[${gi}].items.splice(${ii},1);saveOfcState();renderPitch()">✕</button></div>`});
-      h+=`<div class="ofc-ql-addl" onclick="ofcQLGroups[${gi}].items.push({ico:'🔗',name:'New Link',url:''});saveOfcState();renderPitch()">+ Add link</div></div>`;
-    });
-    h+=`<div class="ofc-ql-addg" onclick="ofcQLGroups.push({id:'g'+Date.now(),ico:'📌',name:'New Group',items:[{ico:'🔗',name:'Link',url:''}]});saveOfcState();renderPitch()">+ Add Group</div></div>`;
-  }
-  h+=`</div>`;
-
-  // Critical surface
-  if(topTasks.length){
-    h+=`<div class="ofc-crit"><div class="ofc-crit-hd">🔥 Highest Priority (${topTasks.length})</div>`;
-    topTasks.forEach(t=>{const cl=t.src==='mgr'?'mgr':t.src==='me'?'me':'ppl';
-      h+=`<div class="ofc-crit-card s-${cl}"><div class="ofc-crit-pri" style="background:${OFC_PRI[t.pri].c}"></div><div class="ofc-crit-info"><div class="ofc-crit-name">${esc(t.name)}</div><div class="ofc-crit-meta"><span class="ofc-crit-src ${cl}">${t.srcLabel}</span> ${t.due?'Due '+t.due:''}${t.time||''}</div></div><div class="ofc-crit-dn" onclick="ofcToggleDone('${t.bk}','${t.id}')">✓</div></div>`});
-    h+=`</div>`;
-  }
-
-  // Box cards
-  h+=`<div class="ofc-box-grid">`;
-  ['mgr','rem','ppl'].forEach(key=>{const m=OFC_BOX[key],c=key==='mgr'?mgrC:key==='rem'?remC:pplC,isA=ofcOpenBox===key;
-    h+=`<div class="ofc-box ${isA?'active':''}" onclick="ofcOpenBox=ofcOpenBox==='${key}'?'':'${key}';renderPitch()"><div class="ofc-box-badges">${c.crit?`<div class="ofc-box-bdot" style="background:#DC2626"></div>`:''}${c.high?`<div class="ofc-box-bdot" style="background:#E8722A"></div>`:''}</div><span class="ofc-box-ico">${m.ico}</span><div class="ofc-box-cnt">${c.total}</div><div class="ofc-box-nm">${m.name}</div></div>`});
-  h+=`</div>`;
-
-  // Expanded panel
-  if(ofcOpenBox){
-    const m=OFC_BOX[ofcOpenBox],list=ofcGetList(ofcOpenBox);
-    const metaFn=ofcOpenBox==='mgr'?t=>`<span class="ofc-from mgr">${t.from||''}</span> ${t.due?'Due '+t.due:''}`:ofcOpenBox==='rem'?t=>t.time||'':t=>`<span class="ofc-from ppl">${t.from||''}</span> ${t.role||''}`;
-    h+=`<div class="ofc-panel"><div class="ofc-panel-hd"><div class="ofc-panel-title"><span style="font-size:18px">${m.ico}</span> ${m.name}</div><button class="ofc-panel-close" onclick="ofcOpenBox='';renderPitch()">✕</button></div>`;
-    h+=`<div class="ofc-box-add"><input class="ofc-box-inp" placeholder="Add task..."><button class="ofc-box-sub" style="background:${m.color}">+ Add</button></div>`;
-    const groups={};OFC_PRI_ORD.forEach(p=>groups[p]=[]);const cds=[];
-    list.forEach(t=>{if(t.done&&t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)>=7)return;if(t.done&&t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7){cds.push(t);return}if(!t.done)groups[t.pri].push(t)});
-    let has=false;
-    for(const pri of OFC_PRI_ORD){if(!groups[pri].length)continue;has=true;
-      h+=`<div class="ofc-pri-grp"><div class="ofc-pri-hd"><span class="ofc-pri-dot" style="background:${OFC_PRI[pri].c}"></span> <span style="color:${OFC_PRI[pri].c}">${OFC_PRI[pri].l} (${groups[pri].length})</span></div>`;
-      groups[pri].forEach(t=>{h+=`<div class="ofc-titem"><div class="ofc-titem-cb" onclick="ofcToggleDone('${ofcOpenBox}','${t.id}')"></div><div class="ofc-titem-info"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta">${metaFn(t)}</div></div>${ofcPriTag(t.pri)}<button class="ofc-titem-del">🗑️</button></div>`});
-      h+=`</div>`}
-    if(cds.length){has=true;h+=`<div class="ofc-pri-grp"><div class="ofc-pri-hd"><span style="color:#8B5CF6">🔄 Completed (${cds.length})</span></div>`;
-      cds.forEach(t=>{const left=Math.max(0,7-Math.floor((Date.now()-t.doneAt)/86400000));h+=`<div class="ofc-titem cooldown"><div class="ofc-titem-cb done"></div><div class="ofc-titem-info"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta" style="color:#8B5CF6">↻ ${left}d</div></div>${ofcPriTag(t.pri)}</div>`});h+=`</div>`}
-    if(!has&&!cds.length)h+=`<div class="ofc-empty">All clear ✨</div>`;
-    h+=`</div>`;
-  }
-  h+=`</div>`;
-  field.innerHTML=h;
-}
-
-// Render pending office tasks on non-office screens
-function renderOfcPendingBanner(){
-  const pending=ofcGetPending();if(!pending.length)return'';
-  let h=`<div class="ofc-pending"><div class="ofc-pend-hdr">⚠️ Pending Office Tasks</div>`;
-  pending.forEach(p=>{h+=`<div class="ofc-pend-task"><div class="ofc-pend-ico">${p.ico}</div><div class="ofc-pend-info"><div class="ofc-pend-name">${p.name}</div><div class="ofc-pend-desc">${p.desc}</div></div><button class="ofc-pend-btn dn" onclick="ofcMarkPending('${p.key}')">✓ Done</button></div>`});
-  return h+`</div>`;
-}
 async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='done';await sb.from('mind_map_app_tasks').update({status:'done',updated_at:new Date().toISOString()}).eq('id',id)}
 async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='in_progress';await sb.from('mind_map_app_tasks').update({status:'in_progress',updated_at:new Date().toISOString()}).eq('id',id)}
 
@@ -989,7 +602,7 @@ async function createTask(name,catName){
 
 // Theme/UI
 function applyTheme(l){const r=document.documentElement,p='--'+l;['bg','accent','as','card','text','text2'].forEach(k=>r.style.setProperty('--'+k,getComputedStyle(r).getPropertyValue(p+'-'+k)))}
-function setLoc(l){loc=l;applyTheme(l);document.querySelectorAll('#locG .loc-b').forEach(b=>b.classList.toggle('active',b.dataset.l===l));checkPoss();ofcUpdateBlockers();renderPitch()}
+function setLoc(l){loc=l;applyTheme(l);document.querySelectorAll('#locG .loc-b').forEach(b=>b.classList.toggle('active',b.dataset.l===l));checkPoss();renderPitch()}
 function setMood(m){mood=m;renderPitch()}
 function toggleHol(){manHol=!manHol;updateBadge();checkPoss();renderPitch()}
 function updateBadge(){const dt=dayType(),b=document.getElementById('dayB');b.textContent=dt==='holiday'?'Holiday':dt==='weekend'?'Weekend':'Weekday';b.className='day-badge '+dt;document.getElementById('holB').classList.toggle('active',manHol)}
@@ -1162,11 +775,7 @@ function skipBreak(){endBreak()}
 // ===== RENDER PITCH =====
 function renderPitch(){
   const field=document.getElementById('pitchField'),strip=document.getElementById('possStrip');
-  // === OFFICE: render office dashboard instead of pitch ===
-  if(loc==='office'){renderOffice();return}
-  // Pending office tasks banner on non-office screens
-  const pendingBanner=renderOfcPendingBanner();
-  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=pendingBanner+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=pendingBanner;
+  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML='';
   if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
   
   const pt=pitched();
@@ -1314,7 +923,7 @@ async function setPreset(cat,preset){
   await saveTimeSlots();renderOv();
 }
 
-async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';checkPoss();ofcUpdateBlockers();renderPitch()}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';checkPoss();renderPitch()}
 init();
 </script>
 </body>
