@@ -390,35 +390,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-ql-addl{font-size:9px;color:var(--accent);cursor:pointer;padding-left:12px;font-weight:500}
 .ofc-ql-addg{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px}
 
-/* QL expanded panel (replaces dropdown) */
-.ofc-ql-panel{background:var(--card);border:1.5px solid var(--as);border-radius:14px;padding:12px;margin-top:8px;animation:ofcSlideD .2s ease}
-.ofc-ql-panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.ofc-ql-panel-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
-.ofc-ql-panel-close{border:none;background:var(--as);width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ofc-ql-link{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:background .1s;border:1.5px solid var(--as);margin-bottom:6px}
-.ofc-ql-link:hover{background:var(--as)}.ofc-ql-link:active{background:var(--accent);color:white;border-color:var(--accent)}
-.ofc-ql-link-ico{font-size:16px;flex-shrink:0}
-.ofc-ql-link-info{flex:1;min-width:0}
-.ofc-ql-link-nm{font-size:11px;font-weight:600}
-.ofc-ql-link-url{font-size:8px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ofc-ql-link-go{font-size:10px;color:var(--accent);flex-shrink:0}
-
-/* App add form */
-.ofc-app-add{background:var(--card);border:1.5px solid var(--as);border-radius:14px;padding:14px;margin-top:8px;animation:ofcSlideD .2s ease}
-.ofc-app-add-title{font-size:12px;font-weight:700;margin-bottom:10px}
-.ofc-app-add-row{display:flex;gap:6px;margin-bottom:8px;align-items:center}
-.ofc-app-add-ico{width:40px;border:1.5px solid var(--as);border-radius:8px;padding:6px 4px;font-size:12px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)}
-.ofc-app-add-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:11px;background:var(--bg);color:var(--text);outline:none}
-.ofc-app-add-inp:focus{border-color:var(--accent)}
-.ofc-app-add-btns{display:flex;gap:6px}
-.ofc-app-add-btn{border:none;padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer}
-.ofc-app-add-btn.save{background:var(--accent);color:white}
-.ofc-app-add-btn.cancel{background:var(--as);color:var(--text2)}
-
-/* App tile edit badge */
-.ofc-app-tile-wrap{position:relative}
-.ofc-app-xbtn{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#DC2626;color:white;font-size:8px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-
 /* Critical surface */
 .ofc-crit{margin-bottom:14px}
 .ofc-crit-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#DC2626;margin-bottom:8px}
@@ -584,7 +555,7 @@ let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weeke
 
 // ===== OFFICE STATE =====
 let ofcCheckedIn=false, ofcCheckoutDone=false, ofcTimesheetDone=false, ofcFreeeDone=false;
-let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false;
+let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='';
 let ofcEvDismissedAt=null, ofcEvMarks=[false,false];
 const ofcLinks={checkin:'',freee:'https://freee.co.jp',timesheet:''};
 let ofcQLGroups=[
@@ -700,7 +671,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -710,13 +681,7 @@ async function loadAll(){
     if(m.key==='cf_regen_defaults')try{regenDefaults=JSON.parse(m.value)}catch{};
     if(m.key==='cf_regen_tasks')try{regenTasks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_timeslots')try{timeSlotRules=JSON.parse(m.value)}catch{};
-    if(m.key==='cf_office')try{const o=JSON.parse(m.value);if(o.date===todayK()){ofcCheckedIn=o.checkedIn||false;ofcCheckoutDone=o.checkoutDone||false;ofcTimesheetDone=o.timesheetDone||false;ofcFreeeDone=o.freeeDone||false}
-      // Legacy: migrate old format
-      if(o.qlGroups&&!mem.find(x=>x.key==='cf_ofc_qlinks')){ofcQLGroups=o.qlGroups}
-      if(o.apps&&!mem.find(x=>x.key==='cf_ofc_apps')){ofcApps=o.apps}
-    }catch{};
-    if(m.key==='cf_ofc_qlinks')try{ofcQLGroups=JSON.parse(m.value)}catch{};
-    if(m.key==='cf_ofc_apps')try{ofcApps=JSON.parse(m.value)}catch{};
+    if(m.key==='cf_office')try{const o=JSON.parse(m.value);if(o.date===todayK()){ofcCheckedIn=o.checkedIn||false;ofcCheckoutDone=o.checkoutDone||false;ofcTimesheetDone=o.timesheetDone||false;ofcFreeeDone=o.freeeDone||false}if(o.qlGroups)ofcQLGroups=o.qlGroups;if(o.apps)ofcApps=o.apps}catch{};
   });
 }
 async function memSave(key,val){
@@ -730,29 +695,7 @@ async function savePlayerMap(){await memSave('cf_players',JSON.stringify(playerM
 async function saveRegenDefaults(){await memSave('cf_regen_defaults',JSON.stringify(regenDefaults))}
 async function saveRegenTasks(){await memSave('cf_regen_tasks',JSON.stringify(regenTasks))}
 async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeSlotRules))}
-async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK()}))}
-async function saveOfcQL(){await memSave('cf_ofc_qlinks',JSON.stringify(ofcQLGroups))}
-async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps))}
-// Confirm delete for QL groups
-let ofcDelTarget=null; // {type:'qlgroup',idx} or {type:'app',idx}
-function ofcAskDel(type,idx){
-  ofcDelTarget={type,idx};
-  const name=type==='qlgroup'?ofcQLGroups[idx].name:ofcApps[idx].name;
-  document.getElementById('delTaskName').textContent=name;
-  document.getElementById('delPopup').classList.add('show');
-}
-// Add app modal
-let ofcAddingApp=false;
-function ofcShowAddApp(){ofcAddingApp=true;renderPitch()}
-function ofcCancelAddApp(){ofcAddingApp=false;renderPitch()}
-function ofcSaveApp(){
-  const ico=document.getElementById('ofcNewAppIco')?.value||'📱';
-  const name=document.getElementById('ofcNewAppName')?.value?.trim();
-  const url=document.getElementById('ofcNewAppUrl')?.value?.trim()||'';
-  if(!name){alert('Enter an app name');return}
-  ofcApps.push({ico,name,url});saveOfcApps();ofcAddingApp=false;renderPitch();
-}
-function ofcRemoveApp(idx){ofcAskDel('app',idx)}
+async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK(),qlGroups:ofcQLGroups,apps:ofcApps}))}
 
 // ===== OFFICE BLOCKER LOGIC =====
 function ofcShouldMorning(){return dayType()==='weekday'&&new Date().getHours()>=9&&(new Date().getHours()>9||new Date().getMinutes()>=50)&&!ofcCheckedIn&&loc==='office'}
@@ -845,51 +788,32 @@ function renderOffice(){
   }
 
   // Apps dock
-  h+=`<div class="ofc-dock"><div class="ofc-dock-hdr ${ofcDockOpen?'open':''}" onclick="ofcDockOpen=!ofcDockOpen;renderPitch()"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📱</span><span style="font-size:12px;font-weight:600">My Apps</span></div><div style="display:flex;align-items:center;gap:8px"><button style="border:none;background:none;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="event.stopPropagation();ofcAppEdit=!ofcAppEdit;ofcDockOpen=true;renderPitch()">${ofcAppEdit?'✓ Done':'✏️'}</button><div class="ofc-dock-chev">▼</div></div></div>`;
+  h+=`<div class="ofc-dock"><div class="ofc-dock-hdr ${ofcDockOpen?'open':''}" onclick="ofcDockOpen=!ofcDockOpen;renderPitch()"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📱</span><span style="font-size:12px;font-weight:600">My Apps</span></div><div class="ofc-dock-chev">▼</div></div>`;
   h+=`<div class="ofc-dock-body ${ofcDockOpen?'open':''}"><div class="ofc-app-grid">`;
-  ofcApps.forEach((a,i)=>{
-    if(ofcAppEdit){
-      h+=`<div class="ofc-app-tile-wrap"><button class="ofc-app-xbtn" onclick="event.stopPropagation();ofcRemoveApp(${i})">✕</button><div class="ofc-app-tile"><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div></div>`;
-    } else {
-      h+=`<div class="ofc-app-tile"${a.url?` onclick="window.open('${esc(a.url)}','_blank')"`:``}><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div>`;
-    }
-  });
-  h+=`<div class="ofc-app-tile" style="border:1.5px dashed var(--as);opacity:.6" onclick="event.stopPropagation();ofcShowAddApp()"><span class="ofc-app-ico">➕</span><div class="ofc-app-nm">Add</div></div></div></div></div>`;
-  // Add app form
-  if(ofcAddingApp){
-    h+=`<div class="ofc-app-add"><div class="ofc-app-add-title">Add New App</div><div class="ofc-app-add-row"><input class="ofc-app-add-ico" id="ofcNewAppIco" value="📱" placeholder="🔗"><input class="ofc-app-add-inp" id="ofcNewAppName" placeholder="App name"></div><div class="ofc-app-add-row"><input class="ofc-app-add-inp" id="ofcNewAppUrl" placeholder="https://... (URL)"></div><div class="ofc-app-add-btns"><button class="ofc-app-add-btn save" onclick="ofcSaveApp()">Save</button><button class="ofc-app-add-btn cancel" onclick="ofcCancelAddApp()">Cancel</button></div></div>`;
-  }
+  ofcApps.forEach(a=>{h+=`<div class="ofc-app-tile"${a.url?` onclick="window.open('${esc(a.url)}','_blank')"`:``}><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div>`});
+  h+=`<div class="ofc-app-tile" style="border:1.5px dashed var(--as);opacity:.5"><span class="ofc-app-ico">➕</span><div class="ofc-app-nm">Add</div></div></div></div></div>`;
 
-  // Grouped quick links — panel view
+  // Grouped quick links
   const visGroups=ofcQLGroups.filter(g=>g.workHours?isWork:true);
   h+=`<div class="ofc-ql"><div class="ofc-ql-hdr"><div class="ofc-ql-title">🔗 Quick Links</div><button class="ofc-ql-edit" onclick="ofcQLEdit=!ofcQLEdit;ofcOpenQL='';renderPitch()">${ofcQLEdit?'✓ Done':'✏️ Edit'}</button></div>`;
   if(!ofcQLEdit){
-    // Group chips — tap to expand panel below
     h+=`<div class="ofc-ql-row">`;
     visGroups.forEach(g=>{
       const isO=ofcOpenQL===g.id;
-      h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn ${isO?'open':''}" onclick="event.stopPropagation();ofcOpenQL=ofcOpenQL==='${g.id}'?'':'${g.id}';renderPitch()"><span>${g.ico}</span> ${esc(g.name)}${g.items.length>1?` <span class="ofc-ql-arr">▾</span>`:''}</div></div>`;
+      if(g.items.length===1){h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn" onclick="window.open('${esc(g.items[0].url)||'#'}','_blank')"><span>${g.ico}</span> ${esc(g.name)}</div></div>`}
+      else{h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn ${isO?'open':''}" onclick="event.stopPropagation();ofcOpenQL=ofcOpenQL==='${g.id}'?'':'${g.id}';renderPitch()"><span>${g.ico}</span> ${esc(g.name)} <span class="ofc-ql-arr">▾</span></div>`;
+        if(isO){h+=`<div class="ofc-ql-dd show">`;g.items.forEach(it=>{h+=`<div class="ofc-ql-dd-item" onclick="window.open('${esc(it.url)||'#'}','_blank')"><span>${it.ico}</span> ${esc(it.name)}</div>`});h+=`</div>`}
+        h+=`</div>`}
     });
     h+=`</div>`;
-    // Expanded panel below for the active group
-    const activeG=visGroups.find(g=>g.id===ofcOpenQL);
-    if(activeG){
-      h+=`<div class="ofc-ql-panel"><div class="ofc-ql-panel-hd"><div class="ofc-ql-panel-title"><span>${activeG.ico}</span> ${esc(activeG.name)}</div><button class="ofc-ql-panel-close" onclick="ofcOpenQL='';renderPitch()">✕</button></div>`;
-      activeG.items.forEach(it=>{
-        const dispUrl=it.url?(it.url.length>35?it.url.slice(0,35)+'…':it.url):'No URL set';
-        h+=`<div class="ofc-ql-link" onclick="if('${esc(it.url)}')window.open('${esc(it.url)}','_blank')"><span class="ofc-ql-link-ico">${it.ico}</span><div class="ofc-ql-link-info"><div class="ofc-ql-link-nm">${esc(it.name)}</div><div class="ofc-ql-link-url">${esc(dispUrl)}</div></div><span class="ofc-ql-link-go">↗</span></div>`;
-      });
-      h+=`</div>`;
-    }
   } else {
-    // Edit mode — with group rename and delete with warning
     h+=`<div class="ofc-ql-ep">`;
     ofcQLGroups.forEach((g,gi)=>{
-      h+=`<div class="ofc-ql-eg"><div class="ofc-ql-eg-hd"><input class="ofc-ql-eg-ico" value="${esc(g.ico)}" style="width:26px;font-size:12px" onchange="ofcQLGroups[${gi}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(g.name)}" style="font-size:11px;font-weight:700;flex:1" onchange="ofcQLGroups[${gi}].name=this.value;saveOfcQL()"><button class="ofc-ql-eg-del" onclick="ofcAskDel('qlgroup',${gi})" title="Delete group">🗑️</button></div>`;
-      g.items.forEach((it,ii)=>{h+=`<div class="ofc-ql-eg-row"><input class="ofc-ql-eg-ico" value="${esc(it.ico)}" onchange="ofcQLGroups[${gi}].items[${ii}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.name)}" onchange="ofcQLGroups[${gi}].items[${ii}].name=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.url)}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].url=this.value;saveOfcQL()"><button class="ofc-ql-eg-xb" onclick="ofcQLGroups[${gi}].items.splice(${ii},1);saveOfcQL();renderPitch()">✕</button></div>`});
-      h+=`<div class="ofc-ql-addl" onclick="ofcQLGroups[${gi}].items.push({ico:'🔗',name:'New Link',url:''});saveOfcQL();renderPitch()">+ Add link</div></div>`;
+      h+=`<div class="ofc-ql-eg"><div class="ofc-ql-eg-hd"><span style="font-size:14px">${g.ico}</span><span class="ofc-ql-eg-nm">${esc(g.name)}</span><button class="ofc-ql-eg-del" onclick="ofcQLGroups.splice(${gi},1);saveOfcState();renderPitch()">🗑️</button></div>`;
+      g.items.forEach((it,ii)=>{h+=`<div class="ofc-ql-eg-row"><input class="ofc-ql-eg-ico" value="${esc(it.ico)}" onchange="ofcQLGroups[${gi}].items[${ii}].ico=this.value;saveOfcState()"><input class="ofc-ql-eg-inp" value="${esc(it.name)}" onchange="ofcQLGroups[${gi}].items[${ii}].name=this.value;saveOfcState()"><input class="ofc-ql-eg-inp" value="${esc(it.url)}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].url=this.value;saveOfcState()"><button class="ofc-ql-eg-xb" onclick="ofcQLGroups[${gi}].items.splice(${ii},1);saveOfcState();renderPitch()">✕</button></div>`});
+      h+=`<div class="ofc-ql-addl" onclick="ofcQLGroups[${gi}].items.push({ico:'🔗',name:'New Link',url:''});saveOfcState();renderPitch()">+ Add link</div></div>`;
     });
-    h+=`<div class="ofc-ql-addg" onclick="ofcQLGroups.push({id:'g'+Date.now(),ico:'📌',name:'New Group',items:[{ico:'🔗',name:'Link',url:''}]});saveOfcQL();renderPitch()">+ Add Group</div></div>`;
+    h+=`<div class="ofc-ql-addg" onclick="ofcQLGroups.push({id:'g'+Date.now(),ico:'📌',name:'New Group',items:[{ico:'🔗',name:'Link',url:''}]});saveOfcState();renderPitch()">+ Add Group</div></div>`;
   }
   h+=`</div>`;
 
@@ -994,15 +918,8 @@ function askDelete(id){
   document.getElementById('delTaskName').textContent=t.name;
   document.getElementById('delPopup').classList.add('show');
 }
-function cancelDelete(){document.getElementById('delPopup').classList.remove('show');pendingDeleteId=null;ofcDelTarget=null}
+function cancelDelete(){document.getElementById('delPopup').classList.remove('show');pendingDeleteId=null}
 async function confirmDelete(){
-  // Office QL/App deletes
-  if(ofcDelTarget){
-    if(ofcDelTarget.type==='qlgroup'){ofcQLGroups.splice(ofcDelTarget.idx,1);saveOfcQL()}
-    else if(ofcDelTarget.type==='app'){ofcApps.splice(ofcDelTarget.idx,1);saveOfcApps()}
-    ofcDelTarget=null;document.getElementById('delPopup').classList.remove('show');renderPitch();return;
-  }
-  // Regular task delete
   const id=pendingDeleteId;if(!id)return;
   // Remove from pitch
   pitchSet.delete(id);savePitch();
