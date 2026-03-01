@@ -249,7 +249,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .nudge-x{border:none;background:rgba(255,255,255,.25);color:white;padding:5px 10px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0}
 .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:4px}
 /* Delete confirm popup */
-.del-ov{display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.del-ov{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center}
 .del-ov.show{display:flex;animation:ovIn .3s ease}
 .del-panel{background:var(--bg);border-radius:16px;padding:20px;width:88%;max-width:320px;box-shadow:0 16px 64px rgba(0,0,0,.25);animation:panUp .35s ease;text-align:center}
 .del-icon{font-size:36px;margin-bottom:8px}
@@ -391,10 +391,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-ql-addg{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px}
 
 /* QL overlay (full screen window) */
-.ofc-ql-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+.ofc-ql-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;padding:0}
 .ofc-ql-overlay.show{display:flex;animation:ofcFadeIn .2s ease}
 @keyframes ofcFadeIn{from{opacity:0}to{opacity:1}}
-.ofc-ql-sheet{background:var(--card);border-radius:20px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;padding:20px 16px 24px;animation:alPopIn .3s ease;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.ofc-ql-sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:75vh;overflow-y:auto;padding:20px 16px 32px;animation:ofcSheetUp .3s ease}
+@keyframes ofcSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .ofc-ql-sheet-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .ofc-ql-sheet-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .ofc-ql-sheet-close{border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
@@ -433,10 +434,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* ===== APP LAUNCHER OVERLAY ===== */
 .applaunch-btn{position:fixed;bottom:72px;right:16px;width:42px;height:42px;border-radius:50%;border:none;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.35);z-index:199;transition:all .3s;display:flex;align-items:center;justify-content:center}
 .applaunch-btn:active{transform:scale(.9)}
-.applaunch-ov{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+.applaunch-ov{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center}
 .applaunch-ov.show{display:flex;animation:ofcFadeIn .2s ease}
-.applaunch-sheet{background:var(--card);border-radius:20px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;padding:20px 16px 24px;animation:alPopIn .3s ease;box-shadow:0 24px 64px rgba(0,0,0,.25)}
-@keyframes alPopIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.applaunch-sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;padding:20px 16px 32px;animation:ofcSheetUp .3s ease}
 .applaunch-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .applaunch-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .applaunch-close{border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
@@ -468,19 +468,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .alapp-go{font-size:12px;color:var(--accent);flex-shrink:0}
 .alapp-loc{font-size:7px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0}
 .alapp-loc.all{background:#E5EAFF;color:#3B5BDB}.alapp-loc.office{background:#E5EAFF;color:#3B5BDB}.alapp-loc.home{background:#FFF0E5;color:#E8722A}
-
-/* App launcher edit mode */
-.al-edit-btn{border:none;background:var(--as);padding:3px 10px;border-radius:6px;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:8px}
-.al-edit-row{display:flex;gap:4px;align-items:center;margin-bottom:6px;padding:6px 8px;background:var(--bg);border-radius:8px;border:1px solid var(--as)}
-.al-edit-ico{width:28px;border:1px solid var(--as);border-radius:6px;padding:4px 2px;font-size:11px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;background:white}
-.al-edit-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
-.al-edit-inp:focus{border-color:var(--accent)}
-.al-edit-inp.url{font-size:9px;color:var(--text2)}
-.al-edit-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0;padding:2px}
-.al-edit-del:hover{opacity:1}
-.al-cat-edit{display:flex;gap:4px;align-items:center;margin-bottom:6px}
-.al-add-btn{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:9px;color:var(--text2);cursor:pointer;margin-top:4px;margin-bottom:4px}
-.al-add-btn:hover{background:var(--as);color:var(--accent)}
 
 /* Critical surface */
 .ofc-crit{margin-bottom:14px}
@@ -532,18 +519,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-from{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
 .ofc-from.mgr{background:rgba(220,38,38,.08);color:#DC2626}.ofc-from.ppl{background:rgba(92,124,250,.08);color:#5C7CFA}
 .ofc-empty{text-align:center;padding:16px;font-size:11px;color:var(--text2);opacity:.5}
-
-/* Office task inline edit */
-.ofc-titem-edit{background:var(--bg);border-radius:8px;padding:8px;margin-bottom:6px;animation:ofcSlideD .15s ease}
-.ofc-titem-edit-row{display:flex;gap:4px;margin-bottom:4px}
-.ofc-titem-edit-inp{flex:1;border:1.5px solid var(--as);border-radius:6px;padding:6px 8px;font-family:'DM Sans',sans-serif;font-size:10px;background:white;color:var(--text);outline:none}
-.ofc-titem-edit-inp:focus{border-color:var(--accent)}
-.ofc-titem-edit-sel{border:1.5px solid var(--as);border-radius:6px;padding:5px 6px;font-size:9px;font-family:'DM Sans',sans-serif;background:white;color:var(--text);outline:none;cursor:pointer}
-.ofc-titem-edit-btns{display:flex;gap:4px}
-.ofc-titem-edit-btn{border:none;padding:5px 10px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer}
-.ofc-titem-edit-btn.save{background:var(--accent);color:white}
-.ofc-titem-edit-btn.del{background:#FEF2F2;color:#DC2626}
-.ofc-titem-edit-btn.cancel{background:var(--as);color:var(--text2)}
 @keyframes ofcSlideD{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
@@ -718,14 +693,14 @@ const OFC_BOX={mgr:{ico:'📨',name:'From Manager',color:'#DC2626'},rem:{ico:'�
 // ===== APP DATABASE =====
 // Universal quick tiles (shown on ALL screens)
 let uniTiles=[
-  {id:'cal',ico:'📅',name:'Calendar',url:'https://celeritas7.github.io/Calender_app/',locs:['home','office','outside']},
-  {id:'cost',ico:'💰',name:'Cost Management',url:'https://celeritas7.github.io/Cost_management/',locs:['home','office','outside']},
+  {id:'cal',ico:'📅',name:'Calendar',url:'',locs:['home','office','outside']},
+  {id:'cost',ico:'💰',name:'Cost Management',url:'',locs:['home','office','outside']},
 ];
 // App database — categorized, with sub-categories for Language Study
 let appDB=[
   {id:'general',ico:'🔧',name:'General Purpose',apps:[
-    {id:'a_cal',ico:'📅',name:'Calendar',url:'https://celeritas7.github.io/Calender_app/',locs:['home','office','outside']},
-    {id:'a_cost',ico:'💰',name:'Cost Management',url:'https://celeritas7.github.io/Cost_management/',locs:['home','office','outside']},
+    {id:'a_cal',ico:'📅',name:'Calendar',url:'',locs:['home','office','outside']},
+    {id:'a_cost',ico:'💰',name:'Cost Management',url:'',locs:['home','office','outside']},
   ]},
   {id:'lang',ico:'🌏',name:'Language Study',subs:[
     {id:'lang_jp',ico:'🇯🇵',name:'Japanese',apps:[
@@ -854,79 +829,44 @@ async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps)
 async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,appDB}))}
 
 // ===== APP LAUNCHER =====
-let alEditMode=false;
-let alDelTarget=null; // {type:'alcat'|'alsub'|'alapp', catIdx, subIdx?, appIdx?}
-
 function openAppLaunch(){
   const sheet=document.getElementById('appLaunchSheet');
-  let h=`<div class="applaunch-hd"><div class="applaunch-title">📚 My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn" onclick="alEditMode=!alEditMode;openAppLaunch()">${alEditMode?'✓ Done':'✏️ Edit'}</button><button class="applaunch-close" onclick="closeAppLaunch()">✕</button></div></div>`;
+  let h=`<div class="applaunch-hd"><div class="applaunch-title">📚 My Apps</div><button class="applaunch-close" onclick="closeAppLaunch()">✕</button></div>`;
 
-  appDB.forEach((cat,ci)=>{
-    const isOpen=alOpen[cat.id]===true; // default CLOSED
+  appDB.forEach(cat=>{
+    const isOpen=alOpen[cat.id]!==false; // default open
+    h+=`<div class="alcat"><div class="alcat-hd" onclick="alOpen['${cat.id}']=!${isOpen};openAppLaunch()"><span class="alcat-ico">${cat.ico}</span><span class="alcat-nm">${esc(cat.name)}</span>`;
     const count=cat.apps?cat.apps.length:(cat.subs||[]).reduce((s,sub)=>s+(sub.apps||[]).length,0);
-
-    // Category header
-    h+=`<div class="alcat">`;
-    if(alEditMode){
-      h+=`<div class="al-cat-edit"><input class="al-edit-ico" value="${esc(cat.ico)}" onchange="appDB[${ci}].ico=this.value;saveAppDB()"><input class="al-edit-inp" value="${esc(cat.name)}" style="font-weight:700" onchange="appDB[${ci}].name=this.value;saveAppDB()"><span class="alcat-badge">${count}</span><button class="al-edit-del" onclick="alAskDel('alcat',${ci})" title="Delete category">🗑️</button><span class="alcat-toggle ${isOpen?'open':''}" onclick="alOpen['${cat.id}']=!${isOpen};openAppLaunch()" style="cursor:pointer">▼</span></div>`;
-    } else {
-      h+=`<div class="alcat-hd" onclick="alOpen['${cat.id}']=!${isOpen};openAppLaunch()"><span class="alcat-ico">${cat.ico}</span><span class="alcat-nm">${esc(cat.name)}</span><span class="alcat-badge">${count}</span><span class="alcat-toggle ${isOpen?'open':''}">▼</span></div>`;
-    }
+    h+=`<span class="alcat-badge">${count}</span><span class="alcat-toggle ${isOpen?'open':''}">▼</span></div>`;
     h+=`<div class="alcat-body ${isOpen?'open':''}">`;
 
     if(cat.apps){
-      cat.apps.forEach((a,ai)=>{h+=alEditMode?renderALAppEdit(a,ci,null,ai):renderALApp(a)});
-      if(alEditMode)h+=`<div class="al-add-btn" onclick="appDB[${ci}].apps.push({id:'a_'+Date.now(),ico:'📱',name:'New App',url:''});saveAppDB();openAppLaunch()">+ Add app</div>`;
+      // Flat apps
+      cat.apps.forEach(a=>{h+=renderALApp(a)});
     }
     if(cat.subs){
-      cat.subs.forEach((sub,si)=>{
-        const subOpen=alOpen[sub.id]===true;
-        if(alEditMode){
-          h+=`<div class="alsub"><div class="al-cat-edit" style="padding-left:8px"><input class="al-edit-ico" value="${esc(sub.ico)}" onchange="appDB[${ci}].subs[${si}].ico=this.value;saveAppDB()"><input class="al-edit-inp" value="${esc(sub.name)}" style="font-weight:600" onchange="appDB[${ci}].subs[${si}].name=this.value;saveAppDB()"><span class="alcat-badge">${(sub.apps||[]).length}</span><button class="al-edit-del" onclick="alAskDel('alsub',${ci},${si})" title="Delete sub">🗑️</button><span class="alsub-arr ${subOpen?'open':''}" onclick="alOpen['${sub.id}']=!${subOpen};openAppLaunch()" style="cursor:pointer">▼</span></div>`;
-        } else {
-          h+=`<div class="alsub"><div class="alsub-hd" onclick="event.stopPropagation();alOpen['${sub.id}']=!${subOpen};openAppLaunch()"><span class="alsub-ico">${sub.ico}</span><span class="alsub-nm">${esc(sub.name)}</span><span class="alcat-badge">${(sub.apps||[]).length}</span><span class="alsub-arr ${subOpen?'open':''}">▼</span></div>`;
-        }
+      // Sub-categories with toggles
+      cat.subs.forEach(sub=>{
+        const subOpen=alOpen[sub.id]!==false;
+        h+=`<div class="alsub"><div class="alsub-hd" onclick="event.stopPropagation();alOpen['${sub.id}']=!${subOpen};openAppLaunch()"><span class="alsub-ico">${sub.ico}</span><span class="alsub-nm">${esc(sub.name)}</span><span class="alcat-badge">${(sub.apps||[]).length}</span><span class="alsub-arr ${subOpen?'open':''}">▼</span></div>`;
         h+=`<div class="alsub-body ${subOpen?'open':''}">`;
-        (sub.apps||[]).forEach((a,ai)=>{h+=alEditMode?renderALAppEdit(a,ci,si,ai):renderALApp(a)});
-        if(alEditMode)h+=`<div class="al-add-btn" onclick="appDB[${ci}].subs[${si}].apps.push({id:'a_'+Date.now(),ico:'📱',name:'New App',url:''});saveAppDB();openAppLaunch()">+ Add app</div>`;
+        (sub.apps||[]).forEach(a=>{h+=renderALApp(a)});
         h+=`</div></div>`;
       });
-      if(alEditMode)h+=`<div class="al-add-btn" onclick="appDB[${ci}].subs.push({id:'sub_'+Date.now(),ico:'🏷️',name:'New Sub',apps:[]});saveAppDB();openAppLaunch()">+ Add sub-category</div>`;
     }
     h+=`</div></div>`;
   });
 
-  if(alEditMode){
-    h+=`<div class="al-add-btn" style="margin-top:8px;font-size:10px;font-weight:600" onclick="appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[]});saveAppDB();openAppLaunch()">+ Add Category</div>`;
-  }
-
   sheet.innerHTML=h;
   document.getElementById('appLaunchOv').classList.add('show');
 }
-
 function renderALApp(a){
   const dispUrl=a.url?(a.url.length>35?a.url.slice(0,35)+'…':a.url):'No URL set';
   const hasUrl=a.url&&a.url.trim();
   const locTag=a.locs?`<span class="alapp-loc all">All</span>`:'';
   return`<div class="alapp" onclick="${hasUrl?`window.open('${esc(a.url)}','_blank');closeAppLaunch()`:``}"><div class="alapp-ico">${a.ico}</div><div class="alapp-info"><div class="alapp-nm">${esc(a.name)}</div><div class="alapp-url">${esc(dispUrl)}</div></div>${locTag}${hasUrl?'<span class="alapp-go">↗</span>':''}</div>`;
 }
-
-function renderALAppEdit(a,ci,si,ai){
-  const path=si!=null?`appDB[${ci}].subs[${si}].apps[${ai}]`:`appDB[${ci}].apps[${ai}]`;
-  return`<div class="al-edit-row"><input class="al-edit-ico" value="${esc(a.ico)}" onchange="${path}.ico=this.value;saveAppDB()"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><input class="al-edit-inp" value="${esc(a.name)}" placeholder="App name" onchange="${path}.name=this.value;saveAppDB()"><input class="al-edit-inp url" value="${esc(a.url||'')}" placeholder="https://... (URL)" onchange="${path}.url=this.value;saveAppDB()"></div><button class="al-edit-del" onclick="alAskDel('alapp',${ci},${si!=null?si:'null'},${ai})" title="Delete app">🗑️</button></div>`;
-}
-
-function alAskDel(type,ci,si,ai){
-  let name='';
-  if(type==='alcat')name=appDB[ci].name;
-  else if(type==='alsub')name=appDB[ci].subs[si].name;
-  else if(type==='alapp')name=si!=null?appDB[ci].subs[si].apps[ai].name:appDB[ci].apps[ai].name;
-  alDelTarget={type,ci,si,ai};
-  document.getElementById('delTaskName').textContent=name;
-  document.getElementById('delPopup').classList.add('show');
-}
-
-function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show');alEditMode=false}
+function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show')}
 
 // Universal quick tiles rendering
 function renderUniTiles(){
@@ -1029,38 +969,6 @@ function ofcWorkDays(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=
 // Office task helpers
 function ofcGetList(key){return key==='mgr'?ofcMgrTasks:key==='rem'?ofcReminders:ofcPplTasks}
 function ofcToggleDone(key,id){const l=ofcGetList(key),t=l.find(x=>x.id===id);if(!t)return;if(!t.done){t.done=true;t.doneAt=Date.now()}else{const cd=t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7;if(!cd){t.done=false;t.doneAt=null}}renderPitch()}
-
-// Office task CRUD
-let ofcEditingTask=null; // {key, id}
-let ofcDelTaskTarget=null; // {key, id}
-function ofcAddTask(key){
-  const inp=document.getElementById('ofcAddInp_'+key);if(!inp)return;
-  const name=inp.value.trim();if(!name)return;
-  const list=ofcGetList(key);
-  const newT={id:'ot_'+Date.now(),name,pri:'medium',done:false,doneAt:null};
-  if(key==='mgr'){newT.from='Me';newT.due=''}
-  else if(key==='rem'){newT.time=''}
-  else{newT.from='';newT.role=''}
-  list.push(newT);inp.value='';renderPitch();
-}
-function ofcStartEdit(key,id){ofcEditingTask={key,id};renderPitch()}
-function ofcCancelEdit(){ofcEditingTask=null;renderPitch()}
-function ofcSaveEdit(key,id){
-  const list=ofcGetList(key),t=list.find(x=>x.id===id);if(!t)return;
-  const nameInp=document.getElementById('ofcEd_name_'+id.replace(/\W/g,''));
-  const priSel=document.getElementById('ofcEd_pri_'+id.replace(/\W/g,''));
-  const metaInp=document.getElementById('ofcEd_meta_'+id.replace(/\W/g,''));
-  if(nameInp)t.name=nameInp.value.trim()||t.name;
-  if(priSel)t.pri=priSel.value;
-  if(metaInp){if(key==='mgr')t.due=metaInp.value;else if(key==='rem')t.time=metaInp.value;else t.from=metaInp.value}
-  ofcEditingTask=null;renderPitch();
-}
-function ofcAskDelTask(key,id){
-  const list=ofcGetList(key),t=list.find(x=>x.id===id);if(!t)return;
-  ofcDelTaskTarget={key,id};
-  document.getElementById('delTaskName').textContent=t.name;
-  document.getElementById('delPopup').classList.add('show');
-}
 function ofcCounts(list){const a=list.filter(t=>!t.done);return{crit:a.filter(t=>t.pri==='critical').length,high:a.filter(t=>t.pri==='high').length,total:a.length}}
 function ofcTopPri(){
   const all=[];
@@ -1158,25 +1066,15 @@ function renderOffice(){
   // Expanded panel
   if(ofcOpenBox){
     const m=OFC_BOX[ofcOpenBox],list=ofcGetList(ofcOpenBox);
-    const metaLabel=ofcOpenBox==='mgr'?'Due':ofcOpenBox==='rem'?'Time':'From';
     const metaFn=ofcOpenBox==='mgr'?t=>`<span class="ofc-from mgr">${t.from||''}</span> ${t.due?'Due '+t.due:''}`:ofcOpenBox==='rem'?t=>t.time||'':t=>`<span class="ofc-from ppl">${t.from||''}</span> ${t.role||''}`;
-    const metaVal=ofcOpenBox==='mgr'?t=>t.due||'':ofcOpenBox==='rem'?t=>t.time||'':t=>t.from||'';
     h+=`<div class="ofc-panel"><div class="ofc-panel-hd"><div class="ofc-panel-title"><span style="font-size:18px">${m.ico}</span> ${m.name}</div><button class="ofc-panel-close" onclick="ofcOpenBox='';renderPitch()">✕</button></div>`;
-    h+=`<div class="ofc-box-add"><input class="ofc-box-inp" id="ofcAddInp_${ofcOpenBox}" placeholder="Add task..." onkeydown="if(event.key==='Enter')ofcAddTask('${ofcOpenBox}')"><button class="ofc-box-sub" style="background:${m.color}" onclick="ofcAddTask('${ofcOpenBox}')">+ Add</button></div>`;
+    h+=`<div class="ofc-box-add"><input class="ofc-box-inp" placeholder="Add task..."><button class="ofc-box-sub" style="background:${m.color}">+ Add</button></div>`;
     const groups={};OFC_PRI_ORD.forEach(p=>groups[p]=[]);const cds=[];
     list.forEach(t=>{if(t.done&&t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)>=7)return;if(t.done&&t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7){cds.push(t);return}if(!t.done)groups[t.pri].push(t)});
     let has=false;
     for(const pri of OFC_PRI_ORD){if(!groups[pri].length)continue;has=true;
       h+=`<div class="ofc-pri-grp"><div class="ofc-pri-hd"><span class="ofc-pri-dot" style="background:${OFC_PRI[pri].c}"></span> <span style="color:${OFC_PRI[pri].c}">${OFC_PRI[pri].l} (${groups[pri].length})</span></div>`;
-      groups[pri].forEach(t=>{
-        const isEd=ofcEditingTask&&ofcEditingTask.key===ofcOpenBox&&ofcEditingTask.id===t.id;
-        const sid=t.id.replace(/\W/g,'');
-        if(isEd){
-          h+=`<div class="ofc-titem-edit"><div class="ofc-titem-edit-row"><input class="ofc-titem-edit-inp" id="ofcEd_name_${sid}" value="${esc(t.name)}"><select class="ofc-titem-edit-sel" id="ofcEd_pri_${sid}">${OFC_PRI_ORD.map(p=>`<option value="${p}" ${t.pri===p?'selected':''}>${OFC_PRI[p].l}</option>`).join('')}</select></div><div class="ofc-titem-edit-row"><input class="ofc-titem-edit-inp" id="ofcEd_meta_${sid}" value="${esc(metaVal(t))}" placeholder="${metaLabel}..."></div><div class="ofc-titem-edit-btns"><button class="ofc-titem-edit-btn save" onclick="ofcSaveEdit('${ofcOpenBox}','${t.id}')">Save</button><button class="ofc-titem-edit-btn del" onclick="ofcAskDelTask('${ofcOpenBox}','${t.id}')">🗑️ Delete</button><button class="ofc-titem-edit-btn cancel" onclick="ofcCancelEdit()">Cancel</button></div></div>`;
-        } else {
-          h+=`<div class="ofc-titem"><div class="ofc-titem-cb" onclick="ofcToggleDone('${ofcOpenBox}','${t.id}')"></div><div class="ofc-titem-info" onclick="ofcStartEdit('${ofcOpenBox}','${t.id}')" style="cursor:pointer"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta">${metaFn(t)}</div></div>${ofcPriTag(t.pri)}<button class="ofc-titem-del" onclick="ofcAskDelTask('${ofcOpenBox}','${t.id}')">🗑️</button></div>`;
-        }
-      });
+      groups[pri].forEach(t=>{h+=`<div class="ofc-titem"><div class="ofc-titem-cb" onclick="ofcToggleDone('${ofcOpenBox}','${t.id}')"></div><div class="ofc-titem-info"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta">${metaFn(t)}</div></div>${ofcPriTag(t.pri)}<button class="ofc-titem-del">🗑️</button></div>`});
       h+=`</div>`}
     if(cds.length){has=true;h+=`<div class="ofc-pri-grp"><div class="ofc-pri-hd"><span style="color:#8B5CF6">🔄 Completed (${cds.length})</span></div>`;
       cds.forEach(t=>{const left=Math.max(0,7-Math.floor((Date.now()-t.doneAt)/86400000));h+=`<div class="ofc-titem cooldown"><div class="ofc-titem-cb done"></div><div class="ofc-titem-info"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta" style="color:#8B5CF6">↻ ${left}d</div></div>${ofcPriTag(t.pri)}</div>`});h+=`</div>`}
@@ -1252,27 +1150,13 @@ function askDelete(id){
   document.getElementById('delTaskName').textContent=t.name;
   document.getElementById('delPopup').classList.add('show');
 }
-function cancelDelete(){document.getElementById('delPopup').classList.remove('show');pendingDeleteId=null;ofcDelTarget=null;alDelTarget=null;ofcDelTaskTarget=null}
+function cancelDelete(){document.getElementById('delPopup').classList.remove('show');pendingDeleteId=null;ofcDelTarget=null}
 async function confirmDelete(){
   // Office QL/App deletes
   if(ofcDelTarget){
     if(ofcDelTarget.type==='qlgroup'){ofcQLGroups.splice(ofcDelTarget.idx,1);saveOfcQL()}
     else if(ofcDelTarget.type==='app'){ofcApps.splice(ofcDelTarget.idx,1);saveOfcApps()}
     ofcDelTarget=null;document.getElementById('delPopup').classList.remove('show');renderPitch();return;
-  }
-  // App launcher deletes
-  if(alDelTarget){
-    const{type,ci,si,ai}=alDelTarget;
-    if(type==='alcat'){appDB.splice(ci,1)}
-    else if(type==='alsub'){appDB[ci].subs.splice(si,1)}
-    else if(type==='alapp'){if(si!=null)appDB[ci].subs[si].apps.splice(ai,1);else appDB[ci].apps.splice(ai,1)}
-    saveAppDB();alDelTarget=null;document.getElementById('delPopup').classList.remove('show');openAppLaunch();return;
-  }
-  // Office task deletes
-  if(ofcDelTaskTarget){
-    const{key,id}=ofcDelTaskTarget;const list=ofcGetList(key);
-    const idx=list.findIndex(x=>x.id===id);if(idx>=0)list.splice(idx,1);
-    ofcDelTaskTarget=null;ofcEditingTask=null;document.getElementById('delPopup').classList.remove('show');renderPitch();return;
   }
   // Regular task delete
   const id=pendingDeleteId;if(!id)return;
