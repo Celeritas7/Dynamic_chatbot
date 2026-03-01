@@ -817,7 +817,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -834,6 +834,7 @@ async function loadAll(){
     }catch{};
     if(m.key==='cf_ofc_qlinks')try{ofcQLGroups=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_apps')try{ofcApps=JSON.parse(m.value)}catch{};
+    if(m.key==='cf_ofc_tasks')try{const d=JSON.parse(m.value);if(d.mgr)ofcMgrTasks=d.mgr;if(d.rem)ofcReminders=d.rem;if(d.ppl)ofcPplTasks=d.ppl}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
   });
   // Migrate: ensure uniTiles have URLs (fixes old saves before URLs were added)
@@ -857,6 +858,7 @@ async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeS
 async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK()}))}
 async function saveOfcQL(){await memSave('cf_ofc_qlinks',JSON.stringify(ofcQLGroups))}
 async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps))}
+async function saveOfcTasks(){await memSave('cf_ofc_tasks',JSON.stringify({mgr:ofcMgrTasks,rem:ofcReminders,ppl:ofcPplTasks}))}
 async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,appDB}))}
 
 // ===== APP LAUNCHER =====
@@ -1034,7 +1036,7 @@ function ofcWorkDays(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=
 
 // Office task helpers
 function ofcGetList(key){return key==='mgr'?ofcMgrTasks:key==='rem'?ofcReminders:ofcPplTasks}
-function ofcToggleDone(key,id){const l=ofcGetList(key),t=l.find(x=>x.id===id);if(!t)return;if(!t.done){t.done=true;t.doneAt=Date.now()}else{const cd=t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7;if(!cd){t.done=false;t.doneAt=null}}renderPitch()}
+function ofcToggleDone(key,id){const l=ofcGetList(key),t=l.find(x=>x.id===id);if(!t)return;if(!t.done){t.done=true;t.doneAt=Date.now()}else{const cd=t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7;if(!cd){t.done=false;t.doneAt=null}}saveOfcTasks();renderPitch()}
 
 // Office task CRUD
 let ofcEditingTask=null; // {key, id}
@@ -1047,7 +1049,7 @@ function ofcAddTask(key){
   if(key==='mgr'){newT.from='Me';newT.due=''}
   else if(key==='rem'){newT.time=''}
   else{newT.from='';newT.role=''}
-  list.push(newT);inp.value='';renderPitch();
+  list.push(newT);inp.value='';saveOfcTasks();renderPitch();
 }
 function ofcStartEdit(key,id){ofcEditingTask={key,id};renderPitch()}
 function ofcCancelEdit(){ofcEditingTask=null;renderPitch()}
@@ -1059,7 +1061,7 @@ function ofcSaveEdit(key,id){
   if(nameInp)t.name=nameInp.value.trim()||t.name;
   if(priSel)t.pri=priSel.value;
   if(metaInp){if(key==='mgr')t.due=metaInp.value;else if(key==='rem')t.time=metaInp.value;else t.from=metaInp.value}
-  ofcEditingTask=null;renderPitch();
+  ofcEditingTask=null;saveOfcTasks();renderPitch();
 }
 function ofcAskDelTask(key,id){
   const list=ofcGetList(key),t=list.find(x=>x.id===id);if(!t)return;
@@ -1278,7 +1280,7 @@ async function confirmDelete(){
   if(ofcDelTaskTarget){
     const{key,id}=ofcDelTaskTarget;const list=ofcGetList(key);
     const idx=list.findIndex(x=>x.id===id);if(idx>=0)list.splice(idx,1);
-    ofcDelTaskTarget=null;ofcEditingTask=null;document.getElementById('delPopup').classList.remove('show');renderPitch();return;
+    saveOfcTasks();ofcDelTaskTarget=null;ofcEditingTask=null;document.getElementById('delPopup').classList.remove('show');renderPitch();return;
   }
   // Regular task delete
   const id=pendingDeleteId;if(!id)return;
