@@ -835,7 +835,13 @@ async function loadAll(){
     if(m.key==='cf_ofc_qlinks')try{ofcQLGroups=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_apps')try{ofcApps=JSON.parse(m.value)}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
-  });
+  }
+  // Migrate: ensure uniTiles have URLs (fixes old saves before URLs were added)
+  const defaultUrls={cal:'https://celeritas7.github.io/Calender_app/',cost:'https://celeritas7.github.io/Cost_management/'};
+  let migrated=false;
+  uniTiles.forEach(t=>{if(defaultUrls[t.id]&&!t.url){t.url=defaultUrls[t.id];migrated=true}});
+  appDB.forEach(cat=>{(cat.apps||[]).forEach(a=>{if(a.id==='a_cal'&&!a.url){a.url=defaultUrls.cal;migrated=true}if(a.id==='a_cost'&&!a.url){a.url=defaultUrls.cost;migrated=true}})});
+  if(migrated)saveAppDB();
 }
 async function memSave(key,val){
   const now=new Date().toISOString();try{const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key',key).maybeSingle();

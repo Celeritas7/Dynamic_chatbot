@@ -391,10 +391,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-ql-addg{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px}
 
 /* QL overlay (full screen window) */
-.ofc-ql-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+.ofc-ql-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;padding:0}
 .ofc-ql-overlay.show{display:flex;animation:ofcFadeIn .2s ease}
 @keyframes ofcFadeIn{from{opacity:0}to{opacity:1}}
-.ofc-ql-sheet{background:var(--card);border-radius:20px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;padding:20px 16px 24px;animation:alPopIn .3s ease;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.ofc-ql-sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:75vh;overflow-y:auto;padding:20px 16px 32px;animation:ofcSheetUp .3s ease}
+@keyframes ofcSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .ofc-ql-sheet-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .ofc-ql-sheet-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .ofc-ql-sheet-close{border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
@@ -532,18 +533,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-from{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
 .ofc-from.mgr{background:rgba(220,38,38,.08);color:#DC2626}.ofc-from.ppl{background:rgba(92,124,250,.08);color:#5C7CFA}
 .ofc-empty{text-align:center;padding:16px;font-size:11px;color:var(--text2);opacity:.5}
-
-/* Office task inline edit */
-.ofc-titem-edit{background:var(--bg);border-radius:8px;padding:8px;margin-bottom:6px;animation:ofcSlideD .15s ease}
-.ofc-titem-edit-row{display:flex;gap:4px;margin-bottom:4px}
-.ofc-titem-edit-inp{flex:1;border:1.5px solid var(--as);border-radius:6px;padding:6px 8px;font-family:'DM Sans',sans-serif;font-size:10px;background:white;color:var(--text);outline:none}
-.ofc-titem-edit-inp:focus{border-color:var(--accent)}
-.ofc-titem-edit-sel{border:1.5px solid var(--as);border-radius:6px;padding:5px 6px;font-size:9px;font-family:'DM Sans',sans-serif;background:white;color:var(--text);outline:none;cursor:pointer}
-.ofc-titem-edit-btns{display:flex;gap:4px}
-.ofc-titem-edit-btn{border:none;padding:5px 10px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;cursor:pointer}
-.ofc-titem-edit-btn.save{background:var(--accent);color:white}
-.ofc-titem-edit-btn.del{background:#FEF2F2;color:#DC2626}
-.ofc-titem-edit-btn.cancel{background:var(--as);color:var(--text2)}
 @keyframes ofcSlideD{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
@@ -718,14 +707,14 @@ const OFC_BOX={mgr:{ico:'📨',name:'From Manager',color:'#DC2626'},rem:{ico:'�
 // ===== APP DATABASE =====
 // Universal quick tiles (shown on ALL screens)
 let uniTiles=[
-  {id:'cal',ico:'📅',name:'Calendar',url:'https://celeritas7.github.io/Calender_app/',locs:['home','office','outside']},
-  {id:'cost',ico:'💰',name:'Cost Management',url:'https://celeritas7.github.io/Cost_management/',locs:['home','office','outside']},
+  {id:'cal',ico:'📅',name:'Calendar',url:'',locs:['home','office','outside']},
+  {id:'cost',ico:'💰',name:'Cost Management',url:'',locs:['home','office','outside']},
 ];
 // App database — categorized, with sub-categories for Language Study
 let appDB=[
   {id:'general',ico:'🔧',name:'General Purpose',apps:[
-    {id:'a_cal',ico:'📅',name:'Calendar',url:'https://celeritas7.github.io/Calender_app/',locs:['home','office','outside']},
-    {id:'a_cost',ico:'💰',name:'Cost Management',url:'https://celeritas7.github.io/Cost_management/',locs:['home','office','outside']},
+    {id:'a_cal',ico:'📅',name:'Calendar',url:'',locs:['home','office','outside']},
+    {id:'a_cost',ico:'💰',name:'Cost Management',url:'',locs:['home','office','outside']},
   ]},
   {id:'lang',ico:'🌏',name:'Language Study',subs:[
     {id:'lang_jp',ico:'🇯🇵',name:'Japanese',apps:[
@@ -1029,38 +1018,6 @@ function ofcWorkDays(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=
 // Office task helpers
 function ofcGetList(key){return key==='mgr'?ofcMgrTasks:key==='rem'?ofcReminders:ofcPplTasks}
 function ofcToggleDone(key,id){const l=ofcGetList(key),t=l.find(x=>x.id===id);if(!t)return;if(!t.done){t.done=true;t.doneAt=Date.now()}else{const cd=t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7;if(!cd){t.done=false;t.doneAt=null}}renderPitch()}
-
-// Office task CRUD
-let ofcEditingTask=null; // {key, id}
-let ofcDelTaskTarget=null; // {key, id}
-function ofcAddTask(key){
-  const inp=document.getElementById('ofcAddInp_'+key);if(!inp)return;
-  const name=inp.value.trim();if(!name)return;
-  const list=ofcGetList(key);
-  const newT={id:'ot_'+Date.now(),name,pri:'medium',done:false,doneAt:null};
-  if(key==='mgr'){newT.from='Me';newT.due=''}
-  else if(key==='rem'){newT.time=''}
-  else{newT.from='';newT.role=''}
-  list.push(newT);inp.value='';renderPitch();
-}
-function ofcStartEdit(key,id){ofcEditingTask={key,id};renderPitch()}
-function ofcCancelEdit(){ofcEditingTask=null;renderPitch()}
-function ofcSaveEdit(key,id){
-  const list=ofcGetList(key),t=list.find(x=>x.id===id);if(!t)return;
-  const nameInp=document.getElementById('ofcEd_name_'+id.replace(/\W/g,''));
-  const priSel=document.getElementById('ofcEd_pri_'+id.replace(/\W/g,''));
-  const metaInp=document.getElementById('ofcEd_meta_'+id.replace(/\W/g,''));
-  if(nameInp)t.name=nameInp.value.trim()||t.name;
-  if(priSel)t.pri=priSel.value;
-  if(metaInp){if(key==='mgr')t.due=metaInp.value;else if(key==='rem')t.time=metaInp.value;else t.from=metaInp.value}
-  ofcEditingTask=null;renderPitch();
-}
-function ofcAskDelTask(key,id){
-  const list=ofcGetList(key),t=list.find(x=>x.id===id);if(!t)return;
-  ofcDelTaskTarget={key,id};
-  document.getElementById('delTaskName').textContent=t.name;
-  document.getElementById('delPopup').classList.add('show');
-}
 function ofcCounts(list){const a=list.filter(t=>!t.done);return{crit:a.filter(t=>t.pri==='critical').length,high:a.filter(t=>t.pri==='high').length,total:a.length}}
 function ofcTopPri(){
   const all=[];
@@ -1158,25 +1115,15 @@ function renderOffice(){
   // Expanded panel
   if(ofcOpenBox){
     const m=OFC_BOX[ofcOpenBox],list=ofcGetList(ofcOpenBox);
-    const metaLabel=ofcOpenBox==='mgr'?'Due':ofcOpenBox==='rem'?'Time':'From';
     const metaFn=ofcOpenBox==='mgr'?t=>`<span class="ofc-from mgr">${t.from||''}</span> ${t.due?'Due '+t.due:''}`:ofcOpenBox==='rem'?t=>t.time||'':t=>`<span class="ofc-from ppl">${t.from||''}</span> ${t.role||''}`;
-    const metaVal=ofcOpenBox==='mgr'?t=>t.due||'':ofcOpenBox==='rem'?t=>t.time||'':t=>t.from||'';
     h+=`<div class="ofc-panel"><div class="ofc-panel-hd"><div class="ofc-panel-title"><span style="font-size:18px">${m.ico}</span> ${m.name}</div><button class="ofc-panel-close" onclick="ofcOpenBox='';renderPitch()">✕</button></div>`;
-    h+=`<div class="ofc-box-add"><input class="ofc-box-inp" id="ofcAddInp_${ofcOpenBox}" placeholder="Add task..." onkeydown="if(event.key==='Enter')ofcAddTask('${ofcOpenBox}')"><button class="ofc-box-sub" style="background:${m.color}" onclick="ofcAddTask('${ofcOpenBox}')">+ Add</button></div>`;
+    h+=`<div class="ofc-box-add"><input class="ofc-box-inp" placeholder="Add task..."><button class="ofc-box-sub" style="background:${m.color}">+ Add</button></div>`;
     const groups={};OFC_PRI_ORD.forEach(p=>groups[p]=[]);const cds=[];
     list.forEach(t=>{if(t.done&&t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)>=7)return;if(t.done&&t.doneAt&&Math.floor((Date.now()-t.doneAt)/86400000)<7){cds.push(t);return}if(!t.done)groups[t.pri].push(t)});
     let has=false;
     for(const pri of OFC_PRI_ORD){if(!groups[pri].length)continue;has=true;
       h+=`<div class="ofc-pri-grp"><div class="ofc-pri-hd"><span class="ofc-pri-dot" style="background:${OFC_PRI[pri].c}"></span> <span style="color:${OFC_PRI[pri].c}">${OFC_PRI[pri].l} (${groups[pri].length})</span></div>`;
-      groups[pri].forEach(t=>{
-        const isEd=ofcEditingTask&&ofcEditingTask.key===ofcOpenBox&&ofcEditingTask.id===t.id;
-        const sid=t.id.replace(/\W/g,'');
-        if(isEd){
-          h+=`<div class="ofc-titem-edit"><div class="ofc-titem-edit-row"><input class="ofc-titem-edit-inp" id="ofcEd_name_${sid}" value="${esc(t.name)}"><select class="ofc-titem-edit-sel" id="ofcEd_pri_${sid}">${OFC_PRI_ORD.map(p=>`<option value="${p}" ${t.pri===p?'selected':''}>${OFC_PRI[p].l}</option>`).join('')}</select></div><div class="ofc-titem-edit-row"><input class="ofc-titem-edit-inp" id="ofcEd_meta_${sid}" value="${esc(metaVal(t))}" placeholder="${metaLabel}..."></div><div class="ofc-titem-edit-btns"><button class="ofc-titem-edit-btn save" onclick="ofcSaveEdit('${ofcOpenBox}','${t.id}')">Save</button><button class="ofc-titem-edit-btn del" onclick="ofcAskDelTask('${ofcOpenBox}','${t.id}')">🗑️ Delete</button><button class="ofc-titem-edit-btn cancel" onclick="ofcCancelEdit()">Cancel</button></div></div>`;
-        } else {
-          h+=`<div class="ofc-titem"><div class="ofc-titem-cb" onclick="ofcToggleDone('${ofcOpenBox}','${t.id}')"></div><div class="ofc-titem-info" onclick="ofcStartEdit('${ofcOpenBox}','${t.id}')" style="cursor:pointer"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta">${metaFn(t)}</div></div>${ofcPriTag(t.pri)}<button class="ofc-titem-del" onclick="ofcAskDelTask('${ofcOpenBox}','${t.id}')">🗑️</button></div>`;
-        }
-      });
+      groups[pri].forEach(t=>{h+=`<div class="ofc-titem"><div class="ofc-titem-cb" onclick="ofcToggleDone('${ofcOpenBox}','${t.id}')"></div><div class="ofc-titem-info"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta">${metaFn(t)}</div></div>${ofcPriTag(t.pri)}<button class="ofc-titem-del">🗑️</button></div>`});
       h+=`</div>`}
     if(cds.length){has=true;h+=`<div class="ofc-pri-grp"><div class="ofc-pri-hd"><span style="color:#8B5CF6">🔄 Completed (${cds.length})</span></div>`;
       cds.forEach(t=>{const left=Math.max(0,7-Math.floor((Date.now()-t.doneAt)/86400000));h+=`<div class="ofc-titem cooldown"><div class="ofc-titem-cb done"></div><div class="ofc-titem-info"><div class="ofc-titem-nm">${esc(t.name)}</div><div class="ofc-titem-meta" style="color:#8B5CF6">↻ ${left}d</div></div>${ofcPriTag(t.pri)}</div>`});h+=`</div>`}
@@ -1252,7 +1199,7 @@ function askDelete(id){
   document.getElementById('delTaskName').textContent=t.name;
   document.getElementById('delPopup').classList.add('show');
 }
-function cancelDelete(){document.getElementById('delPopup').classList.remove('show');pendingDeleteId=null;ofcDelTarget=null;alDelTarget=null;ofcDelTaskTarget=null}
+function cancelDelete(){document.getElementById('delPopup').classList.remove('show');pendingDeleteId=null;ofcDelTarget=null;alDelTarget=null}
 async function confirmDelete(){
   // Office QL/App deletes
   if(ofcDelTarget){
@@ -1267,12 +1214,6 @@ async function confirmDelete(){
     else if(type==='alsub'){appDB[ci].subs.splice(si,1)}
     else if(type==='alapp'){if(si!=null)appDB[ci].subs[si].apps.splice(ai,1);else appDB[ci].apps.splice(ai,1)}
     saveAppDB();alDelTarget=null;document.getElementById('delPopup').classList.remove('show');openAppLaunch();return;
-  }
-  // Office task deletes
-  if(ofcDelTaskTarget){
-    const{key,id}=ofcDelTaskTarget;const list=ofcGetList(key);
-    const idx=list.findIndex(x=>x.id===id);if(idx>=0)list.splice(idx,1);
-    ofcDelTaskTarget=null;ofcEditingTask=null;document.getElementById('delPopup').classList.remove('show');renderPitch();return;
   }
   // Regular task delete
   const id=pendingDeleteId;if(!id)return;
