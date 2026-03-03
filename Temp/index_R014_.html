@@ -306,22 +306,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-bl-btn.confirm{background:#059669;color:white}.ofc-bl-btn.confirm:active{transform:scale(.95)}
 .ofc-bl-btn.dim{background:rgba(255,255,255,.1);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.1)}
 .ofc-bl-btn.ready{background:#059669!important;color:white!important;border-color:#059669!important}
-
-/* Blocker gear/edit */
-.ofc-bl-gear{position:absolute;top:16px;right:16px;border:none;background:rgba(255,255,255,.15);width:32px;height:32px;border-radius:10px;font-size:14px;cursor:pointer;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center}
-.ofc-bl-gear:active{background:rgba(255,255,255,.3)}
-.ofc-bl-edit-ov{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
-.ofc-bl-edit-ov.show{display:flex}
-.ofc-bl-edit-panel{background:var(--card);border-radius:20px;width:100%;max-width:440px;max-height:80vh;overflow-y:auto;padding:20px 16px;box-shadow:0 24px 64px rgba(0,0,0,.3)}
-.ofc-bl-edit-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.ofc-bl-edit-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700}
-.ofc-bl-edit-close{border:none;background:var(--as);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ofc-bl-edit-item{background:var(--bg);border-radius:10px;padding:10px;margin-bottom:8px}
-.ofc-bl-edit-row{display:flex;gap:4px;margin-bottom:4px;align-items:center}
-.ofc-bl-edit-ico{width:30px;border:1px solid var(--as);border-radius:6px;padding:5px 2px;font-size:12px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;background:white}
-.ofc-bl-edit-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:6px 8px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
-.ofc-bl-edit-inp:focus{border-color:var(--accent)}
-.ofc-bl-edit-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.5;flex-shrink:0}
 .ofc-bl-actions{display:flex;gap:8px;width:100%;max-width:360px;margin-top:8px}
 .ofc-bl-actions .ofc-bl-btn{flex:1;padding:10px;text-align:center;cursor:pointer}
 .ofc-bl-hint{font-size:10px;color:rgba(255,255,255,.3);margin-top:24px}
@@ -660,28 +644,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 <button class="applaunch-btn" id="appLaunchBtn" onclick="openAppLaunch()" style="display:none" title="My Apps">📚</button>
 
-<!-- BLOCKER LINK EDITOR -->
-<div class="ofc-bl-edit-ov" id="ofcBlEditOv" onclick="if(event.target===this)ofcCloseBlEdit()">
-  <div class="ofc-bl-edit-panel" id="ofcBlEditPanel"></div>
-</div>
-
 <!-- OFFICE BLOCKERS -->
 <div class="ofc-blocker morning" id="ofcMorning">
   <div class="ofc-bl-icon">🌅</div><div class="ofc-bl-title">Good Morning!</div>
   <div class="ofc-bl-sub">Complete your daily check-in to unlock the app.</div>
-  <div id="ofcBlMorningLinks"></div>
+  <div class="ofc-bl-card"><div class="ofc-bl-card-ico">🔐</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Daily Check-in Entry</div><div class="ofc-bl-card-desc">Open login site and mark attendance</div></div><button class="ofc-bl-btn go" onclick="window.open(ofcLinks.checkin||'#','_blank')">Open ↗</button></div>
   <div class="ofc-bl-card"><div class="ofc-bl-card-ico">✅</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Confirm check-in</div><div class="ofc-bl-card-desc">I've completed my check-in entry</div></div><button class="ofc-bl-btn confirm" onclick="ofcDoCheckin()">Check In ✓</button></div>
   <div class="ofc-bl-hint">⚠️ App locked until check-in</div>
-  <button class="ofc-bl-gear" onclick="ofcEditBlockerLinks('morning')">⚙️</button>
 </div>
 <div class="ofc-blocker evening" id="ofcEvening">
   <div class="ofc-bl-icon">🌙</div><div class="ofc-bl-title">Before You Leave</div>
   <div class="ofc-bl-sub">Complete both tasks. Reappears every 15 min until done.</div>
-  <div id="ofcBlEveningLinks"></div>
+  <div class="ofc-bl-card" id="ofcBlCO"><div class="ofc-bl-card-ico">🔐</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Daily Check-out Entry</div><div class="ofc-bl-card-desc">Open login and mark departure</div></div><button class="ofc-bl-btn go" onclick="window.open(ofcLinks.checkin||'#','_blank')">Open ↗</button></div>
+  <div class="ofc-bl-card" id="ofcBlTS"><div class="ofc-bl-card-ico">📋</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Daily Timesheet Entry</div><div class="ofc-bl-card-desc">Log today's hours</div></div><button class="ofc-bl-btn go" onclick="window.open(ofcLinks.timesheet||'#','_blank')">Open ↗</button></div>
   <div class="ofc-bl-actions"><button class="ofc-bl-btn dim" id="ofcEvBtn0" onclick="ofcEvMark(0)">✓ Checkout done</button><button class="ofc-bl-btn dim" id="ofcEvBtn1" onclick="ofcEvMark(1)">✓ Timesheet done</button></div>
-  <div class="ofc-bl-hint">⚠️ Complete both to stop reminders</div>
-  <button class="ofc-bl-gear" onclick="ofcEditBlockerLinks('evening')">⚙️</button>
-  <button class="ofc-bl-btn dim" style="margin-top:8px;width:100%;max-width:360px" onclick="ofcEvSkip()">Still working — remind me in 15 min</button>
+  <div class="ofc-bl-hint" id="ofcEvHint">⚠️ Complete both to stop reminders</div>
+  <button class="ofc-bl-skip" onclick="ofcEvSkip()">Still working — remind me in 15 min</button>
 </div>
 
 <script>
@@ -707,13 +685,7 @@ let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weeke
 let ofcCheckedIn=false, ofcCheckoutDone=false, ofcTimesheetDone=false, ofcFreeeDone=false;
 let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false;
 let ofcEvDismissedAt=null, ofcEvMarks=[false,false];
-let ofcBlLinks=[
-  {id:'bl_checkin',ico:'🔐',name:'Check-in Entry',desc:'Open login and mark attendance',url:'https://id.jobcan.jp/users/sign_in',screen:'morning'},
-  {id:'bl_checkout',ico:'🔐',name:'Check-out Entry',desc:'Open login and mark departure',url:'https://id.jobcan.jp/users/sign_in',screen:'evening'},
-  {id:'bl_timesheet',ico:'📋',name:'Timesheet Entry',desc:'Log todays hours',url:'',screen:'evening'},
-  {id:'bl_freee',ico:'💴',name:'Freee (Transport)',desc:'Monthly reimbursement',url:'https://freee.co.jp',screen:'evening'},
-];
-const ofcLinks={get checkin(){return(ofcBlLinks.find(l=>l.id==='bl_checkin')||{}).url||''},get freee(){return(ofcBlLinks.find(l=>l.id==='bl_freee')||{}).url||''},get timesheet(){return(ofcBlLinks.find(l=>l.id==='bl_timesheet')||{}).url||''}};
+const ofcLinks={checkin:'https://id.jobcan.jp/users/sign_in',freee:'https://freee.co.jp',timesheet:''};
 let ofcQLGroups=[
   {id:'login',ico:'🔐',name:'Check-in / Timesheet',items:[
     {ico:'🔐',name:'Check-in Login',url:''},
@@ -859,7 +831,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -877,7 +849,6 @@ async function loadAll(){
     if(m.key==='cf_ofc_qlinks')try{ofcQLGroups=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_apps')try{ofcApps=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_tasks')try{const d=JSON.parse(m.value);if(d.mgr)ofcMgrTasks=d.mgr;if(d.rem)ofcReminders=d.rem;if(d.ppl)ofcPplTasks=d.ppl}catch{};
-    if(m.key==='cf_ofc_bl_links')try{ofcBlLinks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
   });
   // Migrate: ensure uniTiles have URLs (fixes old saves before URLs were added)
@@ -1035,38 +1006,11 @@ function ofcShouldEvening(){
 }
 function ofcUpdateBlockers(){
   const mE=document.getElementById('ofcMorning'),eE=document.getElementById('ofcEvening');
-  if(ofcShouldMorning()){mE.classList.add('show');eE.classList.remove('show');ofcRenderBlLinks()}
-  else if(ofcShouldEvening()){mE.classList.remove('show');eE.classList.add('show');ofcRenderBlLinks();ofcResetEvUI()}
+  if(ofcShouldMorning()){mE.classList.add('show');eE.classList.remove('show')}
+  else if(ofcShouldEvening()){mE.classList.remove('show');eE.classList.add('show');ofcResetEvUI()}
   else{mE.classList.remove('show');eE.classList.remove('show')}
 }
 function ofcDoCheckin(){ofcCheckedIn=true;saveOfcState();ofcUpdateBlockers();renderPitch()}
-
-// Save blocker links
-async function saveBlLinks(){await memSave('cf_ofc_bl_links',JSON.stringify(ofcBlLinks))}
-
-// Render dynamic link cards into blocker screens
-function ofcRenderBlLinks(){
-  const mEl=document.getElementById('ofcBlMorningLinks');
-  const eEl=document.getElementById('ofcBlEveningLinks');
-  if(mEl){let h='';ofcBlLinks.filter(l=>l.screen==='morning').forEach(l=>{const hasUrl=l.url&&l.url.trim();h+='<div class="ofc-bl-card"><div class="ofc-bl-card-ico">'+l.ico+'</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">'+esc(l.name)+'</div><div class="ofc-bl-card-desc">'+esc(l.desc)+'</div></div>'+(hasUrl?'<button class="ofc-bl-btn go" onclick="window.open(\''+esc(l.url)+'\',\'_blank\')">Open &#8599;</button>':'<span style="font-size:9px;color:rgba(255,255,255,.4)">No URL</span>')+'</div>'});mEl.innerHTML=h}
-  if(eEl){let h='';ofcBlLinks.filter(l=>l.screen==='evening').forEach(l=>{const hasUrl=l.url&&l.url.trim();h+='<div class="ofc-bl-card"><div class="ofc-bl-card-ico">'+l.ico+'</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">'+esc(l.name)+'</div><div class="ofc-bl-card-desc">'+esc(l.desc)+'</div></div>'+(hasUrl?'<button class="ofc-bl-btn go" onclick="window.open(\''+esc(l.url)+'\',\'_blank\')">Open &#8599;</button>':'<span style="font-size:9px;color:rgba(255,255,255,.4)">No URL</span>')+'</div>'});eEl.innerHTML=h}
-}
-
-// Edit blocker links overlay
-function ofcEditBlockerLinks(screen){
-  const panel=document.getElementById('ofcBlEditPanel');
-  const title=screen==='morning'?'Morning Links':'Evening Links';
-  const ico=screen==='morning'?'&#127749;':'&#127769;';
-  let h='<div class="ofc-bl-edit-hd"><div class="ofc-bl-edit-title">'+ico+' '+title+'</div><button class="ofc-bl-edit-close" onclick="ofcCloseBlEdit()">&#10005;</button></div>';
-  ofcBlLinks.forEach(function(l,i){
-    if(l.screen!==screen)return;
-    h+='<div class="ofc-bl-edit-item"><div class="ofc-bl-edit-row"><input class="ofc-bl-edit-ico" value="'+esc(l.ico)+'" onchange="ofcBlLinks['+i+'].ico=this.value;saveBlLinks();ofcRenderBlLinks()"><input class="ofc-bl-edit-inp" value="'+esc(l.name)+'" placeholder="Name" onchange="ofcBlLinks['+i+'].name=this.value;saveBlLinks();ofcRenderBlLinks()"><button class="ofc-bl-edit-del" onclick="ofcBlLinks.splice('+i+',1);saveBlLinks();ofcRenderBlLinks();ofcEditBlockerLinks(\''+screen+'\')">&#128465;</button></div><div class="ofc-bl-edit-row"><input class="ofc-bl-edit-inp" value="'+esc(l.desc||'')+'" placeholder="Description" onchange="ofcBlLinks['+i+'].desc=this.value;saveBlLinks()"></div><div class="ofc-bl-edit-row"><input class="ofc-bl-edit-inp" value="'+esc(l.url||'')+'" placeholder="https://... (URL)" style="font-size:9px" onchange="ofcBlLinks['+i+'].url=this.value;saveBlLinks();ofcRenderBlLinks()"></div></div>';
-  });
-  h+='<div style="border:1.5px dashed var(--as);border-radius:8px;padding:8px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:4px" onclick="ofcBlLinks.push({id:\'bl_\'+Date.now(),ico:\'&#128279;\',name:\'New Link\',desc:\'\',url:\'\',screen:\''+screen+'\'});saveBlLinks();ofcRenderBlLinks();ofcEditBlockerLinks(\''+screen+'\')">+ Add Link</div>';
-  panel.innerHTML=h;
-  document.getElementById('ofcBlEditOv').classList.add('show');
-}
-function ofcCloseBlEdit(){document.getElementById('ofcBlEditOv').classList.remove('show')}
 function ofcEvMark(i){
   ofcEvMarks[i]=true;const btn=document.getElementById('ofcEvBtn'+i);btn.className='ofc-bl-btn ready';btn.textContent='✓ Done!';
   document.getElementById(i===0?'ofcBlCO':'ofcBlTS').classList.add('done');
