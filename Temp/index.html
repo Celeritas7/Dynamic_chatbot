@@ -581,30 +581,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="regen-panel">
     <div class="regen-head">
       <span style="font-size:20px">✅</span>
-      <div><div class="regen-title" id="regenTaskName">Task</div><div class="regen-sub">Regenerate after how long?</div></div>
+      <div><div class="regen-title" id="regenTaskName">Task</div><div class="regen-sub">Regenerate after how many days?</div></div>
     </div>
     <div class="regen-cat-info">Category default: <strong id="regenCatDefault">not set</strong></div>
-    <div style="font-size:9px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⏱ Hours</div>
     <div class="regen-chips">
-      <div class="regen-chip" data-h="4" onclick="selectRegenHours(4)">4 hours</div>
-      <div class="regen-chip" data-h="8" onclick="selectRegenHours(8)">8 hours</div>
-      <div class="regen-chip" data-h="12" onclick="selectRegenHours(12)">12 hours</div>
+      <div class="regen-chip" data-d="1" onclick="selectRegenPreset(1)">Daily</div>
+      <div class="regen-chip" data-d="3" onclick="selectRegenPreset(3)">3 days</div>
+      <div class="regen-chip" data-d="7" onclick="selectRegenPreset(7)">Weekly</div>
+      <div class="regen-chip" data-d="14" onclick="selectRegenPreset(14)">2 weeks</div>
+      <div class="regen-chip" data-d="30" onclick="selectRegenPreset(30)">Monthly</div>
     </div>
-    <div style="font-size:9px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;margin-top:6px">📅 Days</div>
-    <div class="regen-chips">
-      <div class="regen-chip" data-h="24" onclick="selectRegenHours(24)">Daily</div>
-      <div class="regen-chip" data-h="72" onclick="selectRegenHours(72)">3 days</div>
-      <div class="regen-chip" data-h="168" onclick="selectRegenHours(168)">Weekly</div>
-      <div class="regen-chip" data-h="336" onclick="selectRegenHours(336)">2 weeks</div>
-      <div class="regen-chip" data-h="720" onclick="selectRegenHours(720)">Monthly</div>
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:12px;margin-top:8px">
-      <input class="regen-custom" id="regenCustom" type="number" min="1" placeholder="Custom..." style="margin-bottom:0" oninput="document.querySelectorAll('.regen-chip').forEach(c=>c.classList.remove('active'))">
-      <select id="regenUnit" style="border:1.5px solid var(--as);border-radius:10px;padding:8px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--card);color:var(--text);outline:none;cursor:pointer;min-width:70px">
-        <option value="h">Hours</option>
-        <option value="d" selected>Days</option>
-      </select>
-    </div>
+    <input class="regen-custom" id="regenCustom" type="number" min="1" placeholder="Custom days..." oninput="document.querySelectorAll('.regen-chip').forEach(c=>c.classList.remove('active'))">
     <div class="regen-btns">
       <button class="regen-btn cancel" onclick="closeRegenPopup()">Cancel</button>
       <button class="regen-btn done" onclick="confirmRegen()">✓ Mark Done</button>
@@ -685,7 +672,7 @@ let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weeke
 let ofcCheckedIn=false, ofcCheckoutDone=false, ofcTimesheetDone=false, ofcFreeeDone=false;
 let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false;
 let ofcEvDismissedAt=null, ofcEvMarks=[false,false];
-const ofcLinks={checkin:'https://id.jobcan.jp/users/sign_in',freee:'https://freee.co.jp',timesheet:''};
+const ofcLinks={checkin:'',freee:'https://freee.co.jp',timesheet:''};
 let ofcQLGroups=[
   {id:'login',ico:'🔐',name:'Check-in / Timesheet',items:[
     {ico:'🔐',name:'Check-in Login',url:''},
@@ -792,18 +779,17 @@ function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.
 function canPitch(t){if(isInCooldown(t))return false;const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
 
 // Regen helpers
-function getRegenHours(t){const r=regenTasks[t.id];if(r&&r.hours!=null)return r.hours;if(r&&r.days!=null)return r.days*24;const cat=tCategory(t);const cd=regenDefaults[cat];if(cd!=null)return cd>=1&&cd<=60?cd*24:cd;return null}
-function isInCooldown(t){if(t.status!=='done')return false;const r=regenTasks[t.id];if(!r||!r.done_at)return false;const hrs=getRegenHours(t);if(hrs==null)return false;const doneDate=new Date(r.done_at);const now=new Date();const diffH=(now-doneDate)/(1000*60*60);return diffH<hrs}
-function cooldownLeft(t){const r=regenTasks[t.id];if(!r||!r.done_at)return{v:0,u:'h'};const hrs=getRegenHours(t);if(hrs==null)return{v:0,u:'h'};const doneDate=new Date(r.done_at);const now=new Date();const diffH=(now-doneDate)/(1000*60*60);const left=Math.max(0,hrs-diffH);if(left>=24)return{v:Math.ceil(left/24),u:'d'};return{v:Math.ceil(left),u:'h'}}
-function fmtRegen(hrs){if(hrs==null)return'not set';if(hrs<24)return hrs+'h';if(hrs===24)return'Daily';if(hrs%24===0){const d=hrs/24;if(d===7)return'Weekly';if(d===14)return'2 weeks';if(d===30)return'Monthly';return d+'d'}return hrs+'h'}
+function getRegenDays(t){const r=regenTasks[t.id];if(r&&r.days!=null)return r.days;const cat=tCategory(t);return regenDefaults[cat]!=null?regenDefaults[cat]:null}
+function isInCooldown(t){if(t.status!=='done')return false;const r=regenTasks[t.id];if(!r||!r.done_at)return false;const days=getRegenDays(t);if(days==null)return false;const doneDate=new Date(r.done_at);const now=new Date();const diff=Math.floor((now-doneDate)/(1000*60*60*24));return diff<days}
+function cooldownDaysLeft(t){const r=regenTasks[t.id];if(!r||!r.done_at)return 0;const days=getRegenDays(t);if(days==null)return 0;const doneDate=new Date(r.done_at);const now=new Date();const diff=Math.floor((now-doneDate)/(1000*60*60*24));return Math.max(0,days-diff)}
 function isActive(t){return t.status!=='done'||(t.status==='done'&&isInCooldown(t))}
 async function checkAndReactivate(){
   let changed=false;
   for(const t of allTasks){
     if(t.status!=='done')continue;const r=regenTasks[t.id];if(!r||!r.done_at)continue;
-    const hrs=getRegenHours(t);if(hrs==null)continue;
-    const doneDate=new Date(r.done_at);const now=new Date();const diffH=(now-doneDate)/(1000*60*60);
-    if(diffH>=hrs){await markActive(t.id);await changePriority(t.id,'critical');changed=true;console.log('♻️ Reactivated:',t.name)}
+    const days=getRegenDays(t);if(days==null)continue;
+    const doneDate=new Date(r.done_at);const now=new Date();const diff=Math.floor((now-doneDate)/(1000*60*60*24));
+    if(diff>=days){await markActive(t.id);await changePriority(t.id,'critical');changed=true;console.log('♻️ Reactivated:',t.name)}
   }
   if(changed)renderAll();
 }
@@ -1233,45 +1219,37 @@ async function toggleTask(id){
   }
 }
 function showRegenPopup(t){
-  const cat=tCategory(t);const catDefault=regenDefaults[cat];const r=regenTasks[t.id];
-  const currentH=r?.hours!=null?r.hours:r?.days!=null?r.days*24:catDefault!=null?(catDefault>=1&&catDefault<=60?catDefault*24:catDefault):null;
+  const cat=tCategory(t);const catDefault=regenDefaults[cat];const taskOverride=regenTasks[t.id]?.days;
+  const current=taskOverride!=null?taskOverride:catDefault!=null?catDefault:null;
   const el=document.getElementById('regenPopup');
   document.getElementById('regenTaskName').textContent=t.name;
-  document.getElementById('regenCatDefault').textContent=catDefault!=null?fmtRegen(catDefault>=1&&catDefault<=60?catDefault*24:catDefault):'not set';
-  // Set custom input
-  if(currentH!=null&&currentH>=24&&currentH%24===0){document.getElementById('regenCustom').value=currentH/24;document.getElementById('regenUnit').value='d'}
-  else if(currentH!=null){document.getElementById('regenCustom').value=currentH;document.getElementById('regenUnit').value='h'}
-  else{document.getElementById('regenCustom').value='';document.getElementById('regenUnit').value='d'}
+  document.getElementById('regenCatDefault').textContent=catDefault!=null?catDefault+' days':'not set';
+  document.getElementById('regenCustom').value=current||'';
   // Highlight active preset
-  document.querySelectorAll('.regen-chip').forEach(c=>c.classList.toggle('active',currentH!=null&&parseInt(c.dataset.h)===currentH));
+  document.querySelectorAll('.regen-chip').forEach(c=>c.classList.toggle('active',current!=null&&parseInt(c.dataset.d)===current));
   el.classList.add('show');
 }
 async function confirmRegen(){
   const id=pendingDoneId;if(!id)return;const t=allTasks.find(x=>x.id===id);if(!t)return;
-  const customVal=document.getElementById('regenCustom').value;
-  const unit=document.getElementById('regenUnit').value;
-  let hours=null;
-  if(customVal){const n=parseInt(customVal);hours=unit==='d'?n*24:n}
-  // Save regen info in hours
-  regenTasks[id]={hours,done_at:new Date().toISOString()};
+  const custom=document.getElementById('regenCustom').value;
+  const days=custom?parseInt(custom):null;
+  // Save regen info
+  regenTasks[id]={days,done_at:new Date().toISOString()};
   await saveRegenTasks();
   // Mark done + rotation
   const pl=taskPlayer(t);const cat=tCategory(t);await markDone(id);pitchSet.delete(id);savePitch();
   if(pl==='attacker'){
-    pitchRotation='cooldown_atk';
-    lastDoneAtkCat=cat;
+    pitchRotation='cooldown_atk'; // blur ALL attackers
+    lastDoneAtkCat=cat; // this one stays blurred even after unlock
   } else if(pitchRotation==='cooldown_atk'&&(pl==='midfielder'||pl==='defender')){
-    pitchRotation='free';
+    pitchRotation='free'; // unlock attackers (except lastDoneAtkCat)
   }
   pendingDoneId=null;closeRegenPopup();
+  // Auto-start next study if coming from study chain
   const next=pitched().filter(isStudy);
   if(isStudy(t)&&next.length){startStudy(next[0].id)}else{renderAll()}
 }
-function selectRegenHours(h){
-  if(h>=24&&h%24===0){document.getElementById('regenCustom').value=h/24;document.getElementById('regenUnit').value='d'}
-  else{document.getElementById('regenCustom').value=h;document.getElementById('regenUnit').value='h'}
-  document.querySelectorAll('.regen-chip').forEach(c=>c.classList.toggle('active',parseInt(c.dataset.h)===h));
-}
+function selectRegenPreset(days){document.getElementById('regenCustom').value=days;document.querySelectorAll('.regen-chip').forEach(c=>c.classList.toggle('active',parseInt(c.dataset.d)===days))}
 function closeRegenPopup(){document.getElementById('regenPopup').classList.remove('show');pendingDoneId=null}
 
 // ===== DELETE TASK =====
@@ -1400,9 +1378,9 @@ function renderBench(){
 }
 function benchHTML(t){
   const pri=tPriority(t),onP=pitchSet.has(t.id),cat=tCategory(t),isDone=t.status==='done',inCD=isInCooldown(t);
-  const cl=inCD?cooldownLeft(t):{v:0,u:'h'};const rHrs=getRegenHours(t);
+  const left=inCD?cooldownDaysLeft(t):0;const rDays=getRegenDays(t);
   const delBtn=`<button style="border:none;background:none;font-size:11px;cursor:pointer;color:#DC2626;opacity:.35;flex-shrink:0;padding:2px 4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button>`;
-  if(inCD)return`<div class="bench-task done" style="opacity:.45"><div class="bench-pbar" style="background:#8B5CF6"></div><div class="bench-cb checked" style="pointer-events:none"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta"><span class="bench-tag" style="background:#8B5CF622;color:#8B5CF6">↻ ${cl.v}${cl.u} left</span>${cat?`<span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${delBtn}</div>`;
+  if(inCD)return`<div class="bench-task done" style="opacity:.45"><div class="bench-pbar" style="background:#8B5CF6"></div><div class="bench-cb checked" style="pointer-events:none"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta"><span class="bench-tag" style="background:#8B5CF622;color:#8B5CF6">↻ ${left}d left</span>${cat?`<span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${delBtn}</div>`;
   return`<div class="bench-task ${isDone?'done':''}"><div class="bench-pbar" style="background:${priColor(pri)}"></div><div class="bench-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}')"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta">${cat?`<span class="bench-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone?`<button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':'▶ Pitch'}</button>`:''} ${delBtn}</div>`;
 }
 
@@ -1462,8 +1440,8 @@ function renderCatDetail(){
   if(cooldownTasks.length){
     h+=`<div class="sec-hdr" style="margin-top:16px;color:#8B5CF6">🔄 In Cooldown (${cooldownTasks.length})</div>`;
     h+=cooldownTasks.map(t=>{
-      const cl=cooldownLeft(t);const hrs=getRegenHours(t);
-      return`<div class="dc-item" style="opacity:.5"><div class="dc-item-info" style="flex:1"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c" style="color:#8B5CF6">↻ ${cl.v}${cl.u} left · regen every ${fmtRegen(hrs)}</div></div><button style="border:none;background:none;font-size:12px;cursor:pointer;color:#DC2626;opacity:.6;flex-shrink:0;padding:4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button></div>`
+      const left=cooldownDaysLeft(t);const days=getRegenDays(t);
+      return`<div class="dc-item" style="opacity:.5"><div class="dc-item-info" style="flex:1"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c" style="color:#8B5CF6">↻ ${left} day${left!==1?'s':''} left · regen every ${days}d</div></div><button style="border:none;background:none;font-size:12px;cursor:pointer;color:#DC2626;opacity:.6;flex-shrink:0;padding:4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button></div>`
     }).join('');
   }
 
