@@ -563,34 +563,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes ofcSlideD{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-/* ===== SCREENSAVER ===== */
-.ss-ov{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;padding:24px;cursor:pointer;user-select:none;-webkit-user-select:none}
-.ss-ov.show{display:flex;animation:ssFadeIn 1.5s ease}
-@keyframes ssFadeIn{from{opacity:0}to{opacity:1}}
-.ss-bg{position:absolute;inset:0;background:#0a0a12}
-.ss-particles{position:absolute;inset:0;overflow:hidden}
-.ss-particle{position:absolute;width:2px;height:2px;background:rgba(255,255,255,.3);border-radius:50%;animation:ssFloat linear infinite}
-@keyframes ssFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1.5);opacity:0}}
-.ss-content{position:relative;z-index:2;text-align:center;max-width:400px;animation:ssBreath 4s ease-in-out infinite}
-@keyframes ssBreath{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.02);opacity:1}}
-.ss-msg{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:white;line-height:1.6;text-shadow:0 2px 24px rgba(99,102,241,.3)}
-.ss-hint{font-size:10px;color:rgba(255,255,255,.25);margin-top:24px;letter-spacing:1px}
-.ss-time{font-size:48px;font-weight:200;color:rgba(255,255,255,.15);margin-bottom:16px;font-family:'DM Sans',sans-serif;letter-spacing:4px}
-.ss-edit-btn{position:absolute;top:16px;right:16px;border:none;background:rgba(255,255,255,.08);width:32px;height:32px;border-radius:10px;font-size:14px;cursor:pointer;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;z-index:3}
-.ss-edit-ov{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px}
-.ss-edit-ov.show{display:flex}
-.ss-edit-panel{background:var(--card);border-radius:20px;width:100%;max-width:440px;max-height:80vh;overflow-y:auto;padding:20px 16px;box-shadow:0 24px 64px rgba(0,0,0,.3)}
-.ss-edit-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.ss-edit-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700}
-.ss-edit-close{border:none;background:var(--as);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ss-msg-item{display:flex;gap:6px;align-items:center;margin-bottom:6px}
-.ss-msg-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:11px;background:var(--bg);color:var(--text);outline:none}
-.ss-msg-inp:focus{border-color:var(--accent)}
-.ss-msg-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0}
-.ss-timeout-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--bg);border-radius:8px}
-.ss-timeout-lbl{font-size:10px;font-weight:600;color:var(--text2);flex:1}
-.ss-timeout-inp{width:50px;border:1.5px solid var(--as);border-radius:6px;padding:5px 8px;font-size:11px;font-family:'DM Sans',sans-serif;text-align:center;background:white;outline:none}
-.ss-timeout-unit{font-size:9px;color:var(--text2)}
 </style>
 </head>
 <body>
@@ -710,21 +682,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="ofc-bl-hint">⚠️ Complete both to stop reminders</div>
   <button class="ofc-bl-gear" onclick="ofcEditBlockerLinks('evening')">⚙️</button>
   <button class="ofc-bl-btn dim" style="margin-top:8px;width:100%;max-width:360px" onclick="ofcEvSkip()">Still working — remind me in 15 min</button>
-</div>
-
-<!-- SCREENSAVER -->
-<div class="ss-ov" id="ssOv" onclick="ssDismiss()">
-  <div class="ss-bg"></div>
-  <div class="ss-particles" id="ssParticles"></div>
-  <div class="ss-content">
-    <div class="ss-time" id="ssTime"></div>
-    <div class="ss-msg" id="ssMsg"></div>
-    <div class="ss-hint">tap anywhere to dismiss</div>
-  </div>
-  <button class="ss-edit-btn" onclick="event.stopPropagation();ssOpenEdit()">&#9881;</button>
-</div>
-<div class="ss-edit-ov" id="ssEditOv" onclick="if(event.target===this)ssCloseEdit()">
-  <div class="ss-edit-panel" id="ssEditPanel"></div>
 </div>
 
 <script>
@@ -902,7 +859,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -921,7 +878,6 @@ async function loadAll(){
     if(m.key==='cf_ofc_apps')try{ofcApps=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_tasks')try{const d=JSON.parse(m.value);if(d.mgr)ofcMgrTasks=d.mgr;if(d.rem)ofcReminders=d.rem;if(d.ppl)ofcPplTasks=d.ppl}catch{};
     if(m.key==='cf_ofc_bl_links')try{ofcBlLinks=JSON.parse(m.value)}catch{};
-    if(m.key==='cf_screensaver')try{const ss=JSON.parse(m.value);if(ss.messages)ssMessages=ss.messages;if(ss.timeout)ssTimeoutMin=ss.timeout}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
   });
   // Migrate: ensure uniTiles have URLs (fixes old saves before URLs were added)
@@ -1800,77 +1756,7 @@ async function setPreset(cat,preset){
   await saveTimeSlots();renderOv();
 }
 
-// ===== SCREENSAVER =====
-let ssMessages=[
-  'Stay focused. Stay sharp.',
-  'One task at a time.',
-  'You are doing great.',
-  'Take a breath. Then continue.',
-  'Small steps, big results.',
-];
-let ssTimeoutMin=15;
-let ssTimer=null;
-let ssActive=false;
-let ssClockInt=null;
-
-function ssResetTimer(){
-  if(ssTimer)clearTimeout(ssTimer);
-  if(ssActive)return;
-  ssTimer=setTimeout(ssShow, ssTimeoutMin*60*1000);
-}
-function ssShow(){
-  if(ssActive)return;
-  ssActive=true;
-  const msg=ssMessages.length?ssMessages[Math.floor(Math.random()*ssMessages.length)]:'';
-  document.getElementById('ssMsg').textContent=msg;
-  ssUpdateTime();
-  ssGenParticles();
-  document.getElementById('ssOv').classList.add('show');
-  ssClockInt=setInterval(ssUpdateTime,60000);
-}
-function ssUpdateTime(){
-  const now=new Date();
-  document.getElementById('ssTime').textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-}
-function ssGenParticles(){
-  const cont=document.getElementById('ssParticles');
-  cont.innerHTML='';
-  for(let i=0;i<30;i++){
-    const p=document.createElement('div');
-    p.className='ss-particle';
-    p.style.left=Math.random()*100+'%';
-    p.style.animationDuration=(8+Math.random()*12)+'s';
-    p.style.animationDelay=(Math.random()*10)+'s';
-    p.style.width=p.style.height=(1+Math.random()*2)+'px';
-    cont.appendChild(p);
-  }
-}
-function ssDismiss(){
-  if(!ssActive)return;
-  ssActive=false;
-  if(ssClockInt)clearInterval(ssClockInt);
-  document.getElementById('ssOv').classList.remove('show');
-  ssResetTimer();
-}
-function ssOpenEdit(){
-  const panel=document.getElementById('ssEditPanel');
-  let h='<div class="ss-edit-hd"><div class="ss-edit-title">&#10024; Screensaver Messages</div><button class="ss-edit-close" onclick="ssCloseEdit()">&#10005;</button></div>';
-  h+='<div class="ss-timeout-row"><span class="ss-timeout-lbl">Activate after idle</span><input class="ss-timeout-inp" type="number" min="1" max="120" value="'+ssTimeoutMin+'" onchange="ssTimeoutMin=parseInt(this.value)||15;saveSS();ssResetTimer()"><span class="ss-timeout-unit">min</span></div>';
-  ssMessages.forEach(function(msg,i){
-    h+='<div class="ss-msg-item"><input class="ss-msg-inp" value="'+esc(msg)+'" onchange="ssMessages['+i+']=this.value;saveSS()"><button class="ss-msg-del" onclick="ssMessages.splice('+i+',1);saveSS();ssOpenEdit()">&#128465;</button></div>';
-  });
-  h+='<div style="border:1.5px dashed var(--as);border-radius:8px;padding:8px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px" onclick="ssMessages.push(\'New message\');saveSS();ssOpenEdit()">+ Add Message</div>';
-  panel.innerHTML=h;
-  document.getElementById('ssEditOv').classList.add('show');
-}
-function ssCloseEdit(){document.getElementById('ssEditOv').classList.remove('show')}
-async function saveSS(){await memSave('cf_screensaver',JSON.stringify({messages:ssMessages,timeout:ssTimeoutMin}))}
-function ssInitListeners(){
-  ['click','touchstart','keydown','mousemove','scroll'].forEach(function(ev){document.addEventListener(ev,ssResetTimer,{passive:true})});
-  ssResetTimer();
-}
-
-async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();renderPitch()}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';checkPoss();ofcUpdateBlockers();renderPitch()}
 init();
 </script>
 </body>
