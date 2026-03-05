@@ -84,7 +84,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .fp-lock-msg{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:white;padding:6px 16px;border-radius:20px;font-size:10px;font-weight:600;z-index:10;white-space:nowrap;backdrop-filter:blur(4px)}
 
 /* Queue panel below pitch */
-.fp-queue{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.fp-queue{background:var(--card);border-radius:14px;padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .fp-queue-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .fp-queue-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
 .fp-queue-close{border:none;background:var(--as);width:24px;height:24px;border-radius:8px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
@@ -1166,14 +1166,12 @@ function ofcDoCheckin(){ofcCheckedIn=true;saveOfcState();ofcUpdateBlockers();ren
 // Save blocker links
 async function saveBlLinks(){await memSave('cf_ofc_bl_links',JSON.stringify(ofcBlLinks))}
 
-function isFreeeDay(){return ofcIsFreeeDay()}
-
 // Render dynamic link cards into blocker screens
 function ofcRenderBlLinks(){
   const mEl=document.getElementById('ofcBlMorningLinks');
   const eEl=document.getElementById('ofcBlEveningLinks');
   if(mEl){let h='';ofcBlLinks.filter(l=>l.screen==='morning').forEach(l=>{const hasUrl=l.url&&l.url.trim();h+='<div class="ofc-bl-card"><div class="ofc-bl-card-ico">'+l.ico+'</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">'+esc(l.name)+'</div><div class="ofc-bl-card-desc">'+esc(l.desc)+'</div></div>'+(hasUrl?'<button class="ofc-bl-btn go" onclick="window.open(\''+esc(l.url)+'\',\'_blank\')">Open &#8599;</button>':'<span style="font-size:9px;color:rgba(255,255,255,.4)">No URL</span>')+'</div>'});mEl.innerHTML=h}
-  if(eEl){let h='';ofcBlLinks.filter(l=>l.screen==='evening').filter(l=>l.id!=='bl_freee'||isFreeeDay()).forEach(l=>{const hasUrl=l.url&&l.url.trim();h+='<div class="ofc-bl-card"><div class="ofc-bl-card-ico">'+l.ico+'</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">'+esc(l.name)+'</div><div class="ofc-bl-card-desc">'+esc(l.desc)+'</div></div>'+(hasUrl?'<button class="ofc-bl-btn go" onclick="window.open(\''+esc(l.url)+'\',\'_blank\')">Open &#8599;</button>':'<span style="font-size:9px;color:rgba(255,255,255,.4)">No URL</span>')+'</div>'});eEl.innerHTML=h}
+  if(eEl){let h='';ofcBlLinks.filter(l=>l.screen==='evening').forEach(l=>{const hasUrl=l.url&&l.url.trim();h+='<div class="ofc-bl-card"><div class="ofc-bl-card-ico">'+l.ico+'</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">'+esc(l.name)+'</div><div class="ofc-bl-card-desc">'+esc(l.desc)+'</div></div>'+(hasUrl?'<button class="ofc-bl-btn go" onclick="window.open(\''+esc(l.url)+'\',\'_blank\')">Open &#8599;</button>':'<span style="font-size:9px;color:rgba(255,255,255,.4)">No URL</span>')+'</div>'});eEl.innerHTML=h}
 }
 
 // Edit blocker links overlay
@@ -1192,16 +1190,20 @@ function ofcEditBlockerLinks(screen){
 }
 function ofcCloseBlEdit(){document.getElementById('ofcBlEditOv').classList.remove('show')}
 function ofcEvMark(i){
-  ofcEvMarks[i]=true;const btn=document.getElementById('ofcEvBtn'+i);if(btn){btn.className='ofc-bl-btn ready';btn.textContent='Done!'}
+  ofcEvMarks[i]=true;const btn=document.getElementById('ofcEvBtn'+i);btn.className='ofc-bl-btn ready';btn.textContent='✓ Done!';
+  document.getElementById(i===0?'ofcBlCO':'ofcBlTS').classList.add('done');
   if(ofcEvMarks[0]&&ofcEvMarks[1]){
     ofcCheckoutDone=true;ofcTimesheetDone=true;saveOfcState();
-    setTimeout(()=>{setLoc('home');ofcUpdateBlockers()},600);
+    document.getElementById('ofcEvHint').textContent='✅ All done!';document.getElementById('ofcEvHint').className='ofc-bl-hint ok';
+    setTimeout(()=>{setLoc('home');ofcUpdateBlockers()},800);
   }
 }
 function ofcEvSkip(){ofcEvDismissedAt=Date.now();ofcUpdateBlockers();renderPitch()}
 function ofcResetEvUI(){
   ofcEvMarks=[ofcCheckoutDone,ofcTimesheetDone];
-  ['ofcEvBtn0','ofcEvBtn1'].forEach((id,i)=>{const b=document.getElementById(id);if(!b)return;if(ofcEvMarks[i]){b.className='ofc-bl-btn ready';b.textContent='Done!'}else{b.className='ofc-bl-btn dim';b.textContent=i===0?'Checkout done':'Timesheet done'}});
+  ['ofcEvBtn0','ofcEvBtn1'].forEach((id,i)=>{const b=document.getElementById(id);if(ofcEvMarks[i]){b.className='ofc-bl-btn ready';b.textContent='✓ Done!'}else{b.className='ofc-bl-btn dim';b.textContent=i===0?'✓ Checkout done':'✓ Timesheet done'}});
+  [['ofcBlCO',0],['ofcBlTS',1]].forEach(([id,i])=>{if(ofcEvMarks[i])document.getElementById(id).classList.add('done');else document.getElementById(id).classList.remove('done')});
+  document.getElementById('ofcEvHint').textContent='⚠️ Complete both to stop reminders';document.getElementById('ofcEvHint').className='ofc-bl-hint';
 }
 function ofcMarkPending(key){
   if(key==='checkedIn')ofcCheckedIn=true;
@@ -1220,8 +1222,7 @@ function ofcIsFreeeDay(){
   const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=new Date(y,m+1,0);
   let lwd=new Date(last);while(lwd.getDay()===0||lwd.getDay()===6)lwd.setDate(lwd.getDate()-1);
   let dlwd=new Date(lwd);dlwd.setDate(dlwd.getDate()-1);while(dlwd.getDay()===0||dlwd.getDay()===6)dlwd.setDate(dlwd.getDate()-1);
-  const td=n.toDateString();
-  return td===dlwd.toDateString()||td===lwd.toDateString();
+  return n.toDateString()===dlwd.toDateString();
 }
 function ofcWorkDays(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),last=new Date(y,m+1,0).getDate();let c=0;for(let d=1;d<=last;d++){const day=new Date(y,m,d).getDay();if(day>=1&&day<=5)c++}return c}
 
@@ -1668,8 +1669,7 @@ function renderCatDetail(){
     }
 
     const priGroups={critical:[],high:[],medium:[],low:[],someday:[]};
-    const rankedSet=new Set(posRanks[cat]||[]);
-    tasksInCat.filter(t=>!rankedSet.has(t.id)).forEach(t=>priGroups[tPriority(t)].push(t));
+    tasksInCat.forEach(t=>priGroups[tPriority(t)].push(t));
     const priLabels={critical:{l:'&#128308; Critical',c:'#DC2626'},high:{l:'&#128992; High',c:'#E8722A'},medium:{l:'&#128993; Medium',c:'#F59E0B'},low:{l:'&#128309; Low',c:'#95a5a6'},someday:{l:'&#128173; Someday',c:'#bdc3c7'}};
     h+=`<div style="margin-top:16px">`;
     for(const[pri,list]of Object.entries(priGroups)){
@@ -1818,7 +1818,7 @@ function renderPitch(){
   if(pitchRotation==='cooldown_atk')lockMsg=`<div class="fp-lock-msg">🔄 Do a Mid/Defender task to unlock Attackers</div>`;
   else if(lastDoneAtkCat&&zones.attacker.some(g=>g.cat===lastDoneAtkCat))lockMsg=`<div class="fp-lock-msg">🔒 ${lastDoneAtkCat} resting — use other attackers</div>`;
 
-  field.innerHTML=`${renderQueuePanel()}<div class="fp" onclick="selectedPosition='';renderPitch()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}</div>`;
+  field.innerHTML=`<div class="fp" onclick="selectedPosition='';renderPitch()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}</div>${renderQueuePanel()}`;
 }
 function toggleDot(cat){selectedPosition=selectedPosition===cat?'':cat;expandedDot='';renderPitch()}
 
