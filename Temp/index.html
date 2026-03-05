@@ -82,29 +82,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .fp-empty-sub{font-size:11px;opacity:.7;margin-top:4px}
 /* Rotation lock overlay */
 .fp-lock-msg{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:white;padding:6px 16px;border-radius:20px;font-size:10px;font-weight:600;z-index:10;white-space:nowrap;backdrop-filter:blur(4px)}
-
-/* Queue panel below pitch */
-.fp-queue{background:var(--card);border-radius:14px;padding:14px;margin-top:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.fp-queue-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.fp-queue-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
-.fp-queue-close{border:none;background:var(--as);width:24px;height:24px;border-radius:8px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.fp-queue-item{display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;margin-bottom:6px;border:1.5px solid var(--as);background:var(--bg)}
-.fp-queue-rank{width:22px;height:22px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.fp-queue-info{flex:1;min-width:0}
-.fp-queue-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fp-queue-meta{font-size:9px;color:var(--text2);margin-top:1px}
-.fp-queue-play{border:none;background:#059669;color:white;padding:5px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;flex-shrink:0;font-family:'DM Sans',sans-serif}
-.fp-queue-empty{text-align:center;padding:12px;font-size:10px;color:var(--text2);opacity:.6}
-
-/* Ranking mode */
-.rank-bar{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--card);border-radius:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.rank-btn{border:none;padding:5px 12px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.rank-btn.start{background:#6366F1;color:white}
-.rank-btn.stop{background:#DC2626;color:white}
-.rank-btn.clear{background:var(--as);color:var(--text2)}
-.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#6366F1;color:white;font-size:8px;font-weight:700;flex-shrink:0}
-.rank-tap-hint{font-size:9px;color:#6366F1;font-weight:600;animation:rankPulse 1.5s ease infinite}
-@keyframes rankPulse{0%,100%{opacity:.5}50%{opacity:1}}
 /* Timer overlay on pitch */
 .fp-timer{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;border-radius:18px;color:white;text-align:center}
 .fp-timer-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.8;margin-bottom:6px}
@@ -594,14 +571,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ss-particles{position:absolute;inset:0;overflow:hidden}
 .ss-particle{position:absolute;width:2px;height:2px;background:rgba(255,255,255,.3);border-radius:50%;animation:ssFloat linear infinite}
 @keyframes ssFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1.5);opacity:0}}
-.ss-content{position:relative;z-index:2;text-align:center;max-width:400px}
-.ss-msg{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:white;line-height:1.6;text-shadow:0 2px 24px rgba(99,102,241,.3);min-height:60px}
-.ss-msg .ss-char{display:inline;opacity:0;animation:ssCharIn .4s ease forwards}
-@keyframes ssCharIn{from{opacity:0;filter:blur(4px);transform:translateY(6px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
-.ss-hint{font-size:10px;color:rgba(255,255,255,.25);margin-top:24px;letter-spacing:1px;opacity:0;animation:ssFadeUp 1s ease 2.5s forwards}
-@keyframes ssFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.ss-time{font-size:48px;font-weight:200;color:rgba(255,255,255,.15);margin-bottom:16px;font-family:'DM Sans',sans-serif;letter-spacing:4px;opacity:0;animation:ssTimeFade 2s ease .3s forwards}
-@keyframes ssTimeFade{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.ss-content{position:relative;z-index:2;text-align:center;max-width:400px;animation:ssBreath 4s ease-in-out infinite}
+@keyframes ssBreath{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.02);opacity:1}}
+.ss-msg{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:white;line-height:1.6;text-shadow:0 2px 24px rgba(99,102,241,.3)}
+.ss-hint{font-size:10px;color:rgba(255,255,255,.25);margin-top:24px;letter-spacing:1px}
+.ss-time{font-size:48px;font-weight:200;color:rgba(255,255,255,.15);margin-bottom:16px;font-family:'DM Sans',sans-serif;letter-spacing:4px}
 .ss-edit-btn{position:absolute;top:16px;right:16px;border:none;background:rgba(255,255,255,.08);width:32px;height:32px;border-radius:10px;font-size:14px;cursor:pointer;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;z-index:3}
 .ss-edit-ov{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px}
 .ss-edit-ov.show{display:flex}
@@ -617,30 +591,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ss-timeout-lbl{font-size:10px;font-weight:600;color:var(--text2);flex:1}
 .ss-timeout-inp{width:50px;border:1.5px solid var(--as);border-radius:6px;padding:5px 8px;font-size:11px;font-family:'DM Sans',sans-serif;text-align:center;background:white;outline:none}
 .ss-timeout-unit{font-size:9px;color:var(--text2)}
-
-/* Settings tab sections */
-.sett-sec{margin-bottom:16px}
-.sett-sec-hd{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--text)}
-.sett-sec-sub{font-size:9px;color:var(--text2);margin-bottom:8px;padding-left:2px}
-.sett-link-item{background:var(--card);border-radius:10px;padding:8px;margin-bottom:6px;border:1px solid var(--as)}
-.sett-link-row{display:flex;gap:4px;align-items:center;margin-bottom:3px}
-.sett-link-row:last-child{margin-bottom:0}
-.sett-link-ico{width:28px;border:1px solid var(--as);border-radius:6px;padding:4px 2px;font-size:11px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;background:white}
-.sett-link-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
-.sett-link-inp:focus{border-color:var(--accent)}
-.sett-link-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0}
-.sett-link-del:hover{opacity:1}
-.sett-link-screen{font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
-.sett-link-screen.morning{background:#FFF7ED;color:#EA580C}
-.sett-link-screen.evening{background:#EFF6FF;color:#2563EB}
-.sett-add{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:9px;color:var(--text2);cursor:pointer;margin-top:4px}
-.sett-add:hover{background:var(--as);color:var(--accent)}
-.sett-ss-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:var(--card);border-radius:8px;border:1px solid var(--as)}
-.sett-ss-lbl{font-size:10px;font-weight:600;color:var(--text2);flex:1}
-.sett-ss-inp{width:48px;border:1px solid var(--as);border-radius:6px;padding:4px 6px;font-size:11px;text-align:center;font-family:'DM Sans',sans-serif;background:white;outline:none}
-.sett-msg-item{display:flex;gap:4px;align-items:center;margin-bottom:5px}
-.sett-msg-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:6px 8px;font-family:'DM Sans',sans-serif;font-size:10px;background:var(--card);color:var(--text);outline:none;border:1px solid var(--as)}
-.sett-msg-inp:focus{border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -657,7 +607,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- CENTERED OVERLAY -->
 <div class="ov-bg" id="ovBg" onclick="if(event.target===this)closeOv()">
   <div class="ov-panel"><div class="ov-top"><div class="ov-title">Locker Room</div><div class="ov-close" onclick="closeOv()">✕</div></div>
-    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabD" onclick="switchOvTab('dc')">🎯 DC</button><button class="ov-tab" id="ovTabR" onclick="switchOvTab('rules')">📏 Rules</button><button class="ov-tab" id="ovTabS" onclick="switchOvTab('settings')">⚙️</button></div>
+    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabD" onclick="switchOvTab('dc')">🎯 DC</button><button class="ov-tab" id="ovTabR" onclick="switchOvTab('rules')">⚙️ Rules</button></div>
     <div id="ovContent"></div>
   </div>
 </div>
@@ -750,6 +700,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="ofcBlMorningLinks"></div>
   <div class="ofc-bl-card"><div class="ofc-bl-card-ico">✅</div><div class="ofc-bl-card-info"><div class="ofc-bl-card-name">Confirm check-in</div><div class="ofc-bl-card-desc">I've completed my check-in entry</div></div><button class="ofc-bl-btn confirm" onclick="ofcDoCheckin()">Check In ✓</button></div>
   <div class="ofc-bl-hint">⚠️ App locked until check-in</div>
+  <button class="ofc-bl-gear" onclick="ofcEditBlockerLinks('morning')">⚙️</button>
 </div>
 <div class="ofc-blocker evening" id="ofcEvening">
   <div class="ofc-bl-icon">🌙</div><div class="ofc-bl-title">Before You Leave</div>
@@ -757,6 +708,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="ofcBlEveningLinks"></div>
   <div class="ofc-bl-actions"><button class="ofc-bl-btn dim" id="ofcEvBtn0" onclick="ofcEvMark(0)">✓ Checkout done</button><button class="ofc-bl-btn dim" id="ofcEvBtn1" onclick="ofcEvMark(1)">✓ Timesheet done</button></div>
   <div class="ofc-bl-hint">⚠️ Complete both to stop reminders</div>
+  <button class="ofc-bl-gear" onclick="ofcEditBlockerLinks('evening')">⚙️</button>
   <button class="ofc-bl-btn dim" style="margin-top:8px;width:100%;max-width:360px" onclick="ofcEvSkip()">Still working — remind me in 15 min</button>
 </div>
 
@@ -779,8 +731,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 const sb=window.supabase.createClient('https://wylxvmkcrexwfpjpbhyy.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5bHh2bWtjcmV4d2ZwanBiaHl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzkxMDYsImV4cCI6MjA4NDIxNTEwNn0.6Bxo42hx4jwlJGWnfjiTpiDUsYfc1QLTN3YtrU1efak');
 
 let allTags=[],tagMap={},allTasks=[],taskTags={},pitchSet=new Set(),playerMap={};
-let posRanks={}; // { categoryName: [taskId1, taskId2, ...] } — ordered rank queue
-let rankingMode=false, rankingCat=''; // ranking assignment mode
 let loc='home',mood='Energetic',ovTab='bench',manHol=false,possession='mid_morning';
 let lunchRem=3600,defRem=1800,lunchInt=null,defInt=null;
 let morningCk=new Set(),lunchCk=new Set(),defCk=new Set();
@@ -789,7 +739,7 @@ let studyTimerActive=false,studyTimerRem=0,studyTimerTotal=0,studyTimerInt=null,
 let breakRem=300,breakInt=null;
 let catDetailSearch='',catDetailName='';
 let pitchRotation='free';
-let expandedDot='',selectedPosition='';
+let expandedDot='';
 let lastDoneAtkCat=''; // individual attacker category that stays blurred after unlock
 let regenDefaults={}; // categoryName → days (default regen for all tasks in category)
 let regenTasks={}; // taskId → {days, done_at} (per-task override + last done timestamp)
@@ -906,29 +856,7 @@ function isStudy(t){return STUDY_CATS.includes(tCategory(t))}
 function isDev(t){return DEV_CATS.includes(tCategory(t))}
 function priColor(p){return{critical:'#c0392b',high:'#e74c3c',medium:'#f39c12',low:'#95a5a6',someday:'#bdc3c7'}[p]||'#f39c12'}
 function locTasks(){return allTasks.filter(t=>t.status!=='done'&&tInLoc(t,loc))}
-function pitched(){
-  // Derive from posRanks: all tasks that are ranked in any position
-  const ids=new Set();
-  for(const cat in posRanks)(posRanks[cat]||[]).forEach(id=>ids.add(id));
-  pitchSet=ids; // keep pitchSet in sync
-  return allTasks.filter(t=>ids.has(t.id)&&t.status!=='done'&&!isInCooldown(t));
-}
-function positionsOnPitch(){
-  // Returns categories that have at least one valid ranked task
-  const result=[];
-  for(const cat in posRanks){
-    const valid=(posRanks[cat]||[]).filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&!isInCooldown(t)});
-    if(valid.length)result.push({cat,tasks:valid.map(id=>allTasks.find(x=>x.id===id)).filter(Boolean)});
-  }
-  return result;
-}
-function getRank(cat,taskId){const list=posRanks[cat]||[];return list.indexOf(taskId)}
-function addRank(cat,taskId){if(!posRanks[cat])posRanks[cat]=[];if(!posRanks[cat].includes(taskId)){posRanks[cat].push(taskId);saveRanks();renderAll()}}
-function removeRank(cat,taskId){if(!posRanks[cat])return;posRanks[cat]=posRanks[cat].filter(id=>id!==taskId);if(!posRanks[cat].length)delete posRanks[cat];saveRanks()}
-function moveRankUp(cat,taskId){const list=posRanks[cat]||[];const idx=list.indexOf(taskId);if(idx>0){[list[idx-1],list[idx]]=[list[idx],list[idx-1]];saveRanks();renderCatDetail()}}
-function moveRankDown(cat,taskId){const list=posRanks[cat]||[];const idx=list.indexOf(taskId);if(idx>=0&&idx<list.length-1){[list[idx],list[idx+1]]=[list[idx+1],list[idx]];saveRanks();renderCatDetail()}}
-function clearRanks(cat){delete posRanks[cat];saveRanks();renderCatDetail()}
-async function saveRanks(){await memSave('cf_pos_ranks',JSON.stringify(posRanks))}
+function pitched(){return allTasks.filter(t=>pitchSet.has(t.id)&&t.status!=='done')}
 function catPlayer(c){return playerMap[c]||''}
 function taskPlayer(t){return catPlayer(tCategory(t))}
 function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
@@ -974,7 +902,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -994,14 +922,8 @@ async function loadAll(){
     if(m.key==='cf_ofc_tasks')try{const d=JSON.parse(m.value);if(d.mgr)ofcMgrTasks=d.mgr;if(d.rem)ofcReminders=d.rem;if(d.ppl)ofcPplTasks=d.ppl}catch{};
     if(m.key==='cf_ofc_bl_links')try{ofcBlLinks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_screensaver')try{const ss=JSON.parse(m.value);if(ss.messages)ssMessages=ss.messages;if(ss.timeout)ssTimeoutMin=ss.timeout}catch{};
-    if(m.key==='cf_pos_ranks')try{posRanks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
   });
-  // Migrate: convert old pitchSet to posRanks if posRanks is empty
-  if(Object.keys(posRanks).length===0&&pitchSet.size>0){
-    [...pitchSet].forEach(id=>{const t=allTasks.find(x=>x.id===id);if(!t)return;const cat=tCategory(t);if(!cat)return;if(!posRanks[cat])posRanks[cat]=[];posRanks[cat].push(id)});
-    if(Object.keys(posRanks).length)saveRanks();
-  }
   // Migrate: ensure uniTiles have URLs (fixes old saves before URLs were added)
   const defaultUrls={cal:'https://celeritas7.github.io/Calender_app/',cost:'https://celeritas7.github.io/Cost_management/'};
   let migrated=false;
@@ -1398,8 +1320,8 @@ async function markDone(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='d
 async function markActive(id){const t=allTasks.find(x=>x.id===id);if(t)t.status='in_progress';await sb.from('mind_map_app_tasks').update({status:'in_progress',updated_at:new Date().toISOString()}).eq('id',id)}
 
 // Pitch
-function addPitch(id){const t=allTasks.find(x=>x.id===id);if(!t)return;const cat=tCategory(t);if(cat)addRank(cat,id);else{pitchSet.add(id);savePitch();renderAll()}}
-function rmPitch(id){const t=allTasks.find(x=>x.id===id);const cat=tCategory(t);if(cat)removeRank(cat,id);pitchSet.delete(id);savePitch();if(currentStudyId===id)stopTimer();renderAll()}
+function addPitch(id){const t=allTasks.find(x=>x.id===id);if(t&&!canPitch(t))return;pitchSet.add(id);savePitch();renderAll()}
+function rmPitch(id){pitchSet.delete(id);savePitch();if(currentStudyId===id)stopTimer();renderAll()}
 async function toggleTask(id){
   const t=allTasks.find(x=>x.id===id);if(!t)return;
   if(t.status==='done'){
@@ -1434,10 +1356,7 @@ async function confirmRegen(){
   regenTasks[id]={hours,done_at:new Date().toISOString()};
   await saveRegenTasks();
   // Mark done + rotation
-  const pl=taskPlayer(t);const cat=tCategory(t);await markDone(id);
-  // Remove from posRanks
-  if(cat&&posRanks[cat]){posRanks[cat]=posRanks[cat].filter(x=>x!==id);if(!posRanks[cat].length)delete posRanks[cat];saveRanks()}
-  pitchSet.delete(id);savePitch();
+  const pl=taskPlayer(t);const cat=tCategory(t);await markDone(id);pitchSet.delete(id);savePitch();
   if(pl==='attacker'){
     pitchRotation='cooldown_atk';
     lastDoneAtkCat=cat;
@@ -1487,9 +1406,7 @@ async function confirmDelete(){
   }
   // Regular task delete
   const id=pendingDeleteId;if(!id)return;
-  // Remove from pitch and ranks
-  const delT=allTasks.find(x=>x.id===id);const delCat=delT?tCategory(delT):'';
-  if(delCat&&posRanks[delCat]){posRanks[delCat]=posRanks[delCat].filter(x=>x!==id);if(!posRanks[delCat].length)delete posRanks[delCat];saveRanks()}
+  // Remove from pitch
   pitchSet.delete(id);savePitch();
   if(currentStudyId===id)stopTimer();
   // Remove from regen tracking
@@ -1566,8 +1483,8 @@ function updateClock(){document.getElementById('timeD').textContent=new Date().t
 // ===== OVERLAY =====
 function openOv(){document.getElementById('ovBg').classList.add('show');renderOv()}
 function closeOv(){document.getElementById('ovBg').classList.remove('show')}
-function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabD').classList.toggle('active',t==='dc');document.getElementById('ovTabR').classList.toggle('active',t==='rules');document.getElementById('ovTabS').classList.toggle('active',t==='settings');renderOv()}
-function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():ovTab==='dc'?renderDC():ovTab==='settings'?renderSettings():renderRules()}
+function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabD').classList.toggle('active',t==='dc');document.getElementById('ovTabR').classList.toggle('active',t==='rules');renderOv()}
+function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():ovTab==='dc'?renderDC():renderRules()}
 
 // ===== BENCH =====
 function renderBench(){
@@ -1582,12 +1499,11 @@ function renderBench(){
   return h||'<div style="text-align:center;padding:24px;color:var(--text2);font-size:12px">No tasks for this location</div>';
 }
 function benchHTML(t){
-  const pri=tPriority(t),cat=tCategory(t),isDone=t.status==='done',inCD=isInCooldown(t);
-  const rnk=cat?getRank(cat,t.id):-1;const isRanked=rnk>=0;
+  const pri=tPriority(t),onP=pitchSet.has(t.id),cat=tCategory(t),isDone=t.status==='done',inCD=isInCooldown(t);
   const cl=inCD?cooldownLeft(t):{v:0,u:'h'};const rHrs=getRegenHours(t);
-  const delBtn=`<button style="border:none;background:none;font-size:11px;cursor:pointer;color:#DC2626;opacity:.35;flex-shrink:0;padding:2px 4px" onclick="event.stopPropagation();askDelete('${t.id}')">&#128465;</button>`;
-  if(inCD)return`<div class="bench-task done" style="opacity:.45"><div class="bench-pbar" style="background:#8B5CF6"></div><div class="bench-cb checked" style="pointer-events:none"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta"><span class="bench-tag" style="background:#8B5CF622;color:#8B5CF6">&#8635; ${cl.v}${cl.u} left</span>${cat?`<span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${delBtn}</div>`;
-  return`<div class="bench-task ${isDone?'done':''}"><div class="bench-pbar" style="background:${priColor(pri)}"></div><div class="bench-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}')"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta">${cat?`<span class="bench-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone&&isRanked?`<span class="rank-badge">${rnk+1}</span>`:''} ${delBtn}</div>`;
+  const delBtn=`<button style="border:none;background:none;font-size:11px;cursor:pointer;color:#DC2626;opacity:.35;flex-shrink:0;padding:2px 4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button>`;
+  if(inCD)return`<div class="bench-task done" style="opacity:.45"><div class="bench-pbar" style="background:#8B5CF6"></div><div class="bench-cb checked" style="pointer-events:none"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta"><span class="bench-tag" style="background:#8B5CF622;color:#8B5CF6">↻ ${cl.v}${cl.u} left</span>${cat?`<span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${delBtn}</div>`;
+  return`<div class="bench-task ${isDone?'done':''}"><div class="bench-pbar" style="background:${priColor(pri)}"></div><div class="bench-cb ${isDone?'checked':''}" onclick="toggleTask('${t.id}')"></div><div class="bench-info"><div class="bench-title">${esc(t.name)}</div><div class="bench-meta">${cat?`<span class="bench-tag" style="background:${priColor(pri)}22;color:${priColor(pri)}">${pri}</span><span class="bench-tag" style="background:var(--as);color:var(--accent)">${cat}</span>`:''}</div></div>${!isDone?`<button class="pitch-btn ${onP?'on':'off'}" onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':'▶ Pitch'}</button>`:''} ${delBtn}</div>`;
 }
 
 // ===== DECISION CENTRE =====
@@ -1603,9 +1519,9 @@ function renderDC(){
     const totalCrit=cats.reduce((s,[,l])=>s+l.filter(t=>tPriority(t)==='critical').length,0);
     h+=`<div class="player-sec ${info.cl}"><div class="player-hdr ${info.cl}"><span class="player-icon">${info.icon}</span><span class="player-name">${info.name} ${totalCrit?'(🔴'+totalCrit+')':'('+total+')'}</span><button class="player-add-btn" onclick="openNewCatModal('${pl}')" style="margin-left:auto">+ New</button></div>`;
     if(allCats.length){h+=`<div class="dc-chips">${allCats.map(cat=>{
-      const list=players[pl][cat]||[];const rankedN=(posRanks[cat]||[]).filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'}).length;
+      const list=players[pl][cat]||[];const onP=list.filter(t=>pitchSet.has(t.id)).length;
       const critCount=list.filter(t=>tPriority(t)==='critical').length;
-      return`<div class="dc-chip" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span>${critCount?`<span class="dc-chip-count" style="background:#DC262622;color:#DC2626">&#128308;${critCount}</span>`:`<span class="dc-chip-count">${list.length}</span>`}${rankedN?`<span style="font-size:8px;color:#6366F1">&#127941;${rankedN}</span>`:''}</div>`
+      return`<div class="dc-chip" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span>${critCount?`<span class="dc-chip-count" style="background:#DC262622;color:#DC2626">🔴${critCount}</span>`:`<span class="dc-chip-count">${list.length}</span>`}${onP?`<span style="font-size:8px;color:#059669">⚽${onP}</span>`:''}</div>`
     }).join('')}</div>`}else{h+=`<div style="font-size:10px;color:var(--text2);opacity:.5;padding:4px">No categories assigned</div>`}
     h+=`</div>`;
   });
@@ -1621,13 +1537,13 @@ function renderCatDetail(){
   const tasksInCat=allInCat.filter(t=>t.status!=='done');
   const cooldownTasks=allInCat.filter(t=>isInCooldown(t));
   const doneInCat=allInCat.filter(t=>t.status==='done'&&!isInCooldown(t));
+  const onPitch=tasksInCat.filter(t=>pitchSet.has(t.id)).length;
   const uncategorized=allTasks.filter(t=>t.status!=='done'&&!hasCategory(t));
   const filtered=catDetailSearch?uncategorized.filter(t=>t.name.toLowerCase().includes(catDetailSearch.toLowerCase())):[];
   const catDef=regenDefaults[cat];
-  const rankedCount=(posRanks[cat]||[]).filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'}).length;
 
   let h=`<div class="cat-top"><div class="cat-back" onclick="closeCatDetail()">←</div><div class="cat-name">${esc(cat)}</div>${info?`<div class="cat-badge ${info.cl}">${info.icon} ${info.name}</div>`:''}</div>`;
-  h+=`<div class="cat-stats"><div class="cat-stat"><div class="cat-stat-num">${tasksInCat.length}</div><div class="cat-stat-lbl">Active</div></div><div class="cat-stat"><div class="cat-stat-num">${rankedCount}</div><div class="cat-stat-lbl">On Pitch</div></div><div class="cat-stat"><div class="cat-stat-num">${cooldownTasks.length}</div><div class="cat-stat-lbl">Cooldown</div></div><div class="cat-stat"><div class="cat-stat-num">${doneInCat.length}</div><div class="cat-stat-lbl">Done</div></div></div>`;
+  h+=`<div class="cat-stats"><div class="cat-stat"><div class="cat-stat-num">${tasksInCat.length}</div><div class="cat-stat-lbl">Active</div></div><div class="cat-stat"><div class="cat-stat-num">${onPitch}</div><div class="cat-stat-lbl">On Pitch</div></div><div class="cat-stat"><div class="cat-stat-num">${cooldownTasks.length}</div><div class="cat-stat-lbl">Cooldown</div></div><div class="cat-stat"><div class="cat-stat-num">${doneInCat.length}</div><div class="cat-stat-lbl">Done</div></div></div>`;
 
   // Regen default setting
   h+=`<div style="margin-bottom:12px;padding:10px 12px;background:var(--card);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)"><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:10px;font-weight:700;color:var(--text2)">♻️ DEFAULT REGEN INTERVAL</div><div style="display:flex;align-items:center;gap:6px"><input id="catRegenInput" type="number" min="0" value="${catDef||''}" placeholder="days" style="width:50px;border:1.5px solid var(--as);border-radius:6px;padding:4px 6px;font-size:11px;font-family:DM Sans,sans-serif;text-align:center;background:var(--bg);color:var(--text);outline:none"><button onclick="saveCatRegen()" style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif">Set</button></div></div><div style="font-size:9px;color:var(--text2);margin-top:4px">${catDef?'All new completions regen after '+catDef+' days':'Not set — set days so tasks regenerate after completion'}</div></div>`;
@@ -1653,42 +1569,23 @@ function renderCatDetail(){
 
   // Existing tasks grouped by priority
   if(tasksInCat.length){
-    // Ranking bar
-    const isRM=rankingMode&&rankingCat===cat;
-    const ranked=posRanks[cat]||[];
-    h+=`<div class="rank-bar">${isRM?`<span class="rank-tap-hint">Tap tasks to assign rank order</span><button class="rank-btn stop" onclick="rankingMode=false;rankingCat='';renderCatDetail()">&#10003; Done</button>`:`<span style="font-size:10px;color:var(--text2);flex:1">&#127941; ${ranked.length} ranked</span><button class="rank-btn start" onclick="rankingMode=true;rankingCat='${cat.replace(/'/g,"\\'")}';renderCatDetail()">&#127941; Rank</button>`}${ranked.length?`<button class="rank-btn clear" onclick="clearRanks('${cat.replace(/'/g,"\\'")}')">Clear</button>`:''}</div>`;
-
-    // Show ranked tasks first if any
-    if(ranked.length&&!isRM){
-      h+=`<div class="sec-hdr" style="margin-top:6px;color:#6366F1">&#127941; Ranked Queue (${ranked.filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'}).length})</div>`;
-      ranked.forEach(function(id,ri){
-        const t=allTasks.find(x=>x.id===id);if(!t||t.status==='done'||isInCooldown(t))return;
-        const hasLink=t.links&&t.links.trim();
-        h+=`<div class="dc-item"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();moveRankUp('${cat.replace(/'/g,"\\'")}','${t.id}')">&#8593;</button><button class="dc-pri-btn" onclick="event.stopPropagation();moveRankDown('${cat.replace(/'/g,"\\'")}','${t.id}')">&#8595;</button></div><div class="rank-badge">${ri+1}</div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${tPriority(t)}${hasLink?' · <a href="'+esc(t.links)+'" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:9px;text-decoration:none">&#128279;</a>':''}</div></div><button style="border:none;background:#DC262622;color:#DC2626;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif" onclick="event.stopPropagation();removeRank('${cat.replace(/'/g,"\\'")}','${t.id}');renderCatDetail()">&#10005;</button></div>`;
-      });
-    }
-
     const priGroups={critical:[],high:[],medium:[],low:[],someday:[]};
     tasksInCat.forEach(t=>priGroups[tPriority(t)].push(t));
-    const priLabels={critical:{l:'&#128308; Critical',c:'#DC2626'},high:{l:'&#128992; High',c:'#E8722A'},medium:{l:'&#128993; Medium',c:'#F59E0B'},low:{l:'&#128309; Low',c:'#95a5a6'},someday:{l:'&#128173; Someday',c:'#bdc3c7'}};
+    const priLabels={critical:{l:'🔴 Critical',c:'#DC2626'},high:{l:'🟠 High',c:'#E8722A'},medium:{l:'🟡 Medium',c:'#F59E0B'},low:{l:'🔵 Low',c:'#95a5a6'},someday:{l:'💭 Someday',c:'#bdc3c7'}};
     h+=`<div style="margin-top:16px">`;
     for(const[pri,list]of Object.entries(priGroups)){
       if(!list.length)continue;const lb=priLabels[pri];
       h+=`<div class="sec-hdr" style="margin-top:10px;color:${lb.c}">${lb.l} (${list.length})</div>`;
       h+=list.map(t=>{
-        const rnk=getRank(cat,t.id);const isRanked=rnk>=0;
+        const onP=pitchSet.has(t.id),dur=isStudy(t)?tDuration(t):null,full=!onP&&!canPitch(t);
         const hasLink=t.links&&t.links.trim();const isEditing=editingLinkId===t.id;const sid=t.id.replace(/-/g,'');
         let linkHtml='';
         if(isEditing){
           linkHtml=`<div class="link-edit"><input class="link-inp" id="linkInp_${sid}" value="${esc(t.links||'')}" placeholder="https://..." onkeydown="if(event.key==='Enter'){event.stopPropagation();saveTaskLink('${t.id}')}"><div class="link-edit-btns"><button class="link-save" onclick="event.stopPropagation();saveTaskLink('${t.id}')">Save</button>${hasLink?`<button class="link-rm" onclick="event.stopPropagation();removeTaskLink('${t.id}')">Remove</button>`:''}<button class="link-cancel" onclick="event.stopPropagation();editingLinkId=null;renderCatDetail()">Cancel</button></div></div>`;
         } else if(hasLink){
-          linkHtml=`<div class="dc-item-c"><a href="${esc(t.links)}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:10px;text-decoration:none">&#128279; ${t.links.length>30?t.links.slice(0,30)+'…':t.links}</a> <button style="border:none;background:none;font-size:9px;cursor:pointer;color:var(--text2);opacity:.5" onclick="event.stopPropagation();showLinkEdit('${t.id}')">&#9999;&#65039;</button></div>`;
+          linkHtml=`<div class="dc-item-c"><a href="${esc(t.links)}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:10px;text-decoration:none">🔗 ${t.links.length>30?t.links.slice(0,30)+'…':t.links}</a> <button style="border:none;background:none;font-size:9px;cursor:pointer;color:var(--text2);opacity:.5" onclick="event.stopPropagation();showLinkEdit('${t.id}')">✏️</button></div>`;
         }
-        // In ranking mode: tap to assign rank
-        if(isRM){
-          return`<div class="dc-item" style="cursor:pointer;${isRanked?'opacity:.4':'border:1.5px solid #6366F1'}" onclick="event.stopPropagation();${isRanked?'':`addRank('${cat.replace(/'/g,"\\'")}','${t.id}')`}"><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div></div>${isRanked?`<span class="rank-badge">${rnk+1}</span>`:''}</div>`;
-        }
-        return`<div class="dc-item" style="flex-wrap:wrap"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">&#8593;</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">&#8595;</button></div>${isRanked?`<div class="rank-badge">${rnk+1}</div>`:''}<div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${!hasLink&&!isEditing?` <button style="border:none;background:none;font-size:9px;cursor:pointer;color:var(--text2);opacity:.4" onclick="event.stopPropagation();showLinkEdit('${t.id}')">+ link</button>`:''}</div>${linkHtml}</div>${!isRanked?`<button class="pitch-btn off" onclick="event.stopPropagation();addRank('${cat.replace(/'/g,"\\'")}','${t.id}')">&#127941; Rank</button>`:''}<button style="border:none;background:none;font-size:12px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0;padding:4px" onclick="event.stopPropagation();askDelete('${t.id}')">&#128465;&#65039;</button></div>`
+        return`<div class="dc-item" style="flex-wrap:wrap"><div class="dc-pri-btns"><button class="dc-pri-btn" onclick="event.stopPropagation();promoteTask('${t.id}')">↑</button><button class="dc-pri-btn" onclick="event.stopPropagation();demoteTask('${t.id}')">↓</button></div><div class="dc-item-info"><div class="dc-item-n">${esc(t.name)}</div><div class="dc-item-c">${dur?dur+'m':''}${!hasLink&&!isEditing?` <button style="border:none;background:none;font-size:9px;cursor:pointer;color:var(--text2);opacity:.4" onclick="event.stopPropagation();showLinkEdit('${t.id}')">+ link</button>`:''}</div>${linkHtml}</div><button class="pitch-btn ${onP?'on':'off'}" ${full&&!onP?'disabled style="opacity:.4;cursor:not-allowed"':''} onclick="event.stopPropagation();${onP?`rmPitch('${t.id}')`:`addPitch('${t.id}')`}">${onP?'✓ Pitch':full?'Full':'▶ Pitch'}</button><button style="border:none;background:none;font-size:12px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0;padding:4px" onclick="event.stopPropagation();askDelete('${t.id}')">🗑️</button></div>`
       }).join('');
     }
     h+=`</div>`;
@@ -1795,10 +1692,22 @@ function renderPitch(){
   let dots='';
   function renderDots(list,positions,cl){
     list.forEach((g,i)=>{
-      const pos=positions[i]||{x:50,y:50};const taskCount=g.tasks.length;
-      const isSel=selectedPosition===g.cat;
+      const pos=positions[i]||{x:50,y:50};const isExp=expandedDot===g.cat;const taskCount=g.tasks.length;
+      // Per-category blur for attackers
       const blur=cl==='atk'&&isAtkDotBlurred(g.cat);
-      dots+=`<div class="fp-dot ${isSel?'active':''} ${blur?'blurred':''}" style="left:${pos.x}%;top:${pos.y}%" onclick="${blur?'':`event.stopPropagation();toggleDot('${g.cat.replace(/'/g,"\\'")}')`}"><div class="fp-ball ${cl}" style="position:relative${isSel?';box-shadow:0 0 0 3px rgba(255,255,255,.6)':''}"><span style="font-size:${g.cat.length>6?'7':'8'}px;line-height:1.2">${g.cat.length>10?g.cat.slice(0,9)+'…':g.cat}</span>${taskCount>1?`<div class="fp-count">${taskCount}</div>`:''}</div><div class="fp-lbl">${g.cat}</div></div>`;
+      dots+=`<div class="fp-dot ${isExp?'active':''} ${blur?'blurred':''}" style="left:${pos.x}%;top:${pos.y}%" onclick="${blur?'':`event.stopPropagation();toggleDot('${g.cat.replace(/'/g,"\\'")}')`}"><div class="fp-ball ${cl}" style="position:relative"><span style="font-size:${g.cat.length>6?'7':'8'}px;line-height:1.2">${g.cat.length>10?g.cat.slice(0,9)+'…':g.cat}</span>${taskCount>1?`<div class="fp-count">${taskCount}</div>`:''}</div><div class="fp-lbl">${g.cat}</div>`;
+      // Expanded card
+      if(isExp&&!blur){
+        const cardDir=pos.y>60?'above':'';
+        dots+=`<div class="fp-card ${cardDir}" onclick="event.stopPropagation()"><button class="fp-card-close" onclick="event.stopPropagation();expandedDot='';renderPitch()">✕</button><div class="fp-card-cat ${cl}">${g.cat} — ${taskCount} task${taskCount>1?'s':''}</div>`;
+        g.tasks.forEach(t=>{
+          const dur=tDuration(t);const isSt=isStudy(t);
+          const hasLnk=t.links&&t.links.trim();
+          dots+=`<div class="fp-card-task" style="flex-wrap:wrap"><div class="fp-card-cb" onclick="event.stopPropagation();toggleTask('${t.id}')"></div><div class="fp-card-name">${esc(t.name)}</div>${hasLnk?`<a href="${esc(t.links)}" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;text-decoration:none;flex-shrink:0">🔗</a>`:''}${isSt?`<button class="fp-card-btn timer" onclick="event.stopPropagation();startStudy('${t.id}')">▶ ${dur}m</button>`:`<button class="fp-card-btn check" onclick="event.stopPropagation();toggleTask('${t.id}')">✓</button>`}</div>`;
+        });
+        dots+=`</div>`;
+      }
+      dots+=`</div>`;
     });
   }
   renderDots(zones.attacker,atkPos,'atk');
@@ -1818,30 +1727,9 @@ function renderPitch(){
   if(pitchRotation==='cooldown_atk')lockMsg=`<div class="fp-lock-msg">🔄 Do a Mid/Defender task to unlock Attackers</div>`;
   else if(lastDoneAtkCat&&zones.attacker.some(g=>g.cat===lastDoneAtkCat))lockMsg=`<div class="fp-lock-msg">🔒 ${lastDoneAtkCat} resting — use other attackers</div>`;
 
-  field.innerHTML=`<div class="fp" onclick="selectedPosition='';renderPitch()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}</div>${renderQueuePanel()}`;
+  field.innerHTML=`<div class="fp" onclick="expandedDot='';renderPitch()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}</div>`;
 }
-function toggleDot(cat){selectedPosition=selectedPosition===cat?'':cat;expandedDot='';renderPitch()}
-
-function renderQueuePanel(){
-  if(!selectedPosition)return'';
-  const rankedIds=posRanks[selectedPosition]||[];
-  const tasks=rankedIds.map(id=>allTasks.find(t=>t.id===id)).filter(t=>t&&t.status!=='done'&&!isInCooldown(t));
-  const pl=catPlayer(selectedPosition);const info=pl?PLAYER_INFO[pl]:null;
-  const clr=info?info.cl:'atk';
-  let h='<div class="fp-queue"><div class="fp-queue-hd"><div class="fp-queue-title"><span class="fp-queue-rank" style="background:'+({atk:'#DC2626',mid:'#D97706',def:'#2563EB'}[clr]||'var(--accent)')+'">'+tasks.length+'</span> '+esc(selectedPosition)+'</div><button class="fp-queue-close" onclick="selectedPosition=\'\';renderPitch()">&#10005;</button></div>';
-  if(!tasks.length){
-    h+='<div class="fp-queue-empty">No ranked players at this position. Open &#9776; &gt; category to rank tasks.</div>';
-  } else {
-    tasks.forEach(function(t,i){
-      const dur=isStudy(t)?tDuration(t):null;
-      const hasLnk=t.links&&t.links.trim();
-      const isSt=isStudy(t);
-      h+='<div class="fp-queue-item"><div class="fp-queue-rank">'+(i+1)+'</div><div class="fp-queue-info"><div class="fp-queue-name">'+esc(t.name)+'</div><div class="fp-queue-meta">'+tPriority(t)+(dur?' · '+dur+'m':'')+(hasLnk?' · <a href="'+esc(t.links)+'" target="_blank" style="color:var(--accent);text-decoration:none;font-size:9px" onclick="event.stopPropagation()">&#128279;</a>':'')+'</div></div>'+(isSt?'<button class="fp-queue-play" onclick="event.stopPropagation();startStudy(\''+t.id+'\')">&#9654; '+dur+'m</button>':'<button class="fp-queue-play" onclick="event.stopPropagation();toggleTask(\''+t.id+'\')">&#10003; Done</button>')+'</div>';
-    });
-  }
-  h+='</div>';
-  return h;
-}
+function toggleDot(cat){expandedDot=expandedDot===cat?'':cat;renderPitch()}
 
 // ===== RULES PANEL =====
 function renderRules(){
@@ -1912,33 +1800,6 @@ async function setPreset(cat,preset){
   await saveTimeSlots();renderOv();
 }
 
-// ===== SETTINGS TAB =====
-function renderSettings(){
-  let h='';
-  // Blocker Links section
-  h+='<div class="sett-sec"><div class="sett-sec-hd">&#128274; Blocker Screen Links</div>';
-  h+='<div class="sett-sec-sub">Links shown on morning check-in and evening checkout lock screens</div>';
-  ofcBlLinks.forEach(function(l,i){
-    const scCls=l.screen==='morning'?'morning':'evening';
-    h+='<div class="sett-link-item"><div class="sett-link-row"><input class="sett-link-ico" value="'+esc(l.ico)+'" onchange="ofcBlLinks['+i+'].ico=this.value;saveBlLinks();ofcRenderBlLinks()"><input class="sett-link-inp" value="'+esc(l.name)+'" placeholder="Name" onchange="ofcBlLinks['+i+'].name=this.value;saveBlLinks();ofcRenderBlLinks()"><span class="sett-link-screen '+scCls+'">'+l.screen+'</span><button class="sett-link-del" onclick="ofcBlLinks.splice('+i+',1);saveBlLinks();ofcRenderBlLinks();renderOv()">&#128465;</button></div>';
-    h+='<div class="sett-link-row"><input class="sett-link-inp" value="'+esc(l.url||'')+'" placeholder="https://... (URL)" style="font-size:9px" onchange="ofcBlLinks['+i+'].url=this.value;saveBlLinks();ofcRenderBlLinks()"></div></div>';
-  });
-  h+='<div style="display:flex;gap:6px;margin-top:6px"><div class="sett-add" style="flex:1" onclick="ofcBlLinks.push({id:\'bl_\'+Date.now(),ico:\'&#128279;\',name:\'New Link\',desc:\'\',url:\'\',screen:\'morning\'});saveBlLinks();renderOv()">+ Morning link</div><div class="sett-add" style="flex:1" onclick="ofcBlLinks.push({id:\'bl_\'+Date.now(),ico:\'&#128279;\',name:\'New Link\',desc:\'\',url:\'\',screen:\'evening\'});saveBlLinks();renderOv()">+ Evening link</div></div>';
-  h+='</div>';
-
-  // Screensaver section
-  h+='<div class="sett-sec"><div class="sett-sec-hd">&#10024; Screensaver</div>';
-  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Activate after idle</span><input class="sett-ss-inp" type="number" min="1" max="120" value="'+ssTimeoutMin+'" onchange="ssTimeoutMin=parseInt(this.value)||15;saveSS();ssResetTimer()"><span style="font-size:9px;color:var(--text2)">min</span></div>';
-  h+='<div class="sett-sec-sub">Personal messages shown on screensaver (random pick)</div>';
-  ssMessages.forEach(function(msg,i){
-    h+='<div class="sett-msg-item"><input class="sett-msg-inp" value="'+esc(msg)+'" onchange="ssMessages['+i+']=this.value;saveSS()"><button class="sett-link-del" onclick="ssMessages.splice('+i+',1);saveSS();renderOv()">&#128465;</button></div>';
-  });
-  h+='<div class="sett-add" onclick="ssMessages.push(\'New message\');saveSS();renderOv()">+ Add Message</div>';
-  h+='</div>';
-
-  return h;
-}
-
 // ===== SCREENSAVER =====
 let ssMessages=[
   'Stay focused. Stay sharp.',
@@ -1961,18 +1822,7 @@ function ssShow(){
   if(ssActive)return;
   ssActive=true;
   const msg=ssMessages.length?ssMessages[Math.floor(Math.random()*ssMessages.length)]:'';
-  // Typewriter: wrap each char in a span with staggered delay
-  const msgEl=document.getElementById('ssMsg');
-  msgEl.innerHTML='';
-  var delay=800; // start after time fades in
-  for(var c=0;c<msg.length;c++){
-    var span=document.createElement('span');
-    span.className='ss-char';
-    span.textContent=msg[c]===' '?'\u00A0':msg[c];
-    span.style.animationDelay=delay+'ms';
-    msgEl.appendChild(span);
-    delay+=45; // 45ms per char
-  }
+  document.getElementById('ssMsg').textContent=msg;
   ssUpdateTime();
   ssGenParticles();
   document.getElementById('ssOv').classList.add('show');
