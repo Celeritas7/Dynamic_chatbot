@@ -83,10 +83,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* Rotation lock overlay */
 .fp-lock-msg{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:white;padding:6px 16px;border-radius:20px;font-size:10px;font-weight:600;z-index:10;white-space:nowrap;backdrop-filter:blur(4px)}
 
-/* Queue overlay */
-.fp-queue-ov{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
-.fp-queue-ov.show{display:flex;animation:ofcFadeIn .2s ease}
-.fp-queue{background:var(--card);border-radius:20px;padding:16px;width:100%;max-width:400px;max-height:70vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25);animation:alPopIn .3s ease}
+/* Queue panel below pitch */
+.fp-queue{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .fp-queue-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .fp-queue-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
 .fp-queue-close{border:none;background:var(--as);width:24px;height:24px;border-radius:8px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
@@ -107,19 +105,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .rank-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#6366F1;color:white;font-size:8px;font-weight:700;flex-shrink:0}
 .rank-tap-hint{font-size:9px;color:#6366F1;font-weight:600;animation:rankPulse 1.5s ease infinite}
 @keyframes rankPulse{0%,100%{opacity:.5}50%{opacity:1}}
-
-/* Coach on pitch */
-.fp-coach{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);z-index:10;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-.fp-coach-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1E1B4B,#312E81);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(30,27,75,.4);transition:all .2s}
-.fp-coach-icon:active{transform:scale(.9)}
-.fp-coach-lbl{font-size:7px;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px}
-/* Coach overlay */
-.coach-ov{position:fixed;inset:0;z-index:700;background:var(--bg);display:none;flex-direction:column;overflow-y:auto}
-.coach-ov.show{display:flex;animation:ofcFadeIn .2s ease}
-.coach-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:2}
-.coach-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
-.coach-close{border:none;background:var(--as);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.coach-body{padding:0 16px 24px;flex:1}
 /* Timer overlay on pitch */
 .fp-timer{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;border-radius:18px;color:white;text-align:center}
 .fp-timer-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.8;margin-bottom:6px}
@@ -189,7 +174,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .bench-tag{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px}
 
 /* ==== CATEGORY DETAIL VIEW ==== */
-.cat-detail{display:none;position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.cat-detail{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center}
 .cat-detail.show{display:flex;animation:ovIn .3s ease}
 .cat-panel{background:var(--bg);border-radius:20px;width:94%;max-width:480px;max-height:88vh;overflow-y:auto;padding:20px;box-shadow:0 16px 64px rgba(0,0,0,.25);animation:panUp .35s ease}
 .cat-top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
@@ -232,7 +217,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .regen-btn.done{background:#059669;color:white}
 
 /* New category modal */
-.cat-modal-ov{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
+.cat-modal-ov{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
 .cat-modal-ov.show{display:flex}
 .cat-modal{background:var(--bg);border-radius:16px;padding:20px;width:90%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
 .cat-modal h3{font-family:'Fraunces',serif;font-size:16px;margin-bottom:12px}
@@ -672,7 +657,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- CENTERED OVERLAY -->
 <div class="ov-bg" id="ovBg" onclick="if(event.target===this)closeOv()">
   <div class="ov-panel"><div class="ov-top"><div class="ov-title">Locker Room</div><div class="ov-close" onclick="closeOv()">✕</div></div>
-    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabR" onclick="switchOvTab('rules')">📏 Rules</button><button class="ov-tab" id="ovTabS" onclick="switchOvTab('settings')">⚙️</button></div>
+    <div class="ov-tabs"><button class="ov-tab active" id="ovTabB" onclick="switchOvTab('bench')">📋 Bench</button><button class="ov-tab" id="ovTabD" onclick="switchOvTab('dc')">🎯 DC</button><button class="ov-tab" id="ovTabR" onclick="switchOvTab('rules')">📏 Rules</button><button class="ov-tab" id="ovTabS" onclick="switchOvTab('settings')">⚙️</button></div>
     <div id="ovContent"></div>
   </div>
 </div>
@@ -756,17 +741,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- BLOCKER LINK EDITOR -->
 <div class="ofc-bl-edit-ov" id="ofcBlEditOv" onclick="if(event.target===this)ofcCloseBlEdit()">
   <div class="ofc-bl-edit-panel" id="ofcBlEditPanel"></div>
-</div>
-
-<!-- QUEUE OVERLAY -->
-<div class="fp-queue-ov" id="queueOv" onclick="if(event.target===this)closeQueue()">
-  <div class="fp-queue" id="queuePanel"></div>
-</div>
-
-<!-- COACH OVERLAY -->
-<div class="coach-ov" id="coachOv">
-  <div class="coach-hd"><div class="coach-title">&#129489;&#8205;&#9878;&#65039; Coach</div><button class="coach-close" onclick="closeCoach()">&#10005;</button></div>
-  <div class="coach-body" id="coachBody"></div>
 </div>
 
 <!-- OFFICE BLOCKERS -->
@@ -1545,7 +1519,7 @@ async function removeTaskLink(id){
   await sb.from('mind_map_app_tasks').update({links:'',updated_at:new Date().toISOString()}).eq('id',id);
   editingLinkId=null;renderCatDetail();
 }
-function renderAll(){renderPitch();if(document.getElementById('ovBg').classList.contains('show'))renderOv();if(document.getElementById('catDetail').classList.contains('show'))renderCatDetail();if(document.getElementById('coachOv').classList.contains('show'))document.getElementById('coachBody').innerHTML=renderDC()}
+function renderAll(){renderPitch();if(document.getElementById('ovBg').classList.contains('show'))renderOv();if(document.getElementById('catDetail').classList.contains('show'))renderCatDetail()}
 
 // Priority
 async function changePriority(taskId,newPri){
@@ -1591,8 +1565,8 @@ function updateClock(){document.getElementById('timeD').textContent=new Date().t
 // ===== OVERLAY =====
 function openOv(){document.getElementById('ovBg').classList.add('show');renderOv()}
 function closeOv(){document.getElementById('ovBg').classList.remove('show')}
-function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabR').classList.toggle('active',t==='rules');document.getElementById('ovTabS').classList.toggle('active',t==='settings');renderOv()}
-function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():ovTab==='settings'?renderSettings():renderRules()}
+function switchOvTab(t){ovTab=t;document.getElementById('ovTabB').classList.toggle('active',t==='bench');document.getElementById('ovTabD').classList.toggle('active',t==='dc');document.getElementById('ovTabR').classList.toggle('active',t==='rules');document.getElementById('ovTabS').classList.toggle('active',t==='settings');renderOv()}
+function renderOv(){document.getElementById('ovContent').innerHTML=ovTab==='bench'?renderBench():ovTab==='dc'?renderDC():ovTab==='settings'?renderSettings():renderRules()}
 
 // ===== BENCH =====
 function renderBench(){
@@ -1775,7 +1749,7 @@ function renderPitch(){
   if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
   
   const pt=pitched();
-  if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open Coach to rank players</div></div><div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;return}
+  if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open ☰ and select tasks</div></div></div>`;return}
 
   // Group pitched tasks by category → player type (filter by timeslot)
   const catGroups={};
@@ -1834,42 +1808,30 @@ function renderPitch(){
   if(pitchRotation==='cooldown_atk')lockMsg=`<div class="fp-lock-msg">🔄 Do a Mid/Defender task to unlock Attackers</div>`;
   else if(lastDoneAtkCat&&zones.attacker.some(g=>g.cat===lastDoneAtkCat))lockMsg=`<div class="fp-lock-msg">🔒 ${lastDoneAtkCat} resting — use other attackers</div>`;
 
-  field.innerHTML=`<div class="fp" onclick="event.stopPropagation()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}<div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;
+  field.innerHTML=`${renderQueuePanel()}<div class="fp" onclick="selectedPosition='';renderPitch()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}</div>`;
 }
-function toggleDot(cat){
-  if(selectedPosition===cat){closeQueue();return}
-  selectedPosition=cat;showQueue();
-}
+function toggleDot(cat){selectedPosition=selectedPosition===cat?'':cat;expandedDot='';renderPitch()}
 
-function showQueue(){
-  const panel=document.getElementById('queuePanel');
-  const cat=selectedPosition;if(!cat){closeQueue();return}
-  const rankedIds=posRanks[cat]||[];
+function renderQueuePanel(){
+  if(!selectedPosition)return'';
+  const rankedIds=posRanks[selectedPosition]||[];
   const tasks=rankedIds.map(id=>allTasks.find(t=>t.id===id)).filter(t=>t&&t.status!=='done'&&!isInCooldown(t));
-  const pl=catPlayer(cat);const info=pl?PLAYER_INFO[pl]:null;
+  const pl=catPlayer(selectedPosition);const info=pl?PLAYER_INFO[pl]:null;
   const clr=info?info.cl:'atk';
-  let h='<div class="fp-queue-hd"><div class="fp-queue-title"><span class="fp-queue-rank" style="background:'+({atk:'#DC2626',mid:'#D97706',def:'#2563EB'}[clr]||'var(--accent)')+'">'+tasks.length+'</span> '+esc(cat)+'</div><button class="fp-queue-close" onclick="closeQueue()">&#10005;</button></div>';
+  let h='<div class="fp-queue"><div class="fp-queue-hd"><div class="fp-queue-title"><span class="fp-queue-rank" style="background:'+({atk:'#DC2626',mid:'#D97706',def:'#2563EB'}[clr]||'var(--accent)')+'">'+tasks.length+'</span> '+esc(selectedPosition)+'</div><button class="fp-queue-close" onclick="selectedPosition=\'\';renderPitch()">&#10005;</button></div>';
   if(!tasks.length){
-    h+='<div class="fp-queue-empty">No ranked players. Open Coach to rank tasks.</div>';
+    h+='<div class="fp-queue-empty">No ranked players at this position. Open &#9776; &gt; category to rank tasks.</div>';
   } else {
     tasks.forEach(function(t,i){
       const dur=isStudy(t)?tDuration(t):null;
       const hasLnk=t.links&&t.links.trim();
       const isSt=isStudy(t);
-      h+='<div class="fp-queue-item"><div class="fp-queue-rank">'+(i+1)+'</div><div class="fp-queue-info"><div class="fp-queue-name">'+esc(t.name)+'</div><div class="fp-queue-meta">'+tPriority(t)+(dur?' · '+dur+'m':'')+(hasLnk?' · <a href="'+esc(t.links)+'" target="_blank" style="color:var(--accent);text-decoration:none;font-size:9px" onclick="event.stopPropagation()">&#128279;</a>':'')+'</div></div>'+(isSt?'<button class="fp-queue-play" onclick="event.stopPropagation();closeQueue();startStudy(\''+t.id+'\')">&#9654; '+dur+'m</button>':'<button class="fp-queue-play" onclick="event.stopPropagation();closeQueue();toggleTask(\''+t.id+'\')">&#10003; Done</button>')+'</div>';
+      h+='<div class="fp-queue-item"><div class="fp-queue-rank">'+(i+1)+'</div><div class="fp-queue-info"><div class="fp-queue-name">'+esc(t.name)+'</div><div class="fp-queue-meta">'+tPriority(t)+(dur?' · '+dur+'m':'')+(hasLnk?' · <a href="'+esc(t.links)+'" target="_blank" style="color:var(--accent);text-decoration:none;font-size:9px" onclick="event.stopPropagation()">&#128279;</a>':'')+'</div></div>'+(isSt?'<button class="fp-queue-play" onclick="event.stopPropagation();startStudy(\''+t.id+'\')">&#9654; '+dur+'m</button>':'<button class="fp-queue-play" onclick="event.stopPropagation();toggleTask(\''+t.id+'\')">&#10003; Done</button>')+'</div>';
     });
   }
-  panel.innerHTML=h;
-  document.getElementById('queueOv').classList.add('show');
+  h+='</div>';
+  return h;
 }
-function closeQueue(){selectedPosition='';document.getElementById('queueOv').classList.remove('show');renderPitch()}
-
-// Coach overlay
-function openCoach(){
-  document.getElementById('coachBody').innerHTML=renderDC();
-  document.getElementById('coachOv').classList.add('show');
-}
-function closeCoach(){document.getElementById('coachOv').classList.remove('show')}
 
 // ===== RULES PANEL =====
 function renderRules(){
