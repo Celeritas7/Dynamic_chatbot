@@ -834,7 +834,7 @@ let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weeke
 
 // ===== OFFICE STATE =====
 let ofcCheckedIn=false, ofcCheckoutDone=false, ofcTimesheetDone=false, ofcFreeeDone=false;
-let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false;
+let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false, ofcEditAppIdx=-1;
 let ofcEvDismissedAt=null, ofcEvMarks=[false,false];
 let ofcBlLinks=[
   {id:'bl_checkin',ico:'🔐',name:'Check-in Entry',desc:'Open login and mark attendance',url:'https://id.jobcan.jp/users/sign_in',screen:'morning'},
@@ -1418,16 +1418,21 @@ function renderOffice(){
   }
 
   // Apps dock
-  h+=`<div class="ofc-dock"><div class="ofc-dock-hdr ${ofcDockOpen?'open':''}" onclick="ofcDockOpen=!ofcDockOpen;renderPitch()"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📱</span><span style="font-size:12px;font-weight:600">My Apps</span></div><div style="display:flex;align-items:center;gap:8px"><button style="border:none;background:none;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="event.stopPropagation();ofcAppEdit=!ofcAppEdit;ofcDockOpen=true;renderPitch()">${ofcAppEdit?'✓ Done':'✏️'}</button><div class="ofc-dock-chev">▼</div></div></div>`;
+  h+=`<div class="ofc-dock"><div class="ofc-dock-hdr ${ofcDockOpen?'open':''}" onclick="ofcDockOpen=!ofcDockOpen;renderPitch()"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📱</span><span style="font-size:12px;font-weight:600">My Apps</span></div><div style="display:flex;align-items:center;gap:8px"><button style="border:none;background:none;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="event.stopPropagation();ofcAppEdit=!ofcAppEdit;ofcEditAppIdx=-1;ofcDockOpen=true;renderPitch()">${ofcAppEdit?'✓ Done':'✏️'}</button><div class="ofc-dock-chev">▼</div></div></div>`;
   h+=`<div class="ofc-dock-body ${ofcDockOpen?'open':''}"><div class="ofc-app-grid">`;
   ofcApps.forEach((a,i)=>{
     if(ofcAppEdit){
-      h+=`<div class="ofc-app-tile-wrap"><button class="ofc-app-xbtn" onclick="event.stopPropagation();ofcRemoveApp(${i})">✕</button><div class="ofc-app-tile"><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div></div>`;
+      h+=`<div class="ofc-app-tile-wrap"><button class="ofc-app-xbtn" onclick="event.stopPropagation();ofcRemoveApp(${i})">✕</button><div class="ofc-app-tile" onclick="event.stopPropagation();ofcEditAppIdx=ofcEditAppIdx===${i}?-1:${i};renderPitch()"><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div></div>`;
     } else {
       h+=`<div class="ofc-app-tile"${a.url?` onclick="window.open('${esc(a.url)}','_blank')"`:``}><span class="ofc-app-ico">${a.ico}</span><div class="ofc-app-nm">${esc(a.name)}</div></div>`;
     }
   });
   h+=`<div class="ofc-app-tile" style="border:1.5px dashed var(--as);opacity:.6" onclick="event.stopPropagation();ofcShowAddApp()"><span class="ofc-app-ico">➕</span><div class="ofc-app-nm">Add</div></div></div></div></div>`;
+  // Inline edit form for selected app
+  if(ofcAppEdit&&ofcEditAppIdx>=0&&ofcEditAppIdx<ofcApps.length){
+    const ea=ofcApps[ofcEditAppIdx],ei=ofcEditAppIdx;
+    h+=`<div style="background:var(--card);border:1.5px solid var(--accent);border-radius:12px;padding:10px;margin-top:-8px;margin-bottom:10px"><div style="font-size:9px;font-weight:700;color:var(--accent);margin-bottom:6px">Edit: ${esc(ea.name)}</div><div style="display:flex;gap:4px;margin-bottom:4px"><input id="ofcEditIco${ei}" value="${esc(ea.ico)}" style="width:32px;border:1px solid var(--as);border-radius:6px;padding:5px 2px;font-size:13px;text-align:center;outline:none;background:white"><input id="ofcEditName${ei}" value="${esc(ea.name)}" placeholder="Name" style="flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text)"></div><div style="display:flex;gap:4px"><input id="ofcEditUrl${ei}" value="${esc(ea.url||'')}" placeholder="https://... (URL)" style="flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text2)"><button style="border:none;background:var(--accent);color:white;padding:5px 12px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="ofcApps[${ei}].ico=document.getElementById('ofcEditIco${ei}').value;ofcApps[${ei}].name=document.getElementById('ofcEditName${ei}').value;ofcApps[${ei}].url=document.getElementById('ofcEditUrl${ei}').value;saveOfcApps();ofcEditAppIdx=-1;renderPitch()">Save</button></div></div>`;
+  }
   // Add app form
   if(ofcAddingApp){
     h+=`<div class="ofc-app-add"><div class="ofc-app-add-title">Add New App</div><div class="ofc-app-add-row"><input class="ofc-app-add-ico" id="ofcNewAppIco" value="📱" placeholder="🔗"><input class="ofc-app-add-inp" id="ofcNewAppName" placeholder="App name"></div><div class="ofc-app-add-row"><input class="ofc-app-add-inp" id="ofcNewAppUrl" placeholder="https://... (URL)"></div><div class="ofc-app-add-btns"><button class="ofc-app-add-btn save" onclick="ofcSaveApp()">Save</button><button class="ofc-app-add-btn cancel" onclick="ofcCancelAddApp()">Cancel</button></div></div>`;
