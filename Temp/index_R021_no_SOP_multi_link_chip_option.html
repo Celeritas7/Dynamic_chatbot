@@ -455,21 +455,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-ql-sheet-link{display:flex;align-items:center;gap:12px;padding:14px 12px;border-radius:12px;cursor:pointer;transition:all .15s;border:1.5px solid var(--as);margin-bottom:8px}
 .ofc-ql-sheet-link:hover{background:var(--as)}.ofc-ql-sheet-link:active{background:var(--accent);color:white;border-color:var(--accent)}
 .ofc-ql-sheet-link:active .ofc-ql-slink-url{color:rgba(255,255,255,.6)}
-
-/* QL Chips (sub-links) */
-.ql-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:0 4px}
-.ql-chip{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:20px;background:var(--accent);color:white;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;text-decoration:none;border:none}
-.ql-chip:hover{filter:brightness(1.1)}.ql-chip:active{transform:scale(.95)}
-.ql-chip-arrow{font-size:8px;opacity:.7}
-.ql-link-expand{margin-left:auto;font-size:9px;color:var(--accent);font-weight:600;flex-shrink:0}
-/* Chip edit */
-.ql-chip-edit{background:var(--bg);border-radius:8px;padding:6px;margin-top:6px}
-.ql-chip-edit-row{display:flex;gap:3px;align-items:center;margin-bottom:3px}
-.ql-chip-edit-inp{flex:1;border:1px solid var(--as);border-radius:5px;padding:4px 6px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
-.ql-chip-edit-inp:focus{border-color:var(--accent)}
-.ql-chip-edit-del{border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0}
-.ql-chip-csv-btn{border:1px dashed var(--as);border-radius:6px;padding:5px 8px;font-size:8px;color:var(--text2);cursor:pointer;text-align:center;margin-top:4px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px}
-.ql-chip-csv-btn:hover{background:var(--as);color:var(--accent)}
 .ofc-ql-slink-ico{font-size:22px;flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--as);border-radius:10px}
 .ofc-ql-slink-info{flex:1;min-width:0}
 .ofc-ql-slink-nm{font-size:13px;font-weight:600}
@@ -504,46 +489,52 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .applaunch-btn:active{transform:scale(.9)}
 .applaunch-ov{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
 .applaunch-ov.show{display:flex;animation:ofcFadeIn .2s ease}
-.applaunch-sheet{background:var(--card);border-radius:20px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;padding:20px 16px 24px;animation:alPopIn .3s ease;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.applaunch-sheet{background:var(--card);border-radius:20px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;padding:20px 16px 24px;animation:alPopIn .3s ease;box-shadow:0 24px 64px rgba(0,0,0,.25)}
 @keyframes alPopIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-.applaunch-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.applaunch-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .applaunch-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .applaunch-close{border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.al-filter{display:flex;gap:4px;margin-bottom:10px;padding:3px;background:var(--as);border-radius:9px}
-.al-filter-btn{flex:1;border:none;padding:6px;border-radius:7px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent;color:var(--text2);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:3px}
-.al-filter-btn.active{background:white;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.al-filter-dot{width:6px;height:6px;border-radius:50%}
-.al-summary{display:flex;gap:10px;margin-bottom:10px;padding:7px 10px;background:var(--as);border-radius:9px;align-items:center;font-size:10px;font-weight:600}
-.al-summary-dot{width:7px;height:7px;border-radius:50%}
-.al-grid{display:flex;gap:0;border:1.5px solid var(--as);border-radius:12px;overflow:hidden;min-height:150px}
-.al-col{flex:1;min-width:0;border-right:1px solid var(--as)}.al-col:last-child{border-right:none}
-.al-col-hd{padding:8px 6px;background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-bottom:1.5px solid var(--as);text-align:center}
-.al-col-title{font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:3px}
-.al-col-count{font-size:7px;background:var(--accent);color:white;padding:1px 4px;border-radius:8px}
-.al-col-body{overflow-y:auto;max-height:380px}
-.al-sec-hd{padding:4px 6px;display:flex;align-items:center;gap:3px;font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.al-sec-hd.al-act{background:#ECFDF5;color:#059669;border-bottom:1px solid #D1FAE5;border-top:1px solid #D1FAE5}
-.al-sec-hd.al-inact{background:#F8FAFC;color:#94A3B8;border-bottom:1px solid #E2E8F0;border-top:1px solid #E2E8F0}
-.al-sec-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.al-sub-hd{padding:4px 6px;background:#F8F4F0;border-bottom:1px solid var(--as);border-top:1px solid var(--as)}
-.al-sub-title{font-size:8px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:3px;text-transform:uppercase;letter-spacing:.3px}
-.al-app{padding:7px 6px;border-bottom:1px solid #f5f0ec;cursor:pointer;transition:all .15s;position:relative}
-.al-app:hover{background:var(--as)}.al-app:active{background:var(--accent);color:white}.al-app:last-child{border-bottom:none}
-.al-app-name{font-size:9px;font-weight:600;display:flex;align-items:center;gap:3px;line-height:1.3}
-.al-app-url{font-size:7px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 28px)}
-.al-app:active .al-app-url{color:rgba(255,255,255,.6)}
-.al-app-ico{font-size:12px;flex-shrink:0}.al-app-nourl{font-size:7px;color:#ccc;font-style:italic}
-.al-app.al-dimmed{opacity:.4}.al-app.al-dimmed:hover{opacity:.65}
-.al-app-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-left:auto}
-.al-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:24px;height:13px;border-radius:7px;border:none;cursor:pointer;transition:all .2s;padding:0}
-.al-toggle.on{background:#059669}.al-toggle.off{background:#CBD5E1}
-.al-toggle::after{content:'';position:absolute;top:2px;width:9px;height:9px;border-radius:50%;background:white;transition:all .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
-.al-toggle.on::after{left:13px}.al-toggle.off::after{left:2px}
-.al-empty{padding:10px 6px;text-align:center;font-size:8px;color:var(--text2);opacity:.5}
-.al-edit-btn{border:none;background:var(--as);padding:3px 10px;border-radius:6px;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.al-edit-btn.on{background:var(--accent);color:white}
-.al-edit-add{border:1.5px dashed var(--as);border-radius:8px;padding:6px;text-align:center;font-size:8px;color:var(--text2);cursor:pointer;margin-top:6px}
-.al-edit-add:hover{background:var(--as);color:var(--accent)}
+.alcat{margin-bottom:14px}
+.alcat-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid var(--as)}
+.alcat-ico{font-size:16px}.alcat-nm{font-size:13px;font-weight:700;flex:1}
+.alcat-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--as);color:var(--text2)}
+.alcat-toggle{border:none;background:none;font-size:10px;cursor:pointer;color:var(--text2);transition:transform .2s;padding:4px}
+.alcat-toggle.open{transform:rotate(180deg)}
+.alcat-body{display:none;padding-left:4px}
+.alcat-body.open{display:block;animation:ofcSlideD .2s ease}
+/* Sub-categories */
+.alsub{margin:8px 0 4px 4px}
+.alsub-hd{display:flex;align-items:center;gap:6px;padding:6px 0;cursor:pointer;border-bottom:1px solid var(--as);margin-bottom:6px}
+.alsub-ico{font-size:14px}
+.alsub-nm{font-size:11px;font-weight:600;flex:1;color:var(--text)}
+.alsub-arr{font-size:8px;color:var(--text2);transition:transform .2s}
+.alsub-arr.open{transform:rotate(180deg)}
+.alsub-body{display:none;padding-left:8px}
+.alsub-body.open{display:block}
+/* App link item */
+.alapp{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:10px;cursor:pointer;transition:all .15s;border:1.5px solid var(--as);margin-bottom:6px}
+.alapp:hover{background:var(--as)}.alapp:active{background:var(--accent);color:white;border-color:var(--accent)}
+.alapp:active .alapp-url{color:rgba(255,255,255,.6)}
+.alapp-ico{font-size:18px;flex-shrink:0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--as);border-radius:9px}
+.alapp-info{flex:1;min-width:0}
+.alapp-nm{font-size:12px;font-weight:600}
+.alapp-url{font-size:8px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.alapp-go{font-size:12px;color:var(--accent);flex-shrink:0}
+.alapp-loc{font-size:7px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.alapp-loc.all{background:#E5EAFF;color:#3B5BDB}.alapp-loc.office{background:#E5EAFF;color:#3B5BDB}.alapp-loc.home{background:#FFF0E5;color:#E8722A}
+
+/* App launcher edit mode */
+.al-edit-btn{border:none;background:var(--as);padding:3px 10px;border-radius:6px;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:8px}
+.al-edit-row{display:flex;gap:4px;align-items:center;margin-bottom:6px;padding:6px 8px;background:var(--bg);border-radius:8px;border:1px solid var(--as)}
+.al-edit-ico{width:28px;border:1px solid var(--as);border-radius:6px;padding:4px 2px;font-size:11px;text-align:center;font-family:'DM Sans',sans-serif;outline:none;background:white}
+.al-edit-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
+.al-edit-inp:focus{border-color:var(--accent)}
+.al-edit-inp.url{font-size:9px;color:var(--text2)}
+.al-edit-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.4;flex-shrink:0;padding:2px}
+.al-edit-del:hover{opacity:1}
+.al-cat-edit{display:flex;gap:4px;align-items:center;margin-bottom:6px}
+.al-add-btn{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:9px;color:var(--text2);cursor:pointer;margin-top:4px;margin-bottom:4px}
+.al-add-btn:hover{background:var(--as);color:var(--accent)}
 
 /* Critical surface */
 .ofc-crit{margin-bottom:14px}
@@ -755,7 +746,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="ofc-ql-overlay" id="ofcQLOverlay" onclick="if(event.target===this)ofcCloseQLOverlay()">
   <div class="ofc-ql-sheet" id="ofcQLSheet"></div>
 </div>
-<input type="file" id="qlCsvInput" accept=".csv,.txt" style="display:none" onchange="qlHandleCsv(this)">
 
 <!-- APP LAUNCHER OVERLAY -->
 <div class="applaunch-ov" id="appLaunchOv" onclick="if(event.target===this)closeAppLaunch()">
@@ -1062,120 +1052,75 @@ async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps)
 async function saveOfcTasks(){await memSave('cf_ofc_tasks',JSON.stringify({mgr:ofcMgrTasks,rem:ofcReminders,ppl:ofcPplTasks}))}
 async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,appDB}))}
 
-// ===== APP LAUNCHER (Table View) =====
+// ===== APP LAUNCHER =====
 let alEditMode=false;
-let alFilter='all'; // 'all' | 'active' | 'inactive'
-let alDelTarget=null;
-
-function alAllApps(){
-  const list=[];
-  appDB.forEach(function(cat){
-    if(cat.apps)(cat.apps||[]).forEach(function(a){list.push(a)});
-    if(cat.subs)(cat.subs||[]).forEach(function(sub){(sub.apps||[]).forEach(function(a){list.push(a)})});
-  });
-  return list;
-}
-function alShouldShow(a){
-  if(alFilter==='all')return true;
-  if(alFilter==='active')return a.active!==false;
-  return a.active===false;
-}
-function alCountVis(cat){
-  var all=[];
-  if(cat.apps)all=cat.apps;
-  if(cat.subs)(cat.subs||[]).forEach(function(s){all=all.concat(s.apps||[])});
-  return all.filter(alShouldShow).length;
-}
-
-function alRenderApp(a, path){
-  if(!alShouldShow(a))return'';
-  var hasUrl=a.url&&a.url.trim();
-  var dispUrl=hasUrl?(a.url.length>20?a.url.slice(0,20)+'...':a.url):'';
-  var inact=a.active===false;
-  var h='<div class="al-app'+(inact?' al-dimmed':'')+'" '+(hasUrl&&!alEditMode?'onclick="window.open(\''+esc(a.url)+'\',\'_blank\');closeAppLaunch()"':'')+'>';
-  h+='<div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name);
-  if(!alEditMode)h+='<div class="al-app-dot" style="background:'+(inact?'#CBD5E1':'#059669')+'"></div>';
-  h+='</div>';
-  if(hasUrl)h+='<div class="al-app-url">'+esc(dispUrl)+'</div>';
-  else h+='<div class="al-app-nourl">No URL</div>';
-  if(alEditMode){
-    h+='<button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';saveAppDB();openAppLaunch()"></button>';
-  }
-  h+='</div>';
-  return h;
-}
-
-function alRenderSection(apps, pathBase){
-  var act=apps.filter(function(a){return a.active!==false&&alShouldShow(a)});
-  var inact=apps.filter(function(a){return a.active===false&&alShouldShow(a)});
-  var h='';
-  var showSep=alFilter==='all'&&act.length&&inact.length;
-  if(showSep)h+='<div class="al-sec-hd al-act"><div class="al-sec-dot" style="background:#059669"></div> Active ('+act.length+')</div>';
-  apps.forEach(function(a,ai){if(a.active!==false&&alShouldShow(a))h+=alRenderApp(a,pathBase+'['+ai+']')});
-  if(showSep)h+='<div class="al-sec-hd al-inact"><div class="al-sec-dot" style="background:#CBD5E1"></div> Inactive ('+inact.length+')</div>';
-  apps.forEach(function(a,ai){if(a.active===false&&alShouldShow(a))h+=alRenderApp(a,pathBase+'['+ai+']')});
-  return h;
-}
+let alDelTarget=null; // {type:'alcat'|'alsub'|'alapp', catIdx, subIdx?, appIdx?}
 
 function openAppLaunch(){
-  var sheet=document.getElementById('appLaunchSheet');
-  var all=alAllApps();
-  var actN=all.filter(function(a){return a.active!==false}).length;
-  var inactN=all.filter(function(a){return a.active===false}).length;
+  const sheet=document.getElementById('appLaunchSheet');
+  let h=`<div class="applaunch-hd"><div class="applaunch-title">📚 My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn" onclick="alEditMode=!alEditMode;openAppLaunch()">${alEditMode?'✓ Done':'✏️ Edit'}</button><button class="applaunch-close" onclick="closeAppLaunch()">✕</button></div></div>`;
 
-  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alEditMode=!alEditMode;openAppLaunch()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
+  appDB.forEach((cat,ci)=>{
+    const isOpen=alOpen[cat.id]===true; // default CLOSED
+    const count=cat.apps?cat.apps.length:(cat.subs||[]).reduce((s,sub)=>s+(sub.apps||[]).length,0);
 
-  // Summary
-  h+='<div class="al-summary"><div class="al-summary-dot" style="background:#059669"></div>'+actN+' Active <div class="al-summary-dot" style="background:#CBD5E1;margin-left:6px"></div>'+inactN+' Inactive<span style="margin-left:auto;font-size:9px;color:var(--text2)">'+all.length+' total</span></div>';
-
-  // Filter
-  h+='<div class="al-filter">';
-  h+='<button class="al-filter-btn'+(alFilter==='all'?' active':'')+'" onclick="alFilter=\'all\';openAppLaunch()">All '+all.length+'</button>';
-  h+='<button class="al-filter-btn'+(alFilter==='active'?' active':'')+'" onclick="alFilter=\'active\';openAppLaunch()"><div class="al-filter-dot" style="background:#059669"></div> Active '+actN+'</button>';
-  h+='<button class="al-filter-btn'+(alFilter==='inactive'?' active':'')+'" onclick="alFilter=\'inactive\';openAppLaunch()"><div class="al-filter-dot" style="background:#CBD5E1"></div> Inactive '+inactN+'</button>';
-  h+='</div>';
-
-  // Grid
-  h+='<div class="al-grid">';
-  appDB.forEach(function(cat,ci){
-    var visN=alCountVis(cat);
-    h+='<div class="al-col">';
-    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+visN+'</span></div></div>';
-    h+='<div class="al-col-body">';
-
-    if(cat.subs){
-      cat.subs.forEach(function(sub,si){
-        var subVis=(sub.apps||[]).filter(alShouldShow);
-        if(!subVis.length&&!alEditMode)return;
-        h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+subVis.length+')</span></div></div>';
-        h+=alRenderSection(sub.apps||[],'appDB['+ci+'].subs['+si+'].apps');
-        if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs['+si+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
-      });
-      if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs.push({id:\'sub_\'+Date.now(),ico:\'&#127991;\',name:\'New Group\',apps:[]});saveAppDB();openAppLaunch()">+ Group</div>';
-    } else if(cat.apps){
-      h+=alRenderSection(cat.apps,'appDB['+ci+'].apps');
-      if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
+    // Category header
+    h+=`<div class="alcat">`;
+    if(alEditMode){
+      h+=`<div class="al-cat-edit"><input class="al-edit-ico" value="${esc(cat.ico)}" onchange="appDB[${ci}].ico=this.value;saveAppDB()"><input class="al-edit-inp" value="${esc(cat.name)}" style="font-weight:700" onchange="appDB[${ci}].name=this.value;saveAppDB()"><span class="alcat-badge">${count}</span><button class="al-edit-del" onclick="alAskDel('alcat',${ci})" title="Delete category">🗑️</button><span class="alcat-toggle ${isOpen?'open':''}" onclick="alOpen['${cat.id}']=!${isOpen};openAppLaunch()" style="cursor:pointer">▼</span></div>`;
+    } else {
+      h+=`<div class="alcat-hd" onclick="alOpen['${cat.id}']=!${isOpen};openAppLaunch()"><span class="alcat-ico">${cat.ico}</span><span class="alcat-nm">${esc(cat.name)}</span><span class="alcat-badge">${count}</span><span class="alcat-toggle ${isOpen?'open':''}">▼</span></div>`;
     }
+    h+=`<div class="alcat-body ${isOpen?'open':''}">`;
 
-    if(!visN&&!alEditMode)h+='<div class="al-empty">No apps</div>';
-    h+='</div></div>';
+    if(cat.apps){
+      cat.apps.forEach((a,ai)=>{h+=alEditMode?renderALAppEdit(a,ci,null,ai):renderALApp(a)});
+      if(alEditMode)h+=`<div class="al-add-btn" onclick="appDB[${ci}].apps.push({id:'a_'+Date.now(),ico:'📱',name:'New App',url:''});saveAppDB();openAppLaunch()">+ Add app</div>`;
+    }
+    if(cat.subs){
+      cat.subs.forEach((sub,si)=>{
+        const subOpen=alOpen[sub.id]===true;
+        if(alEditMode){
+          h+=`<div class="alsub"><div class="al-cat-edit" style="padding-left:8px"><input class="al-edit-ico" value="${esc(sub.ico)}" onchange="appDB[${ci}].subs[${si}].ico=this.value;saveAppDB()"><input class="al-edit-inp" value="${esc(sub.name)}" style="font-weight:600" onchange="appDB[${ci}].subs[${si}].name=this.value;saveAppDB()"><span class="alcat-badge">${(sub.apps||[]).length}</span><button class="al-edit-del" onclick="alAskDel('alsub',${ci},${si})" title="Delete sub">🗑️</button><span class="alsub-arr ${subOpen?'open':''}" onclick="alOpen['${sub.id}']=!${subOpen};openAppLaunch()" style="cursor:pointer">▼</span></div>`;
+        } else {
+          h+=`<div class="alsub"><div class="alsub-hd" onclick="event.stopPropagation();alOpen['${sub.id}']=!${subOpen};openAppLaunch()"><span class="alsub-ico">${sub.ico}</span><span class="alsub-nm">${esc(sub.name)}</span><span class="alcat-badge">${(sub.apps||[]).length}</span><span class="alsub-arr ${subOpen?'open':''}">▼</span></div>`;
+        }
+        h+=`<div class="alsub-body ${subOpen?'open':''}">`;
+        (sub.apps||[]).forEach((a,ai)=>{h+=alEditMode?renderALAppEdit(a,ci,si,ai):renderALApp(a)});
+        if(alEditMode)h+=`<div class="al-add-btn" onclick="appDB[${ci}].subs[${si}].apps.push({id:'a_'+Date.now(),ico:'📱',name:'New App',url:''});saveAppDB();openAppLaunch()">+ Add app</div>`;
+        h+=`</div></div>`;
+      });
+      if(alEditMode)h+=`<div class="al-add-btn" onclick="appDB[${ci}].subs.push({id:'sub_'+Date.now(),ico:'🏷️',name:'New Sub',apps:[]});saveAppDB();openAppLaunch()">+ Add sub-category</div>`;
+    }
+    h+=`</div></div>`;
   });
-  h+='</div>';
 
   if(alEditMode){
-    h+='<div class="al-edit-add" style="margin-top:8px;font-weight:600" onclick="appDB.push({id:\'cat_\'+Date.now(),ico:\'&#128194;\',name:\'New Category\',apps:[]});saveAppDB();openAppLaunch()">+ Add Category</div>';
+    h+=`<div class="al-add-btn" style="margin-top:8px;font-size:10px;font-weight:600" onclick="appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[]});saveAppDB();openAppLaunch()">+ Add Category</div>`;
   }
 
   sheet.innerHTML=h;
   document.getElementById('appLaunchOv').classList.add('show');
 }
 
+function renderALApp(a){
+  const dispUrl=a.url?(a.url.length>35?a.url.slice(0,35)+'…':a.url):'No URL set';
+  const hasUrl=a.url&&a.url.trim();
+  const locTag=a.locs?`<span class="alapp-loc all">All</span>`:'';
+  return`<div class="alapp" onclick="${hasUrl?`window.open('${esc(a.url)}','_blank');closeAppLaunch()`:``}"><div class="alapp-ico">${a.ico}</div><div class="alapp-info"><div class="alapp-nm">${esc(a.name)}</div><div class="alapp-url">${esc(dispUrl)}</div></div>${locTag}${hasUrl?'<span class="alapp-go">↗</span>':''}</div>`;
+}
+
+function renderALAppEdit(a,ci,si,ai){
+  const path=si!=null?`appDB[${ci}].subs[${si}].apps[${ai}]`:`appDB[${ci}].apps[${ai}]`;
+  return`<div class="al-edit-row"><input class="al-edit-ico" value="${esc(a.ico)}" onchange="${path}.ico=this.value;saveAppDB()"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><input class="al-edit-inp" value="${esc(a.name)}" placeholder="App name" onchange="${path}.name=this.value;saveAppDB()"><input class="al-edit-inp url" value="${esc(a.url||'')}" placeholder="https://... (URL)" onchange="${path}.url=this.value;saveAppDB()"></div><button class="al-edit-del" onclick="alAskDel('alapp',${ci},${si!=null?si:'null'},${ai})" title="Delete app">🗑️</button></div>`;
+}
+
 function alAskDel(type,ci,si,ai){
-  var name='';
+  let name='';
   if(type==='alcat')name=appDB[ci].name;
   else if(type==='alsub')name=appDB[ci].subs[si].name;
   else if(type==='alapp')name=si!=null?appDB[ci].subs[si].apps[ai].name:appDB[ci].apps[ai].name;
-  alDelTarget={type:type,ci:ci,si:si,ai:ai};
+  alDelTarget={type,ci,si,ai};
   document.getElementById('delTaskName').textContent=name;
   document.getElementById('delPopup').classList.add('show');
 }
@@ -1209,55 +1154,16 @@ function ofcCancelAddApp(){ofcAddingApp=false;renderPitch()}
 function ofcOpenQLOverlay(groupId){
   const g=ofcQLGroups.find(x=>x.id===groupId);if(!g)return;
   const sheet=document.getElementById('ofcQLSheet');
-  let h='<div class="ofc-ql-sheet-hd"><div class="ofc-ql-sheet-title"><span style="font-size:22px">'+g.ico+'</span> '+esc(g.name)+'</div><button class="ofc-ql-sheet-close" onclick="ofcCloseQLOverlay()">&#10005;</button></div>';
-  g.items.forEach(function(it){
-    const hasChips=it.chips&&it.chips.length;
+  let h=`<div class="ofc-ql-sheet-hd"><div class="ofc-ql-sheet-title"><span style="font-size:22px">${g.ico}</span> ${esc(g.name)}</div><button class="ofc-ql-sheet-close" onclick="ofcCloseQLOverlay()">✕</button></div>`;
+  g.items.forEach(it=>{
     const dispUrl=it.url?(it.url.length>40?it.url.slice(0,40)+'…':it.url):'No URL set';
     const hasUrl=it.url&&it.url.trim();
-    if(hasChips){
-      // Item with sub-chips: show name + chip grid
-      h+='<div style="margin-bottom:10px"><div class="ofc-ql-sheet-link" style="margin-bottom:4px;cursor:default">';
-      h+='<div class="ofc-ql-slink-ico">'+it.ico+'</div>';
-      h+='<div class="ofc-ql-slink-info"><div class="ofc-ql-slink-nm">'+esc(it.name)+'</div><div class="ofc-ql-slink-url">'+it.chips.length+' stages</div></div>';
-      h+='<span class="ql-link-expand">'+it.chips.length+' links</span></div>';
-      h+='<div class="ql-chips">';
-      it.chips.forEach(function(c){
-        var curl=c.url&&c.url.trim();
-        h+='<a class="ql-chip" '+(curl?'href="'+esc(c.url)+'" target="_blank" onclick="ofcCloseQLOverlay()"':'')+'>'+(esc(c.name)||'Link')+' <span class="ql-chip-arrow">&#8599;</span></a>';
-      });
-      h+='</div></div>';
-    } else {
-      // Regular single-URL item
-      h+='<div class="ofc-ql-sheet-link" onclick="'+(hasUrl?"window.open('"+esc(it.url)+"','_blank');ofcCloseQLOverlay()":"")+'"><div class="ofc-ql-slink-ico">'+it.ico+'</div><div class="ofc-ql-slink-info"><div class="ofc-ql-slink-nm">'+esc(it.name)+'</div><div class="ofc-ql-slink-url">'+esc(dispUrl)+'</div></div>'+(hasUrl?'<span class="ofc-ql-slink-go">&#8599;</span>':'')+'</div>';
-    }
+    h+=`<div class="ofc-ql-sheet-link" onclick="${hasUrl?`window.open('${esc(it.url)}','_blank');ofcCloseQLOverlay()`:``}"><div class="ofc-ql-slink-ico">${it.ico}</div><div class="ofc-ql-slink-info"><div class="ofc-ql-slink-nm">${esc(it.name)}</div><div class="ofc-ql-slink-url">${esc(dispUrl)}</div></div>${hasUrl?'<span class="ofc-ql-slink-go">↗</span>':''}</div>`;
   });
   sheet.innerHTML=h;
   document.getElementById('ofcQLOverlay').classList.add('show');
 }
 function ofcCloseQLOverlay(){document.getElementById('ofcQLOverlay').classList.remove('show')}
-
-// CSV import for chips
-let qlCsvTarget=null; // {gi, ii}
-function qlHandleCsv(fileInput){
-  const file=fileInput.files[0];if(!file||!qlCsvTarget)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const text=e.target.result;
-    const lines=text.split(/\r?\n/).filter(function(l){return l.trim()});
-    const gi=qlCsvTarget.gi,ii=qlCsvTarget.ii;
-    if(!ofcQLGroups[gi]||!ofcQLGroups[gi].items[ii])return;
-    if(!ofcQLGroups[gi].items[ii].chips)ofcQLGroups[gi].items[ii].chips=[];
-    lines.forEach(function(line){
-      var parts=line.split(',');
-      var name=(parts[0]||'').trim();
-      var url=(parts.slice(1).join(',') ||'').trim();
-      if(name)ofcQLGroups[gi].items[ii].chips.push({name:name,url:url});
-    });
-    saveOfcQL();renderPitch();qlCsvTarget=null;
-  };
-  reader.readAsText(file);
-  fileInput.value='';
-}
 function ofcSaveApp(){
   const ico=document.getElementById('ofcNewAppIco')?.value||'📱';
   const name=document.getElementById('ofcNewAppName')?.value?.trim();
@@ -1439,7 +1345,7 @@ function renderOffice(){
   if(!ofcQLEdit){
     h+=`<div class="ofc-ql-row">`;
     visGroups.forEach(g=>{
-      if(g.items.length===1&&g.items[0].url&&!(g.items[0].chips&&g.items[0].chips.length)){
+      if(g.items.length===1&&g.items[0].url){
         // Single link — open directly
         h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn" onclick="window.open('${esc(g.items[0].url)}','_blank')"><span>${g.ico}</span> ${esc(g.name)}</div></div>`;
       } else {
@@ -1453,16 +1359,7 @@ function renderOffice(){
     h+=`<div class="ofc-ql-ep">`;
     ofcQLGroups.forEach((g,gi)=>{
       h+=`<div class="ofc-ql-eg"><div class="ofc-ql-eg-hd"><input class="ofc-ql-eg-ico" value="${esc(g.ico)}" style="width:26px;font-size:12px" onchange="ofcQLGroups[${gi}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(g.name)}" style="font-size:11px;font-weight:700;flex:1" onchange="ofcQLGroups[${gi}].name=this.value;saveOfcQL()"><button class="ofc-ql-eg-del" onclick="ofcAskDel('qlgroup',${gi})" title="Delete group">🗑️</button></div>`;
-      g.items.forEach((it,ii)=>{
-        h+=`<div class="ofc-ql-eg-row"><input class="ofc-ql-eg-ico" value="${esc(it.ico)}" onchange="ofcQLGroups[${gi}].items[${ii}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.name)}" onchange="ofcQLGroups[${gi}].items[${ii}].name=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.url)}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].url=this.value;saveOfcQL()"><button class="ofc-ql-eg-xb" onclick="ofcQLGroups[${gi}].items.splice(${ii},1);saveOfcQL();renderPitch()">✕</button></div>`;
-        // Chip editing
-        const chips=it.chips||[];
-        h+=`<div class="ql-chip-edit" style="margin-left:30px;margin-bottom:6px">`;
-        chips.forEach((c,ci)=>{
-          h+=`<div class="ql-chip-edit-row"><input class="ql-chip-edit-inp" value="${esc(c.name)}" placeholder="Stage name" onchange="ofcQLGroups[${gi}].items[${ii}].chips[${ci}].name=this.value;saveOfcQL()"><input class="ql-chip-edit-inp" value="${esc(c.url||'')}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].chips[${ci}].url=this.value;saveOfcQL()"><button class="ql-chip-edit-del" onclick="ofcQLGroups[${gi}].items[${ii}].chips.splice(${ci},1);saveOfcQL();renderPitch()">&#10005;</button></div>`;
-        });
-        h+=`<div style="display:flex;gap:4px"><div class="ql-chip-csv-btn" style="flex:1" onclick="if(!ofcQLGroups[${gi}].items[${ii}].chips)ofcQLGroups[${gi}].items[${ii}].chips=[];ofcQLGroups[${gi}].items[${ii}].chips.push({name:'Stage',url:''});saveOfcQL();renderPitch()">+ Chip</div><div class="ql-chip-csv-btn" style="flex:1" onclick="qlCsvTarget={gi:${gi},ii:${ii}};document.getElementById('qlCsvInput').click()">&#128203; CSV Import</div></div></div>`;
-      });
+      g.items.forEach((it,ii)=>{h+=`<div class="ofc-ql-eg-row"><input class="ofc-ql-eg-ico" value="${esc(it.ico)}" onchange="ofcQLGroups[${gi}].items[${ii}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.name)}" onchange="ofcQLGroups[${gi}].items[${ii}].name=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.url)}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].url=this.value;saveOfcQL()"><button class="ofc-ql-eg-xb" onclick="ofcQLGroups[${gi}].items.splice(${ii},1);saveOfcQL();renderPitch()">✕</button></div>`});
       h+=`<div class="ofc-ql-addl" onclick="ofcQLGroups[${gi}].items.push({ico:'🔗',name:'New Link',url:''});saveOfcQL();renderPitch()">+ Add link</div></div>`;
     });
     h+=`<div class="ofc-ql-addg" onclick="ofcQLGroups.push({id:'g'+Date.now(),ico:'📌',name:'New Group',items:[{ico:'🔗',name:'Link',url:''}]});saveOfcQL();renderPitch()">+ Add Group</div></div>`;
