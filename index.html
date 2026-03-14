@@ -416,7 +416,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-ql-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .ofc-ql-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2)}
 .ofc-ql-edit{border:none;background:var(--as);padding:3px 10px;border-radius:6px;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.ofc-ql-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;flex-wrap:wrap;-webkit-overflow-scrolling:touch}
+.ofc-ql-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;flex-wrap:wrap}
 .ofc-ql-chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--as);border-radius:10px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:all .15s;font-size:10px;font-weight:600;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .ofc-ql-chip:active{transform:scale(.96)}
 .ofc-ql-chip.ranked{border-color:var(--accent);background:#F5F3FF;box-shadow:0 2px 6px rgba(99,102,241,.12)}
@@ -424,49 +424,93 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-ql-chip.ranked .ofc-ql-chip-count{background:var(--accent);color:white}
 .ofc-ql-rank-badge{width:16px;height:16px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
 /* Editor overlay */
-.ql-ed-ov{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
+.ql-ed-ov{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:12px}
 .ql-ed-ov.show{display:flex;animation:ofcFadeIn .2s ease}
-.ql-ed-panel{background:var(--bg);border-radius:20px;width:100%;max-width:460px;max-height:85vh;overflow-y:auto;padding:0;box-shadow:0 24px 64px rgba(0,0,0,.25);animation:alPopIn .3s ease}
-.ql-ed-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;position:sticky;top:0;background:var(--bg);z-index:2;border-radius:20px 20px 0 0}
-.ql-ed-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}
-.ql-ed-close{border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ql-ed-body{padding:0 16px 20px}
-.ql-ed-folder{background:var(--card);border-radius:12px;margin-bottom:8px;border:1.5px solid var(--as);overflow:hidden;transition:all .2s}
-.ql-ed-folder.expanded{border-color:var(--accent)}
-.ql-ed-folder-hd{display:flex;align-items:center;gap:6px;padding:10px 10px;cursor:pointer;transition:all .15s}
-.ql-ed-folder-hd:hover{background:#F8F9FF}
-.ql-ed-folder-arrows{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
-.ql-ed-folder-arr{border:none;background:var(--as);width:18px;height:14px;border-radius:4px;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ql-ed-folder-arr:hover{background:var(--accent);color:white}
-.ql-ed-folder-rank{width:18px;height:18px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
-.ql-ed-folder-name{font-size:11px;font-weight:700;flex:1}
-.ql-ed-folder-count{font-size:8px;background:var(--as);padding:1px 6px;border-radius:8px;color:var(--text2);font-weight:600}
-.ql-ed-folder-time{font-size:7px;padding:2px 6px;border-radius:4px;font-weight:600}
-.ql-ed-folder-time.always{background:#ECFDF5;color:#059669}
-.ql-ed-folder-time.limited{background:#FFF7ED;color:#E8722A}
-.ql-ed-folder-chev{font-size:9px;color:var(--text2);transition:transform .2s;flex-shrink:0}
-.ql-ed-folder.expanded .ql-ed-folder-chev{transform:rotate(180deg)}
-.ql-ed-folder-body{padding:0 10px 10px;display:none}
-.ql-ed-folder.expanded .ql-ed-folder-body{display:block;animation:ofcSlideD .2s ease}
-.ql-ed-sett{display:flex;gap:6px;align-items:center;padding:8px 0;margin-bottom:6px;border-bottom:1px solid var(--as);flex-wrap:wrap}
-.ql-ed-sett-lbl{font-size:8px;font-weight:600;color:var(--text2)}
-.ql-ed-sett-inp{border:1px solid var(--as);border-radius:5px;padding:3px 6px;font-size:9px;font-family:'DM Sans',sans-serif;width:38px;text-align:center;outline:none;background:white}
-.ql-ed-sett-inp:focus{border-color:var(--accent)}
-.ql-ed-name-row{display:flex;gap:4px;align-items:center;margin-bottom:6px}
-.ql-ed-name-ico{width:28px;border:1px solid var(--as);border-radius:6px;padding:4px 2px;font-size:12px;text-align:center;outline:none;background:white}
-.ql-ed-name-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;outline:none;background:white}
-.ql-ed-name-inp:focus,.ql-ed-name-ico:focus{border-color:var(--accent)}
-.ql-ed-del{border:none;background:#FEF2F2;color:#DC2626;padding:4px 10px;border-radius:6px;font-size:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.ql-ed-link{display:flex;align-items:center;gap:4px;padding:6px;border-radius:8px;margin-bottom:4px;background:var(--bg)}
-.ql-ed-link-ico{width:24px;border:1px solid var(--as);border-radius:5px;padding:3px 2px;font-size:10px;text-align:center;outline:none;background:white}
-.ql-ed-link-inp{flex:1;border:1px solid var(--as);border-radius:5px;padding:4px 6px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
-.ql-ed-link-inp:focus{border-color:var(--accent)}
-.ql-ed-link-inp.url{font-size:8px;color:var(--text2)}
-.ql-ed-link-del{border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.4}
-.ql-ed-add{border:1.5px dashed var(--as);border-radius:8px;padding:6px;text-align:center;font-size:8px;color:var(--text2);cursor:pointer;margin-top:4px}
-.ql-ed-add:hover{background:white;color:var(--accent);border-color:var(--accent)}
-.ql-ed-add-folder{border:1.5px dashed var(--accent);border-radius:10px;padding:9px;text-align:center;font-size:9px;color:var(--accent);cursor:pointer;font-weight:600;margin-top:8px}
-.ql-ed-add-folder:hover{background:#F5F3FF}
+.ql-ed-panel{background:var(--bg);border-radius:20px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:alPopIn .3s ease;border:1px solid var(--as)}
+.ql-ed-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;position:sticky;top:0;background:var(--bg);z-index:2;border-radius:20px 20px 0 0;border-bottom:1px solid var(--as)}
+.ql-ed-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px}
+.ql-ed-close{border:none;background:var(--as);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
+.ql-ed-body{padding:12px 14px 20px}
+/* Folder card */
+.ql-folder{background:var(--card);border:1.5px solid var(--as);border-radius:14px;margin-bottom:8px;overflow:hidden;transition:all .2s}
+.ql-folder.ql-f-exp{border-color:var(--accent);box-shadow:0 4px 16px rgba(61,90,254,.08)}
+.ql-folder.ql-dragging{opacity:.45;transform:scale(.97)}
+.ql-folder.ql-drag-over{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.ql-folder-hd{display:flex;align-items:center;gap:7px;padding:12px 12px;cursor:pointer}
+.ql-folder-hd:active{background:rgba(0,0,0,.02)}
+.ql-folder-grip{width:20px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:grab;flex-shrink:0;touch-action:none;opacity:.25}
+.ql-folder-grip-line{width:12px;height:2px;border-radius:1px;background:var(--text2)}
+.ql-folder-rank{width:18px;height:18px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.ql-folder-ico{font-size:18px;flex-shrink:0}
+.ql-folder-nm{font-size:13px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ql-folder-cnt{font-size:9px;background:var(--as);padding:2px 7px;border-radius:7px;color:var(--text2);font-weight:600}
+.ql-folder-time{font-size:8px;padding:2px 7px;border-radius:5px;font-weight:600}
+.ql-folder-time.always{background:#E8F5E9;color:#2E7D32}
+.ql-folder-time.limited{background:#FFF3E0;color:#E65100}
+.ql-folder-chev{font-size:9px;color:var(--text2);transition:transform .2s;flex-shrink:0}
+.ql-folder.ql-f-exp .ql-folder-chev{transform:rotate(180deg)}
+.ql-folder-body{padding:0 12px 12px;display:none}
+.ql-folder.ql-f-exp .ql-folder-body{display:block;animation:ofcSlideD .2s ease}
+/* Folder settings */
+.ql-f-sett{background:var(--bg);border-radius:10px;padding:10px;margin-bottom:10px}
+.ql-f-sett-row{display:flex;gap:5px;align-items:center;margin-bottom:8px}
+.ql-f-ico-inp{width:34px;height:34px;border:1.5px solid var(--as);border-radius:8px;font-size:16px;text-align:center;outline:none;background:white}
+.ql-f-ico-inp:focus{border-color:var(--accent)}
+.ql-f-name-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;outline:none;background:white}
+.ql-f-name-inp:focus{border-color:var(--accent)}
+.ql-f-del{border:none;background:#FFEBEE;color:#C62828;padding:7px 12px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ql-f-del:hover{background:#C62828;color:white}
+.ql-f-sett-grid{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ql-f-sett-lbl{font-size:10px;font-weight:600;color:var(--text2)}
+.ql-f-sett-num{border:1.5px solid var(--as);border-radius:6px;padding:5px 7px;font-size:11px;font-family:'DM Sans',sans-serif;width:44px;text-align:center;outline:none;background:white}
+.ql-f-sett-num:focus{border-color:var(--accent)}
+.ql-f-days{display:flex;gap:3px;margin-top:6px}
+.ql-f-day{border:1.5px solid var(--as);background:white;width:32px;height:26px;border-radius:6px;font-size:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2)}
+.ql-f-day.active{background:var(--accent);color:white;border-color:var(--accent)}
+/* Link items */
+.ql-lnk{background:var(--bg);border:1.5px solid var(--as);border-radius:10px;margin-bottom:5px;overflow:hidden;transition:all .2s}
+.ql-lnk.ql-lnk-exp{border-color:var(--accent);background:white}
+.ql-lnk-hd{display:flex;align-items:center;gap:7px;padding:9px 10px;cursor:pointer}
+.ql-lnk-ico{font-size:14px;flex-shrink:0}
+.ql-lnk-nm{font-size:12px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ql-lnk-url-pre{font-size:8px;color:var(--text2);max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ql-lnk-badge{font-size:7px;background:var(--accent);color:white;padding:1px 5px;border-radius:5px;font-weight:600}
+.ql-lnk-hide{font-size:7px;background:#FFEBEE;color:#C62828;padding:1px 5px;border-radius:5px;font-weight:600}
+.ql-lnk-chev{font-size:8px;color:var(--text2);transition:transform .2s;flex-shrink:0}
+.ql-lnk.ql-lnk-exp .ql-lnk-chev{transform:rotate(180deg)}
+.ql-lnk-body{padding:0 10px 10px;display:none}
+.ql-lnk.ql-lnk-exp .ql-lnk-body{display:block;animation:ofcSlideD .15s ease}
+.ql-lnk-edit-row{display:flex;gap:5px;align-items:center;margin-bottom:5px}
+.ql-lnk-e-ico{width:32px;height:32px;border:1.5px solid var(--as);border-radius:8px;font-size:14px;text-align:center;outline:none;background:var(--bg)}
+.ql-lnk-e-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:7px 9px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)}
+.ql-lnk-e-inp:focus,.ql-lnk-e-ico:focus{border-color:var(--accent)}
+.ql-lnk-e-url{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:7px 9px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text2)}
+.ql-lnk-e-url:focus{border-color:var(--accent)}
+.ql-lnk-e-del{border:none;background:#FFEBEE;color:#C62828;width:30px;height:30px;border-radius:7px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+/* Hide toggle */
+.ql-lnk-hide-toggle{display:flex;align-items:center;gap:5px;margin-bottom:6px;padding:4px 0}
+.ql-lnk-hide-lbl{font-size:10px;font-weight:600;color:var(--text2);flex:1}
+.ql-lnk-hide-sw{width:28px;height:15px;border-radius:8px;border:none;cursor:pointer;position:relative;transition:all .2s}
+.ql-lnk-hide-sw.on{background:#059669}.ql-lnk-hide-sw.off{background:#CBD5E1}
+.ql-lnk-hide-sw::after{content:'';position:absolute;top:2px;width:11px;height:11px;border-radius:50%;background:white;transition:all .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.ql-lnk-hide-sw.on::after{left:15px}.ql-lnk-hide-sw.off::after{left:2px}
+/* Chips/stages */
+.ql-chips-sec{margin-top:6px;padding-top:6px;border-top:1px solid var(--as)}
+.ql-chips-title{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.ql-chip-row{display:flex;gap:3px;align-items:center;margin-bottom:3px}
+.ql-chip-n{flex:1;border:1.5px solid var(--as);border-radius:6px;padding:5px 7px;font-size:10px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)}
+.ql-chip-u{flex:2;border:1.5px solid var(--as);border-radius:6px;padding:5px 7px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text2)}
+.ql-chip-n:focus,.ql-chip-u:focus{border-color:var(--accent)}
+.ql-chip-x{border:none;background:none;font-size:9px;cursor:pointer;color:#C62828;opacity:.4;flex-shrink:0}
+.ql-chip-grip{width:16px;cursor:grab;touch-action:none;opacity:.25;display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0}
+.ql-chip-grip-line{width:8px;height:1.5px;border-radius:1px;background:var(--text2)}
+.ql-chip-acts{display:flex;gap:5px;margin-top:4px}
+.ql-chip-act{border:1.5px dashed var(--as);border-radius:6px;padding:4px 10px;font-size:9px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif}
+.ql-chip-act:hover{background:white;color:var(--accent);border-color:var(--accent)}
+.ql-add-lnk{border:1.5px dashed var(--as);border-radius:8px;padding:8px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px;font-weight:600}
+.ql-add-lnk:hover{background:white;color:var(--accent);border-color:var(--accent)}
+.ql-add-folder{border:2px dashed var(--accent);border-radius:14px;padding:12px;text-align:center;font-size:11px;color:var(--accent);cursor:pointer;font-weight:700;margin-top:8px}
+.ql-add-folder:hover{background:#E8EAF6}
 
 /* QL overlay (full screen window) */
 .ofc-ql-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
@@ -1091,69 +1135,104 @@ async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeS
 async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK()}))}
 async function saveOfcQL(){await memSave('cf_ofc_qlinks',JSON.stringify(ofcQLGroups))}
 
-// QL sorting & visibility
+// QL sorting, visibility, drag, editor
+const QL_DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function qlSorted(){
-  const ranked=ofcQLGroups.filter(g=>g.rank>0).sort((a,b)=>a.rank-b.rank);
-  const unranked=ofcQLGroups.filter(g=>!g.rank).sort((a,b)=>(a.seq||0)-(b.seq||0));
-  return[...ranked,...unranked];
+  var ranked=ofcQLGroups.filter(function(f){return f.rank>0}).sort(function(a,b){return a.rank-b.rank});
+  var unranked=ofcQLGroups.filter(function(f){return!f.rank}).sort(function(a,b){return(a.seq||0)-(b.seq||0)});
+  return ranked.concat(unranked);
 }
 function qlIsVisible(g){
+  var hr=new Date().getHours();
+  var day=new Date().getDay();
+  if(g.days&&g.days.length&&!g.days.includes(day))return false;
   if(g.timeFrom==null&&g.timeTo==null)return true;
-  const hr=new Date().getHours();
   return hr>=g.timeFrom&&hr<g.timeTo;
 }
-function qlMoveFolder(fi,dir){
-  const sorted=qlSorted();const f=ofcQLGroups[fi];
-  const si=sorted.indexOf(f);const ti=si+dir;
-  if(ti<0||ti>=sorted.length)return;
-  const target=sorted[ti];
-  const tmp=f.seq||0;f.seq=target.seq||0;target.seq=tmp;
-  saveOfcQL();renderQLEditor();
+function qlTimeLabel(f){
+  if(f.timeFrom==null&&f.timeTo==null)return{text:'Always',cls:'always'};
+  return{text:(f.timeFrom||0)+':00-'+(f.timeTo||24)+':00',cls:'limited'};
 }
 
-// QL Editor overlay
-let qlEdExpanded='';
-function openQLEditor(){qlEdExpanded='';renderQLEditor();document.getElementById('qlEdOv').classList.add('show')}
+// Drag reorder state
+var qlDragSrc=null;
+function qlDragStart(e,vi){qlDragSrc=vi;e.dataTransfer.effectAllowed='move';e.target.closest('.ql-folder').classList.add('ql-dragging')}
+function qlDragEnd(e){qlDragSrc=null;document.querySelectorAll('.ql-folder').forEach(function(f){f.classList.remove('ql-dragging','ql-drag-over')})}
+function qlDragOver(e,vi){e.preventDefault();document.querySelectorAll('.ql-folder').forEach(function(f){f.classList.remove('ql-drag-over')});if(vi!==qlDragSrc)e.target.closest('.ql-folder').classList.add('ql-drag-over')}
+function qlDrop(e,vi){e.preventDefault();if(qlDragSrc==null||qlDragSrc===vi)return;var s=qlSorted();var src=s[qlDragSrc],dst=s[vi];var tmp=src.seq;src.seq=dst.seq;dst.seq=tmp;qlDragSrc=null;saveOfcQL();renderQLEditor()}
+// Touch drag
+var qlTouchSrc=null;
+function qlTouchStart(e,vi){qlTouchSrc=vi;setTimeout(function(){var el=document.querySelectorAll('.ql-folder')[vi];if(el)el.classList.add('ql-dragging')},80)}
+function qlTouchMove(e){if(qlTouchSrc==null)return;e.preventDefault();var t=e.touches[0];document.querySelectorAll('.ql-folder').forEach(function(el,i){el.classList.remove('ql-drag-over');var r=el.getBoundingClientRect();if(t.clientY>=r.top&&t.clientY<=r.bottom&&i!==qlTouchSrc)el.classList.add('ql-drag-over')})}
+function qlTouchEnd(e){if(qlTouchSrc==null)return;var ti=null;document.querySelectorAll('.ql-folder').forEach(function(el,i){if(el.classList.contains('ql-drag-over'))ti=i;el.classList.remove('ql-dragging','ql-drag-over')});if(ti!=null&&ti!==qlTouchSrc){var s=qlSorted();var src=s[qlTouchSrc],dst=s[ti];var tmp=src.seq;src.seq=dst.seq;dst.seq=tmp;saveOfcQL()}qlTouchSrc=null;renderQLEditor()}
+
+// Chip drag reorder
+var qlChipDragFi=null,qlChipDragIi=null,qlChipDragSrc=null;
+function qlChipDragStart(e,fi,ii,ci){qlChipDragFi=fi;qlChipDragIi=ii;qlChipDragSrc=ci;e.dataTransfer.effectAllowed='move'}
+function qlChipDrop(e,fi,ii,ci){e.preventDefault();if(qlChipDragSrc==null||qlChipDragSrc===ci||fi!==qlChipDragFi||ii!==qlChipDragIi)return;var chips=ofcQLGroups[fi].items[ii].chips;var item=chips.splice(qlChipDragSrc,1)[0];chips.splice(ci,0,item);qlChipDragSrc=null;saveOfcQL();renderQLEditor()}
+
+function qlToggleDay(fi,day){var f=ofcQLGroups[fi];if(!f.days)f.days=[0,1,2,3,4,5,6];var idx=f.days.indexOf(day);if(idx>=0)f.days.splice(idx,1);else f.days.push(day);f.days.sort();saveOfcQL();renderQLEditor()}
+
+// Editor overlay
+var qlEdExpanded='',qlEdLink='';
+function qlToggleFolder(fid){qlEdExpanded=qlEdExpanded===fid?'':fid;qlEdLink='';renderQLEditor()}
+function qlToggleLink(lk){qlEdLink=qlEdLink===lk?'':lk;renderQLEditor()}
+function openQLEditor(){qlEdExpanded='';qlEdLink='';renderQLEditor();document.getElementById('qlEdOv').classList.add('show')}
 function closeQLEditor(){document.getElementById('qlEdOv').classList.remove('show');renderPitch()}
 function renderQLEditor(){
-  const sorted=qlSorted();
-  let h='';
-  sorted.forEach(function(f){
-    const fi=ofcQLGroups.indexOf(f);
-    const isExp=qlEdExpanded===f.id;
-    const isRanked=f.rank>0;
-    const hasTime=f.timeFrom!=null;
-    h+='<div class="ql-ed-folder'+(isExp?' expanded':'')+'">';
+  var s=qlSorted();var h='';
+  s.forEach(function(f,vi){
+    var fi=ofcQLGroups.indexOf(f);var isExp=qlEdExpanded===f.id;
+    var tl=qlTimeLabel(f);
+    h+='<div class="ql-folder'+(isExp?' ql-f-exp':'')+'" draggable="true" ondragstart="qlDragStart(event,'+vi+')" ondragend="qlDragEnd(event)" ondragover="qlDragOver(event,'+vi+')" ondrop="qlDrop(event,'+vi+')" ontouchstart="qlTouchStart(event,'+vi+')" ontouchmove="qlTouchMove(event)" ontouchend="qlTouchEnd(event)">';
     // Header
-    h+='<div class="ql-ed-folder-hd" onclick="qlEdExpanded=qlEdExpanded===\''+f.id+'\'?\'\':\'' +f.id+'\';renderQLEditor()">';
-    h+='<div class="ql-ed-folder-arrows"><button class="ql-ed-folder-arr" onclick="event.stopPropagation();qlMoveFolder('+fi+',-1)">&#9650;</button><button class="ql-ed-folder-arr" onclick="event.stopPropagation();qlMoveFolder('+fi+',1)">&#9660;</button></div>';
-    if(isRanked)h+='<div class="ql-ed-folder-rank">'+f.rank+'</div>';
-    h+='<span style="font-size:14px">'+f.ico+'</span>';
-    h+='<span class="ql-ed-folder-name">'+esc(f.name)+'</span>';
-    h+='<span class="ql-ed-folder-count">'+f.items.length+'</span>';
-    h+='<span class="ql-ed-folder-time '+(hasTime?'limited':'always')+'">'+(hasTime?f.timeFrom+'-'+f.timeTo:'Always')+'</span>';
-    h+='<span class="ql-ed-folder-chev">&#9660;</span></div>';
+    h+='<div class="ql-folder-hd" onclick="qlToggleFolder(\''+f.id+'\')">';
+    h+='<div class="ql-folder-grip" onclick="event.stopPropagation()"><div class="ql-folder-grip-line"></div><div class="ql-folder-grip-line"></div><div class="ql-folder-grip-line"></div></div>';
+    if(f.rank>0)h+='<div class="ql-folder-rank">'+f.rank+'</div>';
+    h+='<span class="ql-folder-ico">'+f.ico+'</span><span class="ql-folder-nm">'+esc(f.name)+'</span>';
+    h+='<span class="ql-folder-cnt">'+f.items.length+'</span><span class="ql-folder-time '+tl.cls+'">'+tl.text+'</span>';
+    h+='<span class="ql-folder-chev">&#9660;</span></div>';
     // Body
-    h+='<div class="ql-ed-folder-body">';
-    // Name/ico edit
-    h+='<div class="ql-ed-name-row"><input class="ql-ed-name-ico" value="'+esc(f.ico)+'" onchange="ofcQLGroups['+fi+'].ico=this.value;saveOfcQL();renderQLEditor()"><input class="ql-ed-name-inp" value="'+esc(f.name)+'" onchange="ofcQLGroups['+fi+'].name=this.value;saveOfcQL();renderQLEditor()"><button class="ql-ed-del" onclick="if(confirm(\'Delete \'+ofcQLGroups['+fi+'].name+\'?\')){ofcQLGroups.splice('+fi+',1);qlEdExpanded=\'\';saveOfcQL();renderQLEditor()}">&#128465;</button></div>';
-    // Settings
-    h+='<div class="ql-ed-sett"><span class="ql-ed-sett-lbl">Rank:</span><input class="ql-ed-sett-inp" type="number" min="0" max="10" value="'+(f.rank||0)+'" onchange="ofcQLGroups['+fi+'].rank=parseInt(this.value)||0;saveOfcQL();renderQLEditor()"><span class="ql-ed-sett-lbl" style="margin-left:6px">Visible:</span><input class="ql-ed-sett-inp" type="number" min="0" max="23" value="'+(f.timeFrom!=null?f.timeFrom:'')+'" placeholder="&#8212;" onchange="var v=this.value;ofcQLGroups['+fi+'].timeFrom=v?parseInt(v):null;saveOfcQL();renderQLEditor()"><span style="font-size:8px;color:var(--text2)">to</span><input class="ql-ed-sett-inp" type="number" min="0" max="24" value="'+(f.timeTo!=null?f.timeTo:'')+'" placeholder="&#8212;" onchange="var v=this.value;ofcQLGroups['+fi+'].timeTo=v?parseInt(v):null;saveOfcQL();renderQLEditor()"></div>';
+    h+='<div class="ql-folder-body"><div class="ql-f-sett">';
+    h+='<div class="ql-f-sett-row"><input class="ql-f-ico-inp" value="'+esc(f.ico)+'" onchange="ofcQLGroups['+fi+'].ico=this.value;saveOfcQL();renderQLEditor()"><input class="ql-f-name-inp" value="'+esc(f.name)+'" onchange="ofcQLGroups['+fi+'].name=this.value;saveOfcQL();renderQLEditor()"><button class="ql-f-del" onclick="if(confirm('Delete?')){ofcQLGroups.splice('+fi+',1);qlEdExpanded='';saveOfcQL();renderQLEditor()}">&#128465;</button></div>';
+    h+='<div class="ql-f-sett-grid"><span class="ql-f-sett-lbl">Rank</span><input class="ql-f-sett-num" type="number" min="0" max="10" value="'+(f.rank||0)+'" onchange="ofcQLGroups['+fi+'].rank=parseInt(this.value)||0;saveOfcQL();renderQLEditor()">';
+    h+='<span class="ql-f-sett-lbl" style="margin-left:4px">From</span><input class="ql-f-sett-num" type="number" min="0" max="23" value="'+(f.timeFrom!=null?f.timeFrom:'')+'" placeholder="&#8212;" onchange="var v=this.value;ofcQLGroups['+fi+'].timeFrom=v?parseInt(v):null;saveOfcQL();renderQLEditor()">';
+    h+='<span class="ql-f-sett-lbl">To</span><input class="ql-f-sett-num" type="number" min="0" max="24" value="'+(f.timeTo!=null?f.timeTo:'')+'" placeholder="&#8212;" onchange="var v=this.value;ofcQLGroups['+fi+'].timeTo=v?parseInt(v):null;saveOfcQL();renderQLEditor()"></div>';
+    h+='<div class="ql-f-days">';
+    var fd=f.days||[0,1,2,3,4,5,6];
+    QL_DAYS.forEach(function(lbl,d){h+='<button class="ql-f-day'+(fd.includes(d)?' active':'')+'" onclick="event.stopPropagation();qlToggleDay('+fi+','+d+')">'+lbl+'</button>'});
+    h+='</div></div>';
     // Links
     f.items.forEach(function(it,ii){
-      h+='<div class="ql-ed-link"><input class="ql-ed-link-ico" value="'+esc(it.ico)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].ico=this.value;saveOfcQL()"><div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><input class="ql-ed-link-inp" value="'+esc(it.name)+'" placeholder="Name" onchange="ofcQLGroups['+fi+'].items['+ii+'].name=this.value;saveOfcQL()"><input class="ql-ed-link-inp url" value="'+esc(it.url||'')+'" placeholder="https://..." onchange="ofcQLGroups['+fi+'].items['+ii+'].url=this.value;saveOfcQL()"></div><button class="ql-ed-link-del" onclick="ofcQLGroups['+fi+'].items.splice('+ii+',1);saveOfcQL();renderQLEditor()">&#10005;</button></div>';
+      var lk=fi+'-'+ii;var isLE=qlEdLink===lk;
+      var hasC=it.chips&&it.chips.length;
+      var hidden=it.hidden===true;
+      var du=it.url?(it.url.length>25?it.url.slice(0,25)+'...':it.url):'No URL';
+      h+='<div class="ql-lnk'+(isLE?' ql-lnk-exp':'')+'"'+(hidden&&!isLE?' style="opacity:.4"':'')+'>';
+      h+='<div class="ql-lnk-hd" onclick="qlToggleLink(\''+lk+'\')">';
+      h+='<span class="ql-lnk-ico">'+it.ico+'</span><span class="ql-lnk-nm">'+esc(it.name)+'</span>';
+      if(!isLE)h+='<span class="ql-lnk-url-pre">'+esc(du)+'</span>';
+      if(hasC)h+='<span class="ql-lnk-badge">'+it.chips.length+'</span>';
+      if(hidden)h+='<span class="ql-lnk-hide">hidden</span>';
+      h+='<span class="ql-lnk-chev">&#9660;</span></div>';
+      // Link body
+      h+='<div class="ql-lnk-body">';
+      h+='<div class="ql-lnk-hide-toggle"><span class="ql-lnk-hide-lbl">Visible on home</span><button class="ql-lnk-hide-sw '+(hidden?'off':'on')+'" onclick="ofcQLGroups['+fi+'].items['+ii+'].hidden='+String(!hidden)+';saveOfcQL();renderQLEditor()"></button></div>';
+      h+='<div class="ql-lnk-edit-row"><input class="ql-lnk-e-ico" value="'+esc(it.ico)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].ico=this.value;saveOfcQL();renderQLEditor()"><input class="ql-lnk-e-inp" value="'+esc(it.name)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].name=this.value;saveOfcQL();renderQLEditor()"><button class="ql-lnk-e-del" onclick="ofcQLGroups['+fi+'].items.splice('+ii+',1);qlEdLink='';saveOfcQL();renderQLEditor()">&#128465;</button></div>';
+      h+='<div class="ql-lnk-edit-row"><input class="ql-lnk-e-url" value="'+esc(it.url||'')+'" placeholder="https://..." onchange="ofcQLGroups['+fi+'].items['+ii+'].url=this.value;saveOfcQL()"></div>';
       // Chips
       var chips=it.chips||[];
-      h+='<div style="padding:2px 0 2px 28px">';
+      h+='<div class="ql-chips-sec"><div class="ql-chips-title">Stages ('+chips.length+')</div>';
       chips.forEach(function(c,ci){
-        h+='<div style="display:flex;gap:3px;align-items:center;margin-bottom:2px"><input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:3px 5px;font-size:8px;font-family:DM Sans,sans-serif;outline:none;background:white" value="'+esc(c.name)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].chips['+ci+'].name=this.value;saveOfcQL()"><input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:3px 5px;font-size:8px;font-family:DM Sans,sans-serif;outline:none;background:white" value="'+esc(c.url||'')+'" placeholder="URL" onchange="ofcQLGroups['+fi+'].items['+ii+'].chips['+ci+'].url=this.value;saveOfcQL()"><button style="border:none;background:none;font-size:8px;cursor:pointer;color:#DC2626;opacity:.4" onclick="ofcQLGroups['+fi+'].items['+ii+'].chips.splice('+ci+',1);saveOfcQL();renderQLEditor()">&#10005;</button></div>';
+        h+='<div class="ql-chip-row" draggable="true" ondragstart="qlChipDragStart(event,'+fi+','+ii+','+ci+')" ondragover="event.preventDefault()" ondrop="qlChipDrop(event,'+fi+','+ii+','+ci+')"><div class="ql-chip-grip"><div class="ql-chip-grip-line"></div><div class="ql-chip-grip-line"></div></div><input class="ql-chip-n" value="'+esc(c.name)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].chips['+ci+'].name=this.value;saveOfcQL()"><input class="ql-chip-u" value="'+esc(c.url||'')+'" placeholder="URL" onchange="ofcQLGroups['+fi+'].items['+ii+'].chips['+ci+'].url=this.value;saveOfcQL()"><button class="ql-chip-x" onclick="ofcQLGroups['+fi+'].items['+ii+'].chips.splice('+ci+',1);saveOfcQL();renderQLEditor()">&#10005;</button></div>';
       });
-      h+='<div style="display:flex;gap:4px"><div class="ql-ed-add" style="flex:1;margin-top:2px;padding:3px;font-size:7px" onclick="if(!ofcQLGroups['+fi+'].items['+ii+'].chips)ofcQLGroups['+fi+'].items['+ii+'].chips=[];ofcQLGroups['+fi+'].items['+ii+'].chips.push({name:\'Stage\',url:\'\'});saveOfcQL();renderQLEditor()">+ Chip</div><div class="ql-ed-add" style="flex:1;margin-top:2px;padding:3px;font-size:7px" onclick="qlCsvTarget={gi:'+fi+',ii:'+ii+'};document.getElementById(\'qlCsvInput\').click()">&#128203; CSV</div></div></div>';
+      h+='<div class="ql-chip-acts"><div class="ql-chip-act" onclick="if(!ofcQLGroups['+fi+'].items['+ii+'].chips)ofcQLGroups['+fi+'].items['+ii+'].chips=[];ofcQLGroups['+fi+'].items['+ii+'].chips.push({name:'Stage',url:''});saveOfcQL();renderQLEditor()">+ Stage</div><div class="ql-chip-act" onclick="qlCsvTarget={gi:'+fi+',ii:'+ii+'};document.getElementById(\'qlCsvInput\').click()">&#128203; CSV</div></div></div>';
+      h+='</div></div>';
     });
-    h+='<div class="ql-ed-add" onclick="ofcQLGroups['+fi+'].items.push({ico:\'&#128279;\',name:\'New Link\',url:\'\',chips:[]});saveOfcQL();renderQLEditor()">+ Add Link</div>';
+    h+='<div class="ql-add-lnk" onclick="ofcQLGroups['+fi+'].items.push({ico:'&#128279;',name:'New Link',url:'',chips:[]});qlEdLink=''+fi+'-'+(f.items.length);saveOfcQL();renderQLEditor()">+ Add Link</div>';
     h+='</div></div>';
   });
-  h+='<div class="ql-ed-add-folder" onclick="ofcQLGroups.push({id:\'g\'+Date.now(),ico:\'&#128204;\',name:\'New Folder\',rank:0,seq:ofcQLGroups.length,timeFrom:null,timeTo:null,items:[]});qlEdExpanded=ofcQLGroups[ofcQLGroups.length-1].id;saveOfcQL();renderQLEditor()">+ Add Folder</div>';
+  h+='<div class="ql-add-folder" onclick="ofcQLGroups.push({id:'g'+Date.now(),ico:'&#128193;',name:'New Folder',rank:0,seq:ofcQLGroups.length,timeFrom:null,timeTo:null,days:[0,1,2,3,4,5,6],items:[]});qlEdExpanded=ofcQLGroups[ofcQLGroups.length-1].id;saveOfcQL();renderQLEditor()">+ Add Folder</div>';
   document.getElementById('qlEdBody').innerHTML=h;
 }
 async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps))}
@@ -1309,6 +1388,7 @@ function ofcOpenQLOverlay(groupId){
   const sheet=document.getElementById('ofcQLSheet');
   let h='<div class="ofc-ql-sheet-hd"><div class="ofc-ql-sheet-title"><span style="font-size:22px">'+g.ico+'</span> '+esc(g.name)+'</div><button class="ofc-ql-sheet-close" onclick="ofcCloseQLOverlay()">&#10005;</button></div>';
   g.items.forEach(function(it){
+    if(it.hidden)return;
     const hasChips=it.chips&&it.chips.length;
     const dispUrl=it.url?(it.url.length>40?it.url.slice(0,40)+'…':it.url):'No URL set';
     const hasUrl=it.url&&it.url.trim();
@@ -1541,14 +1621,16 @@ function renderOffice(){
   h+=`<div class="ofc-ql-row">`;
   qlSorted().forEach(g=>{
     if(!qlIsVisible(g))return;
+    const visItems=g.items.filter(it=>!it.hidden);
+    if(!visItems.length)return;
     const isRanked=g.rank>0;
-    if(g.items.length===1&&g.items[0].url&&!(g.items[0].chips&&g.items[0].chips.length)){
-      h+=`<div class="ofc-ql-chip${isRanked?' ranked':''}" onclick="window.open('${esc(g.items[0].url)}','_blank')">`;
+    if(visItems.length===1&&visItems[0].url&&!(visItems[0].chips&&visItems[0].chips.length)){
+      h+=`<div class="ofc-ql-chip${isRanked?' ranked':''}" onclick="window.open('${esc(visItems[0].url)}','_blank')">`;
     } else {
       h+=`<div class="ofc-ql-chip${isRanked?' ranked':''}" onclick="ofcOpenQLOverlay('${g.id}')">`;
     }
     if(isRanked)h+=`<div class="ofc-ql-rank-badge">${g.rank}</div>`;
-    h+=`<span>${g.ico}</span> ${esc(g.name)} <span class="ofc-ql-chip-count">${g.items.length}</span></div>`;
+    h+=`<span>${g.ico}</span> ${esc(g.name)} <span class="ofc-ql-chip-count">${visItems.length}</span></div>`;
   });
   h+=`</div></div>`;
 

@@ -411,62 +411,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-app-ico{font-size:22px;display:block;margin-bottom:3px}
 .ofc-app-nm{font-size:8px;font-weight:600;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* Quick links — home chips + overlay editor */
+/* Grouped quick links */
 .ofc-ql{margin-bottom:14px}
 .ofc-ql-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .ofc-ql-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2)}
 .ofc-ql-edit{border:none;background:var(--as);padding:3px 10px;border-radius:6px;font-size:9px;color:var(--accent);font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.ofc-ql-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;flex-wrap:wrap;-webkit-overflow-scrolling:touch}
-.ofc-ql-chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--as);border-radius:10px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:all .15s;font-size:10px;font-weight:600;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.ofc-ql-chip:active{transform:scale(.96)}
-.ofc-ql-chip.ranked{border-color:var(--accent);background:#F5F3FF;box-shadow:0 2px 6px rgba(99,102,241,.12)}
-.ofc-ql-chip-count{font-size:8px;background:var(--as);padding:1px 5px;border-radius:8px;color:var(--text2)}
-.ofc-ql-chip.ranked .ofc-ql-chip-count{background:var(--accent);color:white}
-.ofc-ql-rank-badge{width:16px;height:16px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
-/* Editor overlay */
-.ql-ed-ov{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
-.ql-ed-ov.show{display:flex;animation:ofcFadeIn .2s ease}
-.ql-ed-panel{background:var(--bg);border-radius:20px;width:100%;max-width:460px;max-height:85vh;overflow-y:auto;padding:0;box-shadow:0 24px 64px rgba(0,0,0,.25);animation:alPopIn .3s ease}
-.ql-ed-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 10px;position:sticky;top:0;background:var(--bg);z-index:2;border-radius:20px 20px 0 0}
-.ql-ed-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}
-.ql-ed-close{border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ql-ed-body{padding:0 16px 20px}
-.ql-ed-folder{background:var(--card);border-radius:12px;margin-bottom:8px;border:1.5px solid var(--as);overflow:hidden;transition:all .2s}
-.ql-ed-folder.expanded{border-color:var(--accent)}
-.ql-ed-folder-hd{display:flex;align-items:center;gap:6px;padding:10px 10px;cursor:pointer;transition:all .15s}
-.ql-ed-folder-hd:hover{background:#F8F9FF}
-.ql-ed-folder-arrows{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
-.ql-ed-folder-arr{border:none;background:var(--as);width:18px;height:14px;border-radius:4px;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.ql-ed-folder-arr:hover{background:var(--accent);color:white}
-.ql-ed-folder-rank{width:18px;height:18px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
-.ql-ed-folder-name{font-size:11px;font-weight:700;flex:1}
-.ql-ed-folder-count{font-size:8px;background:var(--as);padding:1px 6px;border-radius:8px;color:var(--text2);font-weight:600}
-.ql-ed-folder-time{font-size:7px;padding:2px 6px;border-radius:4px;font-weight:600}
-.ql-ed-folder-time.always{background:#ECFDF5;color:#059669}
-.ql-ed-folder-time.limited{background:#FFF7ED;color:#E8722A}
-.ql-ed-folder-chev{font-size:9px;color:var(--text2);transition:transform .2s;flex-shrink:0}
-.ql-ed-folder.expanded .ql-ed-folder-chev{transform:rotate(180deg)}
-.ql-ed-folder-body{padding:0 10px 10px;display:none}
-.ql-ed-folder.expanded .ql-ed-folder-body{display:block;animation:ofcSlideD .2s ease}
-.ql-ed-sett{display:flex;gap:6px;align-items:center;padding:8px 0;margin-bottom:6px;border-bottom:1px solid var(--as);flex-wrap:wrap}
-.ql-ed-sett-lbl{font-size:8px;font-weight:600;color:var(--text2)}
-.ql-ed-sett-inp{border:1px solid var(--as);border-radius:5px;padding:3px 6px;font-size:9px;font-family:'DM Sans',sans-serif;width:38px;text-align:center;outline:none;background:white}
-.ql-ed-sett-inp:focus{border-color:var(--accent)}
-.ql-ed-name-row{display:flex;gap:4px;align-items:center;margin-bottom:6px}
-.ql-ed-name-ico{width:28px;border:1px solid var(--as);border-radius:6px;padding:4px 2px;font-size:12px;text-align:center;outline:none;background:white}
-.ql-ed-name-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;outline:none;background:white}
-.ql-ed-name-inp:focus,.ql-ed-name-ico:focus{border-color:var(--accent)}
-.ql-ed-del{border:none;background:#FEF2F2;color:#DC2626;padding:4px 10px;border-radius:6px;font-size:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-.ql-ed-link{display:flex;align-items:center;gap:4px;padding:6px;border-radius:8px;margin-bottom:4px;background:var(--bg)}
-.ql-ed-link-ico{width:24px;border:1px solid var(--as);border-radius:5px;padding:3px 2px;font-size:10px;text-align:center;outline:none;background:white}
-.ql-ed-link-inp{flex:1;border:1px solid var(--as);border-radius:5px;padding:4px 6px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:white;color:var(--text);min-width:0}
-.ql-ed-link-inp:focus{border-color:var(--accent)}
-.ql-ed-link-inp.url{font-size:8px;color:var(--text2)}
-.ql-ed-link-del{border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.4}
-.ql-ed-add{border:1.5px dashed var(--as);border-radius:8px;padding:6px;text-align:center;font-size:8px;color:var(--text2);cursor:pointer;margin-top:4px}
-.ql-ed-add:hover{background:white;color:var(--accent);border-color:var(--accent)}
-.ql-ed-add-folder{border:1.5px dashed var(--accent);border-radius:10px;padding:9px;text-align:center;font-size:9px;color:var(--accent);cursor:pointer;font-weight:600;margin-top:8px}
-.ql-ed-add-folder:hover{background:#F5F3FF}
+.ofc-ql-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.ofc-ql-row::-webkit-scrollbar{display:none}
+.ofc-ql-grp{flex-shrink:0;position:relative}
+.ofc-ql-btn{display:flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--as);border-radius:10px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:all .15s;font-size:10px;font-weight:600;color:var(--text)}
+.ofc-ql-btn:active{transform:scale(.96)}
+.ofc-ql-btn.open{border-color:var(--accent);background:var(--as);border-radius:10px 10px 0 0}
+.ofc-ql-arr{font-size:8px;color:var(--text2);transition:transform .2s;margin-left:2px}
+.ofc-ql-btn.open .ofc-ql-arr{transform:rotate(180deg)}
+.ofc-ql-dd{display:none;position:absolute;top:100%;left:0;min-width:100%;background:var(--card);border:1.5px solid var(--accent);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 8px 24px rgba(59,91,219,.12);z-index:50;overflow:hidden}
+.ofc-ql-dd.show{display:block;animation:ofcSlideD .2s ease}
+.ofc-ql-dd-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;white-space:nowrap;font-size:10px;font-weight:500;color:var(--text)}
+.ofc-ql-dd-item:hover{background:var(--as)}
+.ofc-ql-dd-item:last-child{border-radius:0 0 8px 8px}
+
+/* Quick links edit mode */
+.ofc-ql-ep{background:var(--card);border:1.5px solid var(--as);border-radius:12px;padding:12px;margin-top:4px}
+.ofc-ql-eg{margin-bottom:10px;border-bottom:1px solid #f0f0f0;padding-bottom:10px}
+.ofc-ql-eg:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+.ofc-ql-eg-hd{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ofc-ql-eg-nm{font-size:11px;font-weight:700;flex:1}
+.ofc-ql-eg-del{border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.4}
+.ofc-ql-eg-row{display:flex;align-items:center;gap:4px;margin-bottom:4px;padding-left:12px}
+.ofc-ql-eg-inp{flex:1;border:1px solid var(--as);border-radius:5px;padding:4px 6px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg);color:var(--text)}
+.ofc-ql-eg-ico{width:26px;border:1px solid var(--as);border-radius:5px;padding:4px 2px;font-size:9px;font-family:'DM Sans',sans-serif;outline:none;text-align:center;background:var(--bg)}
+.ofc-ql-eg-xb{border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.3}
+.ofc-ql-addl{font-size:9px;color:var(--accent);cursor:pointer;padding-left:12px;font-weight:500}
+.ofc-ql-addg{border:1.5px dashed var(--as);border-radius:8px;padding:7px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-top:6px}
 
 /* QL overlay (full screen window) */
 .ofc-ql-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px}
@@ -781,14 +757,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 <input type="file" id="qlCsvInput" accept=".csv,.txt" style="display:none" onchange="qlHandleCsv(this)">
 
-<!-- QL EDITOR OVERLAY -->
-<div class="ql-ed-ov" id="qlEdOv" onclick="if(event.target===this)closeQLEditor()">
-  <div class="ql-ed-panel">
-    <div class="ql-ed-hd"><div class="ql-ed-title">&#128279; Edit Quick Links</div><button class="ql-ed-close" onclick="closeQLEditor()">&#10005;</button></div>
-    <div class="ql-ed-body" id="qlEdBody"></div>
-  </div>
-</div>
-
 <!-- APP LAUNCHER OVERLAY -->
 <div class="applaunch-ov" id="appLaunchOv" onclick="if(event.target===this)closeAppLaunch()">
   <div class="applaunch-sheet" id="appLaunchSheet"></div>
@@ -866,7 +834,7 @@ let timeSlotRules={}; // categoryName → {weekday_from:20, weekday_to:24, weeke
 
 // ===== OFFICE STATE =====
 let ofcCheckedIn=false, ofcCheckoutDone=false, ofcTimesheetDone=false, ofcFreeeDone=false;
-let ofcDockOpen=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false, ofcEditAppIdx=-1;
+let ofcDockOpen=false, ofcQLEdit=false, ofcOpenBox='', ofcOpenQL='', ofcAppEdit=false, ofcEditAppIdx=-1;
 let ofcEvDismissedAt=null, ofcEvMarks=[false,false];
 let ofcBlLinks=[
   {id:'bl_checkin',ico:'🔐',name:'Check-in Entry',desc:'Open login and mark attendance',url:'https://id.jobcan.jp/users/sign_in',screen:'morning'},
@@ -876,19 +844,19 @@ let ofcBlLinks=[
 ];
 const ofcLinks={get checkin(){return(ofcBlLinks.find(l=>l.id==='bl_checkin')||{}).url||''},get freee(){return(ofcBlLinks.find(l=>l.id==='bl_freee')||{}).url||''},get timesheet(){return(ofcBlLinks.find(l=>l.id==='bl_timesheet')||{}).url||''}};
 let ofcQLGroups=[
-  {id:'login',ico:'🔐',name:'Check-in / Timesheet',rank:0,seq:0,timeFrom:null,timeTo:null,items:[
-    {ico:'🔐',name:'Check-in Login',url:'',chips:[]},
-    {ico:'💴',name:'Freee (Transport)',url:'https://freee.co.jp',chips:[]},
-    {ico:'📋',name:'Timesheet Entry',url:'',chips:[]},
+  {id:'login',ico:'🔐',name:'Check-in / Timesheet',items:[
+    {ico:'🔐',name:'Check-in Login',url:''},
+    {ico:'💴',name:'Freee (Transport)',url:'https://freee.co.jp'},
+    {ico:'📋',name:'Timesheet Entry',url:''},
   ]},
-  {id:'sops',ico:'📄',name:'SOPs',rank:0,seq:1,timeFrom:null,timeTo:null,items:[
-    {ico:'🦾',name:'Head SOP',url:'',chips:[]},{ico:'💪',name:'Arm SOP',url:'',chips:[]},{ico:'🤖',name:'Gripper SOP',url:'',chips:[]},
+  {id:'sops',ico:'📄',name:'SOPs',workHours:true,items:[
+    {ico:'🦾',name:'Head SOP',url:''},{ico:'💪',name:'Arm SOP',url:''},{ico:'🤖',name:'Gripper SOP',url:''},
   ]},
-  {id:'ecn',ico:'📁',name:'ECN Folder',rank:0,seq:2,timeFrom:null,timeTo:null,items:[
-    {ico:'📋',name:'ECN 101',url:'',chips:[]},{ico:'📋',name:'ECN 100',url:'',chips:[]},
+  {id:'ecn',ico:'📁',name:'ECN Folder',workHours:true,items:[
+    {ico:'📋',name:'ECN 101',url:''},{ico:'📋',name:'ECN 100',url:''},
   ]},
-  {id:'misc',ico:'📧',name:'Outlook',rank:0,seq:3,timeFrom:null,timeTo:null,items:[
-    {ico:'📧',name:'Outlook Web',url:'https://outlook.office.com',chips:[]},
+  {id:'misc',ico:'📧',name:'Outlook',items:[
+    {ico:'📧',name:'Outlook Web',url:'https://outlook.office.com'},
   ]},
 ];
 let ofcApps=[
@@ -1057,7 +1025,7 @@ async function loadAll(){
       if(o.qlGroups&&!mem.find(x=>x.key==='cf_ofc_qlinks')){ofcQLGroups=o.qlGroups}
       if(o.apps&&!mem.find(x=>x.key==='cf_ofc_apps')){ofcApps=o.apps}
     }catch{};
-    if(m.key==='cf_ofc_qlinks')try{ofcQLGroups=JSON.parse(m.value);ofcQLGroups.forEach(function(g,i){if(g.rank==null)g.rank=0;if(g.seq==null)g.seq=i;if(g.timeFrom===undefined)g.timeFrom=null;if(g.timeTo===undefined)g.timeTo=null})}catch{};
+    if(m.key==='cf_ofc_qlinks')try{ofcQLGroups=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_apps')try{ofcApps=JSON.parse(m.value)}catch{};
     if(m.key==='cf_ofc_tasks')try{const d=JSON.parse(m.value);if(d.mgr)ofcMgrTasks=d.mgr;if(d.rem)ofcReminders=d.rem;if(d.ppl)ofcPplTasks=d.ppl}catch{};
     if(m.key==='cf_ofc_bl_links')try{ofcBlLinks=JSON.parse(m.value)}catch{};
@@ -1090,72 +1058,6 @@ async function saveRegenTasks(){await memSave('cf_regen_tasks',JSON.stringify(re
 async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeSlotRules))}
 async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK()}))}
 async function saveOfcQL(){await memSave('cf_ofc_qlinks',JSON.stringify(ofcQLGroups))}
-
-// QL sorting & visibility
-function qlSorted(){
-  const ranked=ofcQLGroups.filter(g=>g.rank>0).sort((a,b)=>a.rank-b.rank);
-  const unranked=ofcQLGroups.filter(g=>!g.rank).sort((a,b)=>(a.seq||0)-(b.seq||0));
-  return[...ranked,...unranked];
-}
-function qlIsVisible(g){
-  if(g.timeFrom==null&&g.timeTo==null)return true;
-  const hr=new Date().getHours();
-  return hr>=g.timeFrom&&hr<g.timeTo;
-}
-function qlMoveFolder(fi,dir){
-  const sorted=qlSorted();const f=ofcQLGroups[fi];
-  const si=sorted.indexOf(f);const ti=si+dir;
-  if(ti<0||ti>=sorted.length)return;
-  const target=sorted[ti];
-  const tmp=f.seq||0;f.seq=target.seq||0;target.seq=tmp;
-  saveOfcQL();renderQLEditor();
-}
-
-// QL Editor overlay
-let qlEdExpanded='';
-function openQLEditor(){qlEdExpanded='';renderQLEditor();document.getElementById('qlEdOv').classList.add('show')}
-function closeQLEditor(){document.getElementById('qlEdOv').classList.remove('show');renderPitch()}
-function renderQLEditor(){
-  const sorted=qlSorted();
-  let h='';
-  sorted.forEach(function(f){
-    const fi=ofcQLGroups.indexOf(f);
-    const isExp=qlEdExpanded===f.id;
-    const isRanked=f.rank>0;
-    const hasTime=f.timeFrom!=null;
-    h+='<div class="ql-ed-folder'+(isExp?' expanded':'')+'">';
-    // Header
-    h+='<div class="ql-ed-folder-hd" onclick="qlEdExpanded=qlEdExpanded===\''+f.id+'\'?\'\':\'' +f.id+'\';renderQLEditor()">';
-    h+='<div class="ql-ed-folder-arrows"><button class="ql-ed-folder-arr" onclick="event.stopPropagation();qlMoveFolder('+fi+',-1)">&#9650;</button><button class="ql-ed-folder-arr" onclick="event.stopPropagation();qlMoveFolder('+fi+',1)">&#9660;</button></div>';
-    if(isRanked)h+='<div class="ql-ed-folder-rank">'+f.rank+'</div>';
-    h+='<span style="font-size:14px">'+f.ico+'</span>';
-    h+='<span class="ql-ed-folder-name">'+esc(f.name)+'</span>';
-    h+='<span class="ql-ed-folder-count">'+f.items.length+'</span>';
-    h+='<span class="ql-ed-folder-time '+(hasTime?'limited':'always')+'">'+(hasTime?f.timeFrom+'-'+f.timeTo:'Always')+'</span>';
-    h+='<span class="ql-ed-folder-chev">&#9660;</span></div>';
-    // Body
-    h+='<div class="ql-ed-folder-body">';
-    // Name/ico edit
-    h+='<div class="ql-ed-name-row"><input class="ql-ed-name-ico" value="'+esc(f.ico)+'" onchange="ofcQLGroups['+fi+'].ico=this.value;saveOfcQL();renderQLEditor()"><input class="ql-ed-name-inp" value="'+esc(f.name)+'" onchange="ofcQLGroups['+fi+'].name=this.value;saveOfcQL();renderQLEditor()"><button class="ql-ed-del" onclick="if(confirm(\'Delete \'+ofcQLGroups['+fi+'].name+\'?\')){ofcQLGroups.splice('+fi+',1);qlEdExpanded=\'\';saveOfcQL();renderQLEditor()}">&#128465;</button></div>';
-    // Settings
-    h+='<div class="ql-ed-sett"><span class="ql-ed-sett-lbl">Rank:</span><input class="ql-ed-sett-inp" type="number" min="0" max="10" value="'+(f.rank||0)+'" onchange="ofcQLGroups['+fi+'].rank=parseInt(this.value)||0;saveOfcQL();renderQLEditor()"><span class="ql-ed-sett-lbl" style="margin-left:6px">Visible:</span><input class="ql-ed-sett-inp" type="number" min="0" max="23" value="'+(f.timeFrom!=null?f.timeFrom:'')+'" placeholder="&#8212;" onchange="var v=this.value;ofcQLGroups['+fi+'].timeFrom=v?parseInt(v):null;saveOfcQL();renderQLEditor()"><span style="font-size:8px;color:var(--text2)">to</span><input class="ql-ed-sett-inp" type="number" min="0" max="24" value="'+(f.timeTo!=null?f.timeTo:'')+'" placeholder="&#8212;" onchange="var v=this.value;ofcQLGroups['+fi+'].timeTo=v?parseInt(v):null;saveOfcQL();renderQLEditor()"></div>';
-    // Links
-    f.items.forEach(function(it,ii){
-      h+='<div class="ql-ed-link"><input class="ql-ed-link-ico" value="'+esc(it.ico)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].ico=this.value;saveOfcQL()"><div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><input class="ql-ed-link-inp" value="'+esc(it.name)+'" placeholder="Name" onchange="ofcQLGroups['+fi+'].items['+ii+'].name=this.value;saveOfcQL()"><input class="ql-ed-link-inp url" value="'+esc(it.url||'')+'" placeholder="https://..." onchange="ofcQLGroups['+fi+'].items['+ii+'].url=this.value;saveOfcQL()"></div><button class="ql-ed-link-del" onclick="ofcQLGroups['+fi+'].items.splice('+ii+',1);saveOfcQL();renderQLEditor()">&#10005;</button></div>';
-      // Chips
-      var chips=it.chips||[];
-      h+='<div style="padding:2px 0 2px 28px">';
-      chips.forEach(function(c,ci){
-        h+='<div style="display:flex;gap:3px;align-items:center;margin-bottom:2px"><input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:3px 5px;font-size:8px;font-family:DM Sans,sans-serif;outline:none;background:white" value="'+esc(c.name)+'" onchange="ofcQLGroups['+fi+'].items['+ii+'].chips['+ci+'].name=this.value;saveOfcQL()"><input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:3px 5px;font-size:8px;font-family:DM Sans,sans-serif;outline:none;background:white" value="'+esc(c.url||'')+'" placeholder="URL" onchange="ofcQLGroups['+fi+'].items['+ii+'].chips['+ci+'].url=this.value;saveOfcQL()"><button style="border:none;background:none;font-size:8px;cursor:pointer;color:#DC2626;opacity:.4" onclick="ofcQLGroups['+fi+'].items['+ii+'].chips.splice('+ci+',1);saveOfcQL();renderQLEditor()">&#10005;</button></div>';
-      });
-      h+='<div style="display:flex;gap:4px"><div class="ql-ed-add" style="flex:1;margin-top:2px;padding:3px;font-size:7px" onclick="if(!ofcQLGroups['+fi+'].items['+ii+'].chips)ofcQLGroups['+fi+'].items['+ii+'].chips=[];ofcQLGroups['+fi+'].items['+ii+'].chips.push({name:\'Stage\',url:\'\'});saveOfcQL();renderQLEditor()">+ Chip</div><div class="ql-ed-add" style="flex:1;margin-top:2px;padding:3px;font-size:7px" onclick="qlCsvTarget={gi:'+fi+',ii:'+ii+'};document.getElementById(\'qlCsvInput\').click()">&#128203; CSV</div></div></div>';
-    });
-    h+='<div class="ql-ed-add" onclick="ofcQLGroups['+fi+'].items.push({ico:\'&#128279;\',name:\'New Link\',url:\'\',chips:[]});saveOfcQL();renderQLEditor()">+ Add Link</div>';
-    h+='</div></div>';
-  });
-  h+='<div class="ql-ed-add-folder" onclick="ofcQLGroups.push({id:\'g\'+Date.now(),ico:\'&#128204;\',name:\'New Folder\',rank:0,seq:ofcQLGroups.length,timeFrom:null,timeTo:null,items:[]});qlEdExpanded=ofcQLGroups[ofcQLGroups.length-1].id;saveOfcQL();renderQLEditor()">+ Add Folder</div>';
-  document.getElementById('qlEdBody').innerHTML=h;
-}
 async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps))}
 async function saveOfcTasks(){await memSave('cf_ofc_tasks',JSON.stringify({mgr:ofcMgrTasks,rem:ofcReminders,ppl:ofcPplTasks}))}
 async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,appDB}))}
@@ -1536,21 +1438,41 @@ function renderOffice(){
     h+=`<div class="ofc-app-add"><div class="ofc-app-add-title">Add New App</div><div class="ofc-app-add-row"><input class="ofc-app-add-ico" id="ofcNewAppIco" value="📱" placeholder="🔗"><input class="ofc-app-add-inp" id="ofcNewAppName" placeholder="App name"></div><div class="ofc-app-add-row"><input class="ofc-app-add-inp" id="ofcNewAppUrl" placeholder="https://... (URL)"></div><div class="ofc-app-add-btns"><button class="ofc-app-add-btn save" onclick="ofcSaveApp()">Save</button><button class="ofc-app-add-btn cancel" onclick="ofcCancelAddApp()">Cancel</button></div></div>`;
   }
 
-  // Grouped quick links — chips with ranking/time visibility
-  h+=`<div class="ofc-ql"><div class="ofc-ql-hdr"><div class="ofc-ql-title">🔗 Quick Links</div><button class="ofc-ql-edit" onclick="openQLEditor()">✏️ Edit</button></div>`;
-  h+=`<div class="ofc-ql-row">`;
-  qlSorted().forEach(g=>{
-    if(!qlIsVisible(g))return;
-    const isRanked=g.rank>0;
-    if(g.items.length===1&&g.items[0].url&&!(g.items[0].chips&&g.items[0].chips.length)){
-      h+=`<div class="ofc-ql-chip${isRanked?' ranked':''}" onclick="window.open('${esc(g.items[0].url)}','_blank')">`;
-    } else {
-      h+=`<div class="ofc-ql-chip${isRanked?' ranked':''}" onclick="ofcOpenQLOverlay('${g.id}')">`;
-    }
-    if(isRanked)h+=`<div class="ofc-ql-rank-badge">${g.rank}</div>`;
-    h+=`<span>${g.ico}</span> ${esc(g.name)} <span class="ofc-ql-chip-count">${g.items.length}</span></div>`;
-  });
-  h+=`</div></div>`;
+  // Grouped quick links — tap opens overlay window
+  const visGroups=ofcQLGroups.filter(g=>g.workHours?isWork:true);
+  h+=`<div class="ofc-ql"><div class="ofc-ql-hdr"><div class="ofc-ql-title">🔗 Quick Links</div><button class="ofc-ql-edit" onclick="ofcQLEdit=!ofcQLEdit;renderPitch()">${ofcQLEdit?'✓ Done':'✏️ Edit'}</button></div>`;
+  if(!ofcQLEdit){
+    h+=`<div class="ofc-ql-row">`;
+    visGroups.forEach(g=>{
+      if(g.items.length===1&&g.items[0].url&&!(g.items[0].chips&&g.items[0].chips.length)){
+        // Single link — open directly
+        h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn" onclick="window.open('${esc(g.items[0].url)}','_blank')"><span>${g.ico}</span> ${esc(g.name)}</div></div>`;
+      } else {
+        // Multi-link — open overlay
+        h+=`<div class="ofc-ql-grp"><div class="ofc-ql-btn" onclick="ofcOpenQLOverlay('${g.id}')"><span>${g.ico}</span> ${esc(g.name)} <span style="font-size:8px;color:var(--text2);margin-left:2px">${g.items.length}</span></div></div>`;
+      }
+    });
+    h+=`</div>`;
+  } else {
+    // Edit mode — with group rename and delete with warning
+    h+=`<div class="ofc-ql-ep">`;
+    ofcQLGroups.forEach((g,gi)=>{
+      h+=`<div class="ofc-ql-eg"><div class="ofc-ql-eg-hd"><input class="ofc-ql-eg-ico" value="${esc(g.ico)}" style="width:26px;font-size:12px" onchange="ofcQLGroups[${gi}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(g.name)}" style="font-size:11px;font-weight:700;flex:1" onchange="ofcQLGroups[${gi}].name=this.value;saveOfcQL()"><button class="ofc-ql-eg-del" onclick="ofcAskDel('qlgroup',${gi})" title="Delete group">🗑️</button></div>`;
+      g.items.forEach((it,ii)=>{
+        h+=`<div class="ofc-ql-eg-row"><input class="ofc-ql-eg-ico" value="${esc(it.ico)}" onchange="ofcQLGroups[${gi}].items[${ii}].ico=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.name)}" onchange="ofcQLGroups[${gi}].items[${ii}].name=this.value;saveOfcQL()"><input class="ofc-ql-eg-inp" value="${esc(it.url)}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].url=this.value;saveOfcQL()"><button class="ofc-ql-eg-xb" onclick="ofcQLGroups[${gi}].items.splice(${ii},1);saveOfcQL();renderPitch()">✕</button></div>`;
+        // Chip editing
+        const chips=it.chips||[];
+        h+=`<div class="ql-chip-edit" style="margin-left:30px;margin-bottom:6px">`;
+        chips.forEach((c,ci)=>{
+          h+=`<div class="ql-chip-edit-row"><input class="ql-chip-edit-inp" value="${esc(c.name)}" placeholder="Stage name" onchange="ofcQLGroups[${gi}].items[${ii}].chips[${ci}].name=this.value;saveOfcQL()"><input class="ql-chip-edit-inp" value="${esc(c.url||'')}" placeholder="URL" onchange="ofcQLGroups[${gi}].items[${ii}].chips[${ci}].url=this.value;saveOfcQL()"><button class="ql-chip-edit-del" onclick="ofcQLGroups[${gi}].items[${ii}].chips.splice(${ci},1);saveOfcQL();renderPitch()">&#10005;</button></div>`;
+        });
+        h+=`<div style="display:flex;gap:4px"><div class="ql-chip-csv-btn" style="flex:1" onclick="if(!ofcQLGroups[${gi}].items[${ii}].chips)ofcQLGroups[${gi}].items[${ii}].chips=[];ofcQLGroups[${gi}].items[${ii}].chips.push({name:'Stage',url:''});saveOfcQL();renderPitch()">+ Chip</div><div class="ql-chip-csv-btn" style="flex:1" onclick="qlCsvTarget={gi:${gi},ii:${ii}};document.getElementById('qlCsvInput').click()">&#128203; CSV Import</div></div></div>`;
+      });
+      h+=`<div class="ofc-ql-addl" onclick="ofcQLGroups[${gi}].items.push({ico:'🔗',name:'New Link',url:''});saveOfcQL();renderPitch()">+ Add link</div></div>`;
+    });
+    h+=`<div class="ofc-ql-addg" onclick="ofcQLGroups.push({id:'g'+Date.now(),ico:'📌',name:'New Group',items:[{ico:'🔗',name:'Link',url:''}]});saveOfcQL();renderPitch()">+ Add Group</div></div>`;
+  }
+  h+=`</div>`;
 
   // Critical surface
   if(topTasks.length){
