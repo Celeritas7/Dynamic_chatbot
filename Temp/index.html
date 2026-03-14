@@ -1242,56 +1242,107 @@ async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,ap
 
 // ===== APP LAUNCHER (Table View) =====
 let alEditMode=false;
-let alFilter='all'; // 'all' | 'active' | 'inactive'
+let alFilter='all';
 let alDelTarget=null;
 
 function alAllApps(){
-  const list=[];
+  var list=[];
   appDB.forEach(function(cat){
     if(cat.apps)(cat.apps||[]).forEach(function(a){list.push(a)});
     if(cat.subs)(cat.subs||[]).forEach(function(sub){(sub.apps||[]).forEach(function(a){list.push(a)})});
   });
   return list;
 }
-function alShouldShow(a){
-  if(alFilter==='all')return true;
-  if(alFilter==='active')return a.active!==false;
-  return a.active===false;
-}
-function alCountVis(cat){
-  var all=[];
-  if(cat.apps)all=cat.apps;
-  if(cat.subs)(cat.subs||[]).forEach(function(s){all=all.concat(s.apps||[])});
-  return all.filter(alShouldShow).length;
-}
 
-function alRenderApp(a, path){
-  if(!alShouldShow(a))return'';
+function alRenderAppNormal(a){
   var hasUrl=a.url&&a.url.trim();
   var dispUrl=hasUrl?(a.url.length>20?a.url.slice(0,20)+'...':a.url):'';
-  var inact=a.active===false;
-  var h='<div class="al-app'+(inact?' al-dimmed':'')+'" '+(hasUrl&&!alEditMode?'onclick="window.open(\''+esc(a.url)+'\',\'_blank\');closeAppLaunch()"':'')+'>';
-  h+='<div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name);
-  if(!alEditMode)h+='<div class="al-app-dot" style="background:'+(inact?'#CBD5E1':'#059669')+'"></div>';
-  h+='</div>';
+  var h='<div class="al-app" '+(hasUrl?'onclick="window.open(\''+esc(a.url)+'\',\'_blank\');closeAppLaunch()"':'')+'>';
+  h+='<div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name)+'</div>';
   if(hasUrl)h+='<div class="al-app-url">'+esc(dispUrl)+'</div>';
   else h+='<div class="al-app-nourl">No URL</div>';
-  if(alEditMode){
-    h+='<button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';saveAppDB();openAppLaunch()"></button>';
-  }
   h+='</div>';
   return h;
 }
 
-function alRenderSection(apps, pathBase){
-  var act=apps.filter(function(a){return a.active!==false&&alShouldShow(a)});
-  var inact=apps.filter(function(a){return a.active===false&&alShouldShow(a)});
+function alRenderAppInactive(a){
+  var h='<div class="al-app al-dimmed" style="pointer-events:none">';
+  h+='<div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name)+'</div>';
+  var hasUrl=a.url&&a.url.trim();
+  if(hasUrl)h+='<div class="al-app-url">'+esc(a.url.length>20?a.url.slice(0,20)+'...':a.url)+'</div>';
+  else h+='<div class="al-app-nourl">No URL</div>';
+  h+='</div>';
+  return h;
+}
+
+function alRenderAppEdit(a, path){
+  var inact=a.active===false;
+  var hasUrl=a.url&&a.url.trim();
+  var dispUrl=hasUrl?(a.url.length>18?a.url.slice(0,18)+'...':a.url):'No URL';
+  var h='<div class="al-app'+(inact?' al-dimmed':'')+'">';
+  h+='<div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name);
+  h+='<button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';saveAppDB();openAppLaunch()"></button>';
+  h+='</div>';
+  h+='<div class="al-app-url">'+esc(dispUrl)+'</div>';
+  h+='</div>';
+  return h;
+}
+
+// Normal mode: active apps with sub-headers, then inactive section at bottom
+function alRenderColNormal(cat, ci){
   var h='';
-  var showSep=alFilter==='all'&&act.length&&inact.length;
-  if(showSep)h+='<div class="al-sec-hd al-act"><div class="al-sec-dot" style="background:#059669"></div> Active ('+act.length+')</div>';
-  apps.forEach(function(a,ai){if(a.active!==false&&alShouldShow(a))h+=alRenderApp(a,pathBase+'['+ai+']')});
-  if(showSep)h+='<div class="al-sec-hd al-inact"><div class="al-sec-dot" style="background:#CBD5E1"></div> Inactive ('+inact.length+')</div>';
-  apps.forEach(function(a,ai){if(a.active===false&&alShouldShow(a))h+=alRenderApp(a,pathBase+'['+ai+']')});
+  var allInCol=[];
+  if(cat.subs){
+    // Collect active apps per sub, then all inactive
+    cat.subs.forEach(function(sub,si){
+      var actApps=(sub.apps||[]).filter(function(a){return a.active!==false});
+      if(actApps.length){
+        h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+'</div></div>';
+        actApps.forEach(function(a){h+=alRenderAppNormal(a)});
+      }
+      (sub.apps||[]).forEach(function(a){allInCol.push(a)});
+    });
+  } else if(cat.apps){
+    cat.apps.filter(function(a){return a.active!==false}).forEach(function(a){h+=alRenderAppNormal(a)});
+    allInCol=cat.apps;
+  }
+  // Inactive section at bottom
+  var inactApps=allInCol.filter(function(a){return a.active===false});
+  if(inactApps.length){
+    h+='<div class="al-sec-hd al-inact"><div class="al-sec-dot" style="background:#CBD5E1"></div> Inactive ('+inactApps.length+')</div>';
+    inactApps.forEach(function(a){h+=alRenderAppInactive(a)});
+  }
+  return h;
+}
+
+// Edit mode: show all with toggles, respecting filter
+function alRenderColEdit(cat, ci){
+  var h='';
+  if(cat.subs){
+    cat.subs.forEach(function(sub,si){
+      var filtered=(sub.apps||[]).filter(function(a){
+        if(alFilter==='active')return a.active!==false;
+        if(alFilter==='inactive')return a.active===false;
+        return true;
+      });
+      if(!filtered.length)return;
+      h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+filtered.length+')</span></div></div>';
+      (sub.apps||[]).forEach(function(a,ai){
+        if(alFilter==='active'&&a.active===false)return;
+        if(alFilter==='inactive'&&a.active!==false)return;
+        h+=alRenderAppEdit(a,'appDB['+ci+'].subs['+si+'].apps['+ai+']');
+      });
+      h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs['+si+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
+    });
+    h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs.push({id:\'sub_\'+Date.now(),ico:\'&#127991;\',name:\'New Group\',apps:[]});saveAppDB();openAppLaunch()">+ Group</div>';
+  } else if(cat.apps){
+    (cat.apps||[]).forEach(function(a,ai){
+      if(alFilter==='active'&&a.active===false)return;
+      if(alFilter==='inactive'&&a.active!==false)return;
+      h+=alRenderAppEdit(a,'appDB['+ci+'].apps['+ai+']');
+    });
+    h+='<div class="al-edit-add" onclick="appDB['+ci+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
+  }
   return h;
 }
 
@@ -1301,41 +1352,39 @@ function openAppLaunch(){
   var actN=all.filter(function(a){return a.active!==false}).length;
   var inactN=all.filter(function(a){return a.active===false}).length;
 
-  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alEditMode=!alEditMode;openAppLaunch()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
+  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alEditMode=!alEditMode;alFilter=alEditMode?\'all\':\'all\';openAppLaunch()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
 
   // Summary
   h+='<div class="al-summary"><div class="al-summary-dot" style="background:#059669"></div>'+actN+' Active <div class="al-summary-dot" style="background:#CBD5E1;margin-left:6px"></div>'+inactN+' Inactive<span style="margin-left:auto;font-size:9px;color:var(--text2)">'+all.length+' total</span></div>';
 
-  // Filter
-  h+='<div class="al-filter">';
-  h+='<button class="al-filter-btn'+(alFilter==='all'?' active':'')+'" onclick="alFilter=\'all\';openAppLaunch()">All '+all.length+'</button>';
-  h+='<button class="al-filter-btn'+(alFilter==='active'?' active':'')+'" onclick="alFilter=\'active\';openAppLaunch()"><div class="al-filter-dot" style="background:#059669"></div> Active '+actN+'</button>';
-  h+='<button class="al-filter-btn'+(alFilter==='inactive'?' active':'')+'" onclick="alFilter=\'inactive\';openAppLaunch()"><div class="al-filter-dot" style="background:#CBD5E1"></div> Inactive '+inactN+'</button>';
-  h+='</div>';
+  // Filter tabs — ONLY in edit mode
+  if(alEditMode){
+    h+='<div class="al-filter">';
+    h+='<button class="al-filter-btn'+(alFilter==='all'?' active':'')+'" onclick="alFilter=\'all\';openAppLaunch()">All '+all.length+'</button>';
+    h+='<button class="al-filter-btn'+(alFilter==='active'?' active':'')+'" onclick="alFilter=\'active\';openAppLaunch()"><div class="al-filter-dot" style="background:#059669"></div> Active '+actN+'</button>';
+    h+='<button class="al-filter-btn'+(alFilter==='inactive'?' active':'')+'" onclick="alFilter=\'inactive\';openAppLaunch()"><div class="al-filter-dot" style="background:#CBD5E1"></div> Inactive '+inactN+'</button>';
+    h+='</div>';
+  }
 
   // Grid
   h+='<div class="al-grid">';
   appDB.forEach(function(cat,ci){
-    var visN=alCountVis(cat);
+    var allInCol=[];
+    if(cat.apps)allInCol=cat.apps;
+    if(cat.subs)(cat.subs||[]).forEach(function(s){allInCol=allInCol.concat(s.apps||[])});
+    var actCount=allInCol.filter(function(a){return a.active!==false}).length;
+
     h+='<div class="al-col">';
-    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+visN+'</span></div></div>';
+    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+actCount+'</span></div></div>';
     h+='<div class="al-col-body">';
 
-    if(cat.subs){
-      cat.subs.forEach(function(sub,si){
-        var subVis=(sub.apps||[]).filter(alShouldShow);
-        if(!subVis.length&&!alEditMode)return;
-        h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+subVis.length+')</span></div></div>';
-        h+=alRenderSection(sub.apps||[],'appDB['+ci+'].subs['+si+'].apps');
-        if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs['+si+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
-      });
-      if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs.push({id:\'sub_\'+Date.now(),ico:\'&#127991;\',name:\'New Group\',apps:[]});saveAppDB();openAppLaunch()">+ Group</div>';
-    } else if(cat.apps){
-      h+=alRenderSection(cat.apps,'appDB['+ci+'].apps');
-      if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
+    if(alEditMode){
+      h+=alRenderColEdit(cat, ci);
+    } else {
+      h+=alRenderColNormal(cat, ci);
     }
 
-    if(!visN&&!alEditMode)h+='<div class="al-empty">No apps</div>';
+    if(!actCount&&!alEditMode)h+='<div class="al-empty">No active apps</div>';
     h+='</div></div>';
   });
   h+='</div>';
@@ -1358,7 +1407,7 @@ function alAskDel(type,ci,si,ai){
   document.getElementById('delPopup').classList.add('show');
 }
 
-function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show');alEditMode=false}
+function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show');alEditMode=false;alFilter='all'}
 
 // Universal quick tiles rendering
 function renderUniTiles(){

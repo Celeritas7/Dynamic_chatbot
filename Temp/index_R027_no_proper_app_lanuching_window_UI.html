@@ -839,11 +839,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 <button class="applaunch-btn" id="appLaunchBtn" onclick="openAppLaunch()" style="display:none" title="My Apps">📚</button>
 
-<!-- APP EDIT OVERLAY -->
-<div style="position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px" id="alEditOv" onclick="if(event.target===this)alCloseEditOv()">
-  <div style="background:white;border-radius:20px;width:100%;max-width:360px;padding:24px 20px;box-shadow:0 24px 64px rgba(0,0,0,.2)" id="alEditCard"></div>
-</div>
-
 <!-- BLOCKER LINK EDITOR -->
 <div class="ofc-bl-edit-ov" id="ofcBlEditOv" onclick="if(event.target===this)ofcCloseBlEdit()">
   <div class="ofc-bl-edit-panel" id="ofcBlEditPanel"></div>
@@ -1247,122 +1242,57 @@ async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,ap
 
 // ===== APP LAUNCHER (Table View) =====
 let alEditMode=false;
-let alFilter='all';
+let alFilter='all'; // 'all' | 'active' | 'inactive'
 let alDelTarget=null;
 
 function alAllApps(){
-  var list=[];
+  const list=[];
   appDB.forEach(function(cat){
     if(cat.apps)(cat.apps||[]).forEach(function(a){list.push(a)});
     if(cat.subs)(cat.subs||[]).forEach(function(sub){(sub.apps||[]).forEach(function(a){list.push(a)})});
   });
   return list;
 }
+function alShouldShow(a){
+  if(alFilter==='all')return true;
+  if(alFilter==='active')return a.active!==false;
+  return a.active===false;
+}
+function alCountVis(cat){
+  var all=[];
+  if(cat.apps)all=cat.apps;
+  if(cat.subs)(cat.subs||[]).forEach(function(s){all=all.concat(s.apps||[])});
+  return all.filter(alShouldShow).length;
+}
 
-function alRenderAppNormal(a){
+function alRenderApp(a, path){
+  if(!alShouldShow(a))return'';
   var hasUrl=a.url&&a.url.trim();
   var dispUrl=hasUrl?(a.url.length>20?a.url.slice(0,20)+'...':a.url):'';
-  return '<div class="al-app" '+(hasUrl?'onclick="window.open(\''+esc(a.url)+'\',\'_blank\');closeAppLaunch()"':'')+'><div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name)+'</div>'+(hasUrl?'<div class="al-app-url">'+esc(dispUrl)+'</div>':'<div class="al-app-nourl">No URL</div>')+'</div>';
-}
-
-function alRenderAppInactive(a){
-  return '<div class="al-app al-dimmed" style="pointer-events:none"><div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name)+'</div></div>';
-}
-
-function alRenderAppEditRow(a, path){
   var inact=a.active===false;
-  var show=true;
-  if(alFilter==='active'&&inact)show=false;
-  if(alFilter==='inactive'&&!inact)show=false;
-  if(!show)return '';
-  return '<div class="al-app'+(inact?' al-dimmed':'')+'" style="display:flex;align-items:center;gap:4px"><span class="al-app-ico">'+a.ico+'</span><span class="al-app-name" style="flex:1;font-size:9px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(a.name)+'</span><button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';saveAppDB();openAppLaunch()" style="position:relative"></button><button style="border:none;background:none;font-size:8px;color:var(--accent);cursor:pointer;padding:2px 3px;opacity:.6;flex-shrink:0" onclick="event.stopPropagation();alOpenEditOv(\''+path.replace(/'/g,"\\'")+'\')">&#9999;&#65039;</button></div>';
-}
-
-// Normal mode column
-function alRenderColNormal(cat, ci){
-  var h='',allInCol=[];
-  if(cat.subs){
-    cat.subs.forEach(function(sub){
-      var act=(sub.apps||[]).filter(function(a){return a.active!==false});
-      if(act.length){
-        h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+'</div></div>';
-        act.forEach(function(a){h+=alRenderAppNormal(a)});
-      }
-      (sub.apps||[]).forEach(function(a){allInCol.push(a)});
-    });
-  } else if(cat.apps){
-    cat.apps.filter(function(a){return a.active!==false}).forEach(function(a){h+=alRenderAppNormal(a)});
-    allInCol=cat.apps;
+  var h='<div class="al-app'+(inact?' al-dimmed':'')+'" '+(hasUrl&&!alEditMode?'onclick="window.open(\''+esc(a.url)+'\',\'_blank\');closeAppLaunch()"':'')+'>';
+  h+='<div class="al-app-name"><span class="al-app-ico">'+a.ico+'</span>'+esc(a.name);
+  if(!alEditMode)h+='<div class="al-app-dot" style="background:'+(inact?'#CBD5E1':'#059669')+'"></div>';
+  h+='</div>';
+  if(hasUrl)h+='<div class="al-app-url">'+esc(dispUrl)+'</div>';
+  else h+='<div class="al-app-nourl">No URL</div>';
+  if(alEditMode){
+    h+='<button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';saveAppDB();openAppLaunch()"></button>';
   }
-  var inact=allInCol.filter(function(a){return a.active===false});
-  if(inact.length){
-    h+='<div class="al-sec-hd al-inact"><div class="al-sec-dot" style="background:#CBD5E1"></div> Inactive ('+inact.length+')</div>';
-    inact.forEach(function(a){h+=alRenderAppInactive(a)});
-  }
+  h+='</div>';
   return h;
 }
 
-// Edit mode column
-function alRenderColEdit(cat, ci){
+function alRenderSection(apps, pathBase){
+  var act=apps.filter(function(a){return a.active!==false&&alShouldShow(a)});
+  var inact=apps.filter(function(a){return a.active===false&&alShouldShow(a)});
   var h='';
-  if(cat.subs){
-    cat.subs.forEach(function(sub,si){
-      var filtered=(sub.apps||[]).filter(function(a){
-        if(alFilter==='active')return a.active!==false;
-        if(alFilter==='inactive')return a.active===false;
-        return true;
-      });
-      if(!filtered.length)return;
-      h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+filtered.length+')</span></div></div>';
-      (sub.apps||[]).forEach(function(a,ai){
-        h+=alRenderAppEditRow(a,'appDB['+ci+'].subs['+si+'].apps['+ai+']');
-      });
-      h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs['+si+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
-    });
-    h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs.push({id:\'sub_\'+Date.now(),ico:\'&#127991;\',name:\'New Group\',apps:[]});saveAppDB();openAppLaunch()">+ Group</div>';
-  } else if(cat.apps){
-    (cat.apps||[]).forEach(function(a,ai){
-      h+=alRenderAppEditRow(a,'appDB['+ci+'].apps['+ai+']');
-    });
-    h+='<div class="al-edit-add" onclick="appDB['+ci+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
-  }
+  var showSep=alFilter==='all'&&act.length&&inact.length;
+  if(showSep)h+='<div class="al-sec-hd al-act"><div class="al-sec-dot" style="background:#059669"></div> Active ('+act.length+')</div>';
+  apps.forEach(function(a,ai){if(a.active!==false&&alShouldShow(a))h+=alRenderApp(a,pathBase+'['+ai+']')});
+  if(showSep)h+='<div class="al-sec-hd al-inact"><div class="al-sec-dot" style="background:#CBD5E1"></div> Inactive ('+inact.length+')</div>';
+  apps.forEach(function(a,ai){if(a.active===false&&alShouldShow(a))h+=alRenderApp(a,pathBase+'['+ai+']')});
   return h;
-}
-
-// Edit overlay for single app
-var alEditPath=null,alEditApp=null;
-function alOpenEditOv(path){
-  alEditPath=path;alEditApp=eval(path);
-  alRenderEditOv();
-  document.getElementById('alEditOv').classList.add('show');
-}
-function alCloseEditOv(){
-  document.getElementById('alEditOv').classList.remove('show');
-  alEditPath=null;alEditApp=null;openAppLaunch();
-}
-function alRenderEditOv(){
-  if(!alEditApp)return;
-  var a=alEditApp,inact=a.active===false;
-  var h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:Fraunces,serif;font-size:16px;font-weight:700">Edit App</div><button style="border:none;background:var(--as);width:30px;height:30px;border-radius:10px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--text2)" onclick="alCloseEditOv()">&#10005;</button></div>';
-  h+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input id="alEdIco" value="'+esc(a.ico)+'" style="width:48px;height:48px;border:2px solid var(--as);border-radius:14px;font-size:24px;text-align:center;outline:none;background:var(--bg)"><input id="alEdName" value="'+esc(a.name)+'" style="flex:1;border:2px solid var(--as);border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700;font-family:DM Sans,sans-serif;outline:none;background:var(--bg)"></div>';
-  h+='<div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">URL</div>';
-  h+='<input id="alEdUrl" value="'+esc(a.url||'')+'" placeholder="https://..." style="width:100%;border:2px solid var(--as);border-radius:12px;padding:12px 14px;font-size:13px;font-family:DM Sans,sans-serif;outline:none;background:var(--bg);color:var(--text2);margin-bottom:12px;box-sizing:border-box">';
-  h+='<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg);border-radius:12px;margin-bottom:16px"><span style="font-size:12px;font-weight:600;flex:1">Status</span><span style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:6px;background:'+(inact?'#FEF2F2;color:#C62828':'#E8F5E9;color:#2E7D32')+'">'+(inact?'Inactive':'Active')+'</span><button style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:'+(inact?'#CBD5E1':'#059669')+'" onclick="alEditApp.active=!alEditApp.active;alRenderEditOv()"><span style="position:absolute;top:3px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:all .15s;'+(inact?'left:3px':'left:19px')+'"></span></button></div>';
-  h+='<div style="display:flex;gap:8px"><button style="flex:1;border:none;background:var(--accent);color:white;padding:12px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif" onclick="alSaveEditOv()">Save</button><button style="border:none;background:#FFEBEE;color:#C62828;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif" onclick="alDeleteEditOv()">&#128465;</button></div>';
-  document.getElementById('alEditCard').innerHTML=h;
-}
-function alSaveEditOv(){
-  if(!alEditApp||!alEditPath)return;
-  alEditApp.ico=document.getElementById('alEdIco').value;
-  alEditApp.name=document.getElementById('alEdName').value;
-  alEditApp.url=document.getElementById('alEdUrl').value;
-  saveAppDB();alCloseEditOv();
-}
-function alDeleteEditOv(){
-  if(!alEditPath)return;
-  if(!confirm('Delete "'+alEditApp.name+'"?'))return;
-  try{eval(alEditPath.replace(/\.apps\[(\d+)\]$/,'.apps.splice($1,1)'))}catch(e){}
-  saveAppDB();alCloseEditOv();
 }
 
 function openAppLaunch(){
@@ -1371,30 +1301,41 @@ function openAppLaunch(){
   var actN=all.filter(function(a){return a.active!==false}).length;
   var inactN=all.filter(function(a){return a.active===false}).length;
 
-  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alEditMode=!alEditMode;alFilter=\'all\';openAppLaunch()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
+  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alEditMode=!alEditMode;openAppLaunch()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
 
+  // Summary
   h+='<div class="al-summary"><div class="al-summary-dot" style="background:#059669"></div>'+actN+' Active <div class="al-summary-dot" style="background:#CBD5E1;margin-left:6px"></div>'+inactN+' Inactive<span style="margin-left:auto;font-size:9px;color:var(--text2)">'+all.length+' total</span></div>';
 
-  if(alEditMode){
-    h+='<div class="al-filter">';
-    h+='<button class="al-filter-btn'+(alFilter==='all'?' active':'')+'" onclick="alFilter=\'all\';openAppLaunch()">All '+all.length+'</button>';
-    h+='<button class="al-filter-btn'+(alFilter==='active'?' active':'')+'" onclick="alFilter=\'active\';openAppLaunch()"><div class="al-filter-dot" style="background:#059669"></div> Active '+actN+'</button>';
-    h+='<button class="al-filter-btn'+(alFilter==='inactive'?' active':'')+'" onclick="alFilter=\'inactive\';openAppLaunch()"><div class="al-filter-dot" style="background:#CBD5E1"></div> Inactive '+inactN+'</button>';
-    h+='</div>';
-  }
+  // Filter
+  h+='<div class="al-filter">';
+  h+='<button class="al-filter-btn'+(alFilter==='all'?' active':'')+'" onclick="alFilter=\'all\';openAppLaunch()">All '+all.length+'</button>';
+  h+='<button class="al-filter-btn'+(alFilter==='active'?' active':'')+'" onclick="alFilter=\'active\';openAppLaunch()"><div class="al-filter-dot" style="background:#059669"></div> Active '+actN+'</button>';
+  h+='<button class="al-filter-btn'+(alFilter==='inactive'?' active':'')+'" onclick="alFilter=\'inactive\';openAppLaunch()"><div class="al-filter-dot" style="background:#CBD5E1"></div> Inactive '+inactN+'</button>';
+  h+='</div>';
 
+  // Grid
   h+='<div class="al-grid">';
   appDB.forEach(function(cat,ci){
-    var allInCol=[];
-    if(cat.apps)allInCol=cat.apps;
-    if(cat.subs)(cat.subs||[]).forEach(function(s){allInCol=allInCol.concat(s.apps||[])});
-    var actCount=allInCol.filter(function(a){return a.active!==false}).length;
-
+    var visN=alCountVis(cat);
     h+='<div class="al-col">';
-    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+actCount+'</span></div></div>';
+    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+visN+'</span></div></div>';
     h+='<div class="al-col-body">';
-    if(alEditMode){h+=alRenderColEdit(cat,ci)}
-    else{var c=alRenderColNormal(cat,ci);h+=c||'<div class="al-empty">No active apps</div>'}
+
+    if(cat.subs){
+      cat.subs.forEach(function(sub,si){
+        var subVis=(sub.apps||[]).filter(alShouldShow);
+        if(!subVis.length&&!alEditMode)return;
+        h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+subVis.length+')</span></div></div>';
+        h+=alRenderSection(sub.apps||[],'appDB['+ci+'].subs['+si+'].apps');
+        if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs['+si+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
+      });
+      if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs.push({id:\'sub_\'+Date.now(),ico:\'&#127991;\',name:\'New Group\',apps:[]});saveAppDB();openAppLaunch()">+ Group</div>';
+    } else if(cat.apps){
+      h+=alRenderSection(cat.apps,'appDB['+ci+'].apps');
+      if(alEditMode)h+='<div class="al-edit-add" onclick="appDB['+ci+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
+    }
+
+    if(!visN&&!alEditMode)h+='<div class="al-empty">No apps</div>';
     h+='</div></div>';
   });
   h+='</div>';
@@ -1417,7 +1358,7 @@ function alAskDel(type,ci,si,ai){
   document.getElementById('delPopup').classList.add('show');
 }
 
-function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show');alEditMode=false;alFilter='all'}
+function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show');alEditMode=false}
 
 // Universal quick tiles rendering
 function renderUniTiles(){
