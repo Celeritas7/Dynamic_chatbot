@@ -840,7 +840,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <button class="applaunch-btn" id="appLaunchBtn" onclick="openAppLaunch()" style="display:none" title="My Apps">📚</button>
 
 <!-- APP EDIT OVERLAY -->
-<div style="position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px" id="alEditOv" onclick="if(event.target===this)alCloseEditOv()">
+<div class="ql-ed-ov" id="alEditOv" onclick="if(event.target===this)alCloseEditOv()">
   <div style="background:white;border-radius:20px;width:100%;max-width:360px;padding:24px 20px;box-shadow:0 24px 64px rgba(0,0,0,.2)" id="alEditCard"></div>
 </div>
 
