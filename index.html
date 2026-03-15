@@ -1275,7 +1275,7 @@ function alRenderAppEditRow(a, path){
   if(alFilter==='active'&&inact)show=false;
   if(alFilter==='inactive'&&!inact)show=false;
   if(!show)return '';
-  return '<div class="al-app'+(inact?' al-dimmed':'')+'" style="display:flex;align-items:center;gap:4px"><span class="al-app-ico">'+a.ico+'</span><span class="al-app-name" style="flex:1;font-size:9px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(a.name)+'</span><button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';saveAppDB();openAppLaunch()" style="position:relative"></button><button style="border:none;background:none;font-size:8px;color:var(--accent);cursor:pointer;padding:2px 3px;opacity:.6;flex-shrink:0" onclick="event.stopPropagation();alOpenEditOv(\''+path.replace(/'/g,"\\'")+'\')">&#9999;&#65039;</button></div>';
+  return '<div class="al-app'+(inact?' al-dimmed':'')+'" style="display:flex;align-items:center;gap:4px"><span class="al-app-ico">'+a.ico+'</span><span class="al-app-name" style="flex:1;font-size:9px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(a.name)+'</span><button class="al-toggle '+(inact?'off':'on')+'" onclick="event.stopPropagation();'+path+'.active='+String(inact)+';openAppLaunch()" style="position:relative"></button><button style="border:none;background:none;font-size:8px;color:var(--accent);cursor:pointer;padding:2px 3px;opacity:.6;flex-shrink:0" onclick="event.stopPropagation();alOpenEditOv(\''+path.replace(/'/g,"\\'")+'\')">&#9999;&#65039;</button></div>';
 }
 
 // Normal mode column
@@ -1331,20 +1331,21 @@ function alRenderColEdit(cat, ci){
 
 // Edit overlay for single app
 var alEditPath=null,alEditApp=null;
+var alSnapshot=null; // saved copy of appDB before edit mode
 function alAddAppTo(ci,si){
-  var newApp={id:'a_'+Date.now(),ico:'\u{1F4F1}',name:'New App',url:'',active:true};
+  var newApp={id:'a_'+Date.now(),ico:'📱',name:'New App',url:'',active:true};
   if(si!=null)appDB[ci].subs[si].apps.push(newApp);
   else appDB[ci].apps.push(newApp);
-  saveAppDB();openAppLaunch();
+  openAppLaunch();
 }
 function alAddGroup(ci){
   if(!appDB[ci].subs)appDB[ci].subs=[];
-  appDB[ci].subs.push({id:'sub_'+Date.now(),ico:'\u{1F3F7}',name:'New Group',apps:[]});
-  saveAppDB();openAppLaunch();
+  appDB[ci].subs.push({id:'sub_'+Date.now(),ico:'🏷',name:'New Group',apps:[]});
+  openAppLaunch();
 }
 function alAddCategory(){
-  appDB.push({id:'cat_'+Date.now(),ico:'\u{1F4C2}',name:'New Category',apps:[]});
-  saveAppDB();openAppLaunch();
+  appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[]});
+  openAppLaunch();
 }
 function alOpenEditOv(path){
   alEditPath=path;alEditApp=eval(path);
@@ -1371,13 +1372,15 @@ function alSaveEditOv(){
   alEditApp.ico=document.getElementById('alEdIco').value;
   alEditApp.name=document.getElementById('alEdName').value;
   alEditApp.url=document.getElementById('alEdUrl').value;
-  saveAppDB();alCloseEditOv();
+  document.getElementById('alEditOv').classList.remove('show');
+  alEditPath=null;alEditApp=null;openAppLaunch();
 }
 function alDeleteEditOv(){
   if(!alEditPath)return;
   if(!confirm('Delete "'+alEditApp.name+'"?'))return;
   try{eval(alEditPath.replace(/\.apps\[(\d+)\]$/,'.apps.splice($1,1)'))}catch(e){}
-  saveAppDB();alCloseEditOv();
+  document.getElementById('alEditOv').classList.remove('show');
+  alEditPath=null;alEditApp=null;openAppLaunch();
 }
 
 function openAppLaunch(){
@@ -1386,7 +1389,7 @@ function openAppLaunch(){
   var actN=all.filter(function(a){return a.active!==false}).length;
   var inactN=all.filter(function(a){return a.active===false}).length;
 
-  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alEditMode=!alEditMode;alFilter=\'all\';openAppLaunch()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
+  var h='<div class="applaunch-hd"><div class="applaunch-title">&#128218; My Apps</div><div style="display:flex;align-items:center;gap:6px"><button class="al-edit-btn'+(alEditMode?' on':'')+'" onclick="alToggleEditMode()">'+(alEditMode?'&#10003; Done':'&#9999;&#65039; Edit')+'</button><button class="applaunch-close" onclick="closeAppLaunch()">&#10005;</button></div></div>';
 
   h+='<div class="al-summary"><div class="al-summary-dot" style="background:#059669"></div>'+actN+' Active <div class="al-summary-dot" style="background:#CBD5E1;margin-left:6px"></div>'+inactN+' Inactive<span style="margin-left:auto;font-size:9px;color:var(--text2)">'+all.length+' total</span></div>';
 
@@ -1432,7 +1435,28 @@ function alAskDel(type,ci,si,ai){
   document.getElementById('delPopup').classList.add('show');
 }
 
-function closeAppLaunch(){document.getElementById('appLaunchOv').classList.remove('show');alEditMode=false;alFilter='all'}
+function alToggleEditMode(){
+  if(!alEditMode){
+    // Entering edit mode — snapshot
+    alSnapshot=JSON.parse(JSON.stringify(appDB));
+    alEditMode=true;
+  } else {
+    // Done — save to Supabase
+    alEditMode=false;alFilter='all';
+    saveAppDB();
+  }
+  openAppLaunch();
+}
+function closeAppLaunch(){
+  if(alEditMode&&alSnapshot){
+    // Cancel — restore snapshot
+    appDB.length=0;
+    alSnapshot.forEach(function(c){appDB.push(c)});
+    alSnapshot=null;
+  }
+  document.getElementById('appLaunchOv').classList.remove('show');
+  alEditMode=false;alFilter='all';
+}
 
 // Universal quick tiles rendering
 function renderUniTiles(){
