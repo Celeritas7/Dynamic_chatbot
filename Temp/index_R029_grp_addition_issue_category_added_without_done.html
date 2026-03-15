@@ -1317,35 +1317,20 @@ function alRenderColEdit(cat, ci){
       (sub.apps||[]).forEach(function(a,ai){
         h+=alRenderAppEditRow(a,'appDB['+ci+'].subs['+si+'].apps['+ai+']');
       });
-      h+='<div class="al-edit-add" onclick="alAddAppTo('+ci+','+si+')">+ App</div>';
+      h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs['+si+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
     });
-    h+='<div class="al-edit-add" onclick="alAddGroup('+ci+')">+ Group</div>';
+    h+='<div class="al-edit-add" onclick="appDB['+ci+'].subs.push({id:\'sub_\'+Date.now(),ico:\'&#127991;\',name:\'New Group\',apps:[]});saveAppDB();openAppLaunch()">+ Group</div>';
   } else if(cat.apps){
     (cat.apps||[]).forEach(function(a,ai){
       h+=alRenderAppEditRow(a,'appDB['+ci+'].apps['+ai+']');
     });
-    h+='<div class="al-edit-add" onclick="alAddAppTo('+ci+',null)">+ App</div>';
+    h+='<div class="al-edit-add" onclick="appDB['+ci+'].apps.push({id:\'a_\'+Date.now(),ico:\'&#128241;\',name:\'New App\',url:\'\',active:true});saveAppDB();openAppLaunch()">+ App</div>';
   }
   return h;
 }
 
 // Edit overlay for single app
 var alEditPath=null,alEditApp=null;
-function alAddAppTo(ci,si){
-  var newApp={id:'a_'+Date.now(),ico:'\u{1F4F1}',name:'New App',url:'',active:true};
-  if(si!=null)appDB[ci].subs[si].apps.push(newApp);
-  else appDB[ci].apps.push(newApp);
-  saveAppDB();openAppLaunch();
-}
-function alAddGroup(ci){
-  if(!appDB[ci].subs)appDB[ci].subs=[];
-  appDB[ci].subs.push({id:'sub_'+Date.now(),ico:'\u{1F3F7}',name:'New Group',apps:[]});
-  saveAppDB();openAppLaunch();
-}
-function alAddCategory(){
-  appDB.push({id:'cat_'+Date.now(),ico:'\u{1F4C2}',name:'New Category',apps:[]});
-  saveAppDB();openAppLaunch();
-}
 function alOpenEditOv(path){
   alEditPath=path;alEditApp=eval(path);
   alRenderEditOv();
@@ -1415,7 +1400,7 @@ function openAppLaunch(){
   h+='</div>';
 
   if(alEditMode){
-    h+='<div class="al-edit-add" style="margin-top:8px;font-weight:600" onclick="alAddCategory()">+ Add Category</div>';
+    h+='<div class="al-edit-add" style="margin-top:8px;font-weight:600" onclick="appDB.push({id:\'cat_\'+Date.now(),ico:\'&#128194;\',name:\'New Category\',apps:[]});saveAppDB();openAppLaunch()">+ Add Category</div>';
   }
 
   sheet.innerHTML=h;
