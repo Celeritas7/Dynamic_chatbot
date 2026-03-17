@@ -627,6 +627,47 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ofc-crit-src.mgr{background:rgba(220,38,38,.1);color:#DC2626}.ofc-crit-src.me{background:rgba(217,119,6,.1);color:#D97706}.ofc-crit-src.ppl{background:rgba(92,124,250,.1);color:#5C7CFA}
 .ofc-crit-dn{width:26px;height:26px;border-radius:7px;border:1.5px solid rgba(220,38,38,.15);background:white;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;flex-shrink:0;color:var(--text2)}
 
+/* Commute strip */
+.cmte{margin-bottom:14px}
+.cmte-card{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.cmte-hd{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.cmte-ico{font-size:18px}
+.cmte-title{font-size:11px;font-weight:700;flex:1}
+.cmte-dir{font-size:8px;font-weight:600;padding:2px 7px;border-radius:5px}
+.cmte-dir.am{background:#E8F5E9;color:#2E7D32}.cmte-dir.pm{background:#FFF3E0;color:#E65100}
+.cmte-route{display:flex;align-items:center;gap:3px;padding:6px 8px;background:var(--bg);border-radius:8px;margin-bottom:8px;overflow-x:auto;flex-wrap:nowrap}
+.cmte-stn{font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;white-space:nowrap}
+.cmte-stn.home{background:var(--accent);color:white}
+.cmte-stn.xfer{background:#E8722A;color:white}
+.cmte-stn.office{background:#059669;color:white}
+.cmte-leg{font-size:6px;color:var(--text2);white-space:nowrap}
+.cmte-trains{margin-bottom:8px}
+.cmte-trains-hd{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.cmte-line-dot{width:7px;height:7px;border-radius:50%}
+.cmte-line-nm{font-size:9px;font-weight:700}
+.cmte-line-from{font-size:8px;color:var(--text2)}
+.cmte-tr{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:3px;border:1.5px solid transparent}
+.cmte-tr.run{background:#FFF8E1;border-color:#FFE082;opacity:.85}
+.cmte-tr.best{background:#E8F5E9;border-color:#A5D6A7}
+.cmte-tr.nxt{background:white;border-color:#E8EAF6}
+.cmte-tr-time{font-size:14px;font-weight:700;width:40px;flex-shrink:0;font-family:'Fraunces',serif}
+.cmte-tr-info{flex:1;min-width:0}
+.cmte-tr-dest{font-size:8px;font-weight:600}
+.cmte-tr-type{font-size:7px;color:var(--text2)}
+.cmte-tr-cd{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;flex-shrink:0}
+.cmte-tr-cd.soon{background:#FFF3E0;color:#E8722A}
+.cmte-tr-cd.ok{background:#F0F4FF;color:var(--accent)}
+.cmte-conn{padding:6px 8px;background:#FFFDE7;border-radius:8px;margin-bottom:6px;border:1px solid #FFF9C4}
+.cmte-conn-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:8px}
+.cmte-conn-row:last-child{margin-bottom:0}
+.cmte-conn-ico{font-size:10px;flex-shrink:0}
+.cmte-conn-txt{flex:1}
+.cmte-conn-time{font-weight:700;color:var(--accent);flex-shrink:0}
+.cmte-arrival{padding:8px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:10px;text-align:center}
+.cmte-arr-lbl{font-size:8px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:.4px}
+.cmte-arr-time{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#059669}
+.cmte-arr-total{font-size:8px;color:var(--text2)}
+
 /* Square box cards */
 .ofc-box-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
 .ofc-box{background:var(--card);border-radius:16px;border:1.5px solid var(--as);padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
@@ -1245,6 +1286,96 @@ async function saveOfcApps(){await memSave('cf_ofc_apps',JSON.stringify(ofcApps)
 async function saveOfcTasks(){await memSave('cf_ofc_tasks',JSON.stringify({mgr:ofcMgrTasks,rem:ofcReminders,ppl:ofcPplTasks}))}
 async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,appDB}))}
 
+// ===== COMMUTE TIMETABLE =====
+var CMTE_WALK_AM=13,CMTE_WALK_PM=12;
+var CMTE_SOBU_AKB=25,CMTE_AKB_HMC=4,CMTE_XFER=5,CMTE_MONO_RYU=8;
+// 下総中山→秋葉原 (総武線 三鷹方面 weekday)
+var cmteSobuAM=[700,703,706,709,712,715,718,720,723,725,728,731,733,736,738,741,744,747,750,752,755,758,800,803,806,809,811,814,818,822,826,830,834,837,840,844,848,852,856,900,904,908,912,916,920,925,930,935,940,945,950,955,1000,1005,1010,1016,1022,1028,1034,1040,1046,1052,1058];
+// 秋葉原→下総中山 (総武線 千葉方面 weekday)
+var cmteSobuPM=[1700,1703,1706,1710,1713,1716,1720,1723,1726,1729,1732,1735,1738,1741,1744,1748,1752,1756,1800,1803,1806,1810,1813,1816,1820,1824,1828,1832,1836,1840,1844,1848,1852,1856,1900,1904,1908,1912,1917,1922,1927,1932,1937,1942,1947,1952,1957,2000,2005,2010,2016,2022,2028,2034,2040,2047,2054,2101,2108,2116,2124,2132,2140,2150,2200,2212,2225,2240,2255];
+// 浜松町→流通センター (モノレール weekday)
+var cmteMonoAM=[700,704,708,712,716,720,724,728,732,736,740,744,748,752,756,800,804,808,812,816,820,824,828,832,836,840,844,848,852,856,900,904,908,912,917,923,927,932,935,940,945,950,955,1000,1005,1010,1015,1020,1025,1030,1035,1040,1045,1050,1055];
+// 流通センター→浜松町 (モノレール weekday)
+var cmteMonoPM=[1702,1707,1712,1717,1722,1727,1732,1737,1742,1747,1752,1757,1802,1807,1812,1817,1822,1827,1832,1837,1842,1847,1852,1857,1902,1907,1912,1918,1924,1930,1936,1942,1948,1954,2000,2006,2012,2018,2025,2032,2039,2046,2053,2100,2108,2116,2125,2135,2145,2155,2205,2220,2240];
+
+function cmteTimeToMin(t){return Math.floor(t/100)*60+(t%100)}
+function cmteMinToStr(m){var h=Math.floor(m/60),mi=m%60;return String(h).padStart(2,'0')+':'+String(mi).padStart(2,'0')}
+function cmteTTStr(t){return String(Math.floor(t/100)).padStart(2,'0')+':'+String(t%100).padStart(2,'0')}
+
+function cmteFindTrains(tt,nowMin,walkMin){
+  var trains=tt.map(function(t){return{raw:t,min:cmteTimeToMin(t)}});
+  var run=null,next=[];
+  var comfort=nowMin+walkMin;
+  for(var i=0;i<trains.length;i++){
+    if(trains[i].min>nowMin&&trains[i].min<comfort)run=trains[i];
+    else if(trains[i].min>=comfort&&next.length<3)next.push(trains[i]);
+  }
+  return{run:run,next:next};
+}
+function cmteFindAfter(tt,afterMin){
+  for(var i=0;i<tt.length;i++){var m=cmteTimeToMin(tt[i]);if(m>=afterMin)return{raw:tt[i],min:m}}
+  return null;
+}
+function cmteCD(trainMin,nowMin){
+  var d=trainMin-nowMin;
+  if(d<=5)return{t:d+'min',c:'soon'};
+  return{t:d+'min',c:'ok'};
+}
+
+function renderCommute(){
+  var now=new Date(),hr=now.getHours(),mn=now.getMinutes(),nowMin=hr*60+mn;
+  var isAM=nowMin>=480&&nowMin<=630;
+  var isPM=nowMin>=1020&&nowMin<=1320;
+  if(!isAM&&!isPM)return '';
+
+  var h='<div class="cmte"><div class="cmte-card">';
+  if(isAM){
+    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Commute</span><span class="cmte-dir am">🏠→🏢</span></div>';
+    h+='<div class="cmte-route"><span class="cmte-stn home">下総中山</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn office">流通センター</span></div>';
+    var r=cmteFindTrains(cmteSobuAM,nowMin,CMTE_WALK_AM);
+    h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#FFD700"></div><span class="cmte-line-nm">総武線</span><span class="cmte-line-from">下総中山→秋葉原</span></div>';
+    if(r.run){var cd=cmteCD(r.run.min,nowMin);h+='<div class="cmte-tr run"><div class="cmte-tr-time">'+cmteTTStr(r.run.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">三鷹方面</div><div class="cmte-tr-type">🏃 Run! Leaves in '+cd.t+'</div></div><div class="cmte-tr-cd soon">'+cd.t+'</div></div>'}
+    r.next.forEach(function(t,i){
+      var cd=cmteCD(t.min,nowMin);var best=i===0;
+      h+='<div class="cmte-tr '+(best?'best':'nxt')+'"><div class="cmte-tr-time">'+cmteTTStr(t.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">三鷹方面</div><div class="cmte-tr-type">'+(best?'⭐ Best':'各停')+'</div></div><div class="cmte-tr-cd '+cd.c+'">'+cd.t+'</div></div>';
+      if(best){
+        var arrAkb=t.min+CMTE_SOBU_AKB;var depHmc=arrAkb+CMTE_XFER+CMTE_AKB_HMC;
+        var mono=cmteFindAfter(cmteMonoAM,depHmc+CMTE_XFER);
+        var arrRyu=mono?mono.min+CMTE_MONO_RYU:depHmc+CMTE_XFER+CMTE_MONO_RYU+5;
+        h+='<div class="cmte-conn"><div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">秋葉原着 → 山手線/京浜東北線</span><span class="cmte-conn-time">~'+cmteMinToStr(arrAkb)+'</span></div>';
+        h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">浜松町着 → モノレール</span><span class="cmte-conn-time">~'+cmteMinToStr(depHmc)+'</span></div>';
+        if(mono)h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🚝</span><span class="cmte-conn-txt">モノレール '+cmteTTStr(mono.raw)+'発</span><span class="cmte-conn-time">~'+cmteMinToStr(mono.min+CMTE_MONO_RYU)+'</span></div>';
+        h+='</div>';
+        h+='<div class="cmte-arrival"><div class="cmte-arr-lbl">流通センター着</div><div class="cmte-arr-time">'+cmteMinToStr(arrRyu)+'</div><div class="cmte-arr-total">~'+(arrRyu-t.min)+'min total</div></div>';
+      }
+    });
+    h+='</div>';
+  } else {
+    h+='<div class="cmte-hd"><span class="cmte-ico">🏠</span><span class="cmte-title">Commute</span><span class="cmte-dir pm">🏢→🏠</span></div>';
+    h+='<div class="cmte-route"><span class="cmte-stn office">流通センター</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn home">下総中山</span></div>';
+    var r=cmteFindTrains(cmteMonoPM,nowMin,CMTE_WALK_PM);
+    h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#00BCD4"></div><span class="cmte-line-nm">モノレール</span><span class="cmte-line-from">流通センター→浜松町</span></div>';
+    if(r.run){var cd=cmteCD(r.run.min,nowMin);h+='<div class="cmte-tr run"><div class="cmte-tr-time">'+cmteTTStr(r.run.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">浜松町方面</div><div class="cmte-tr-type">🏃 Run! Leaves in '+cd.t+'</div></div><div class="cmte-tr-cd soon">'+cd.t+'</div></div>'}
+    r.next.forEach(function(t,i){
+      var cd=cmteCD(t.min,nowMin);var best=i===0;
+      h+='<div class="cmte-tr '+(best?'best':'nxt')+'"><div class="cmte-tr-time">'+cmteTTStr(t.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">浜松町方面</div><div class="cmte-tr-type">'+(best?'⭐ Best':'普通')+'</div></div><div class="cmte-tr-cd '+cd.c+'">'+cd.t+'</div></div>';
+      if(best){
+        var arrHmc=t.min+CMTE_MONO_RYU;var depAkb=arrHmc+CMTE_XFER+CMTE_AKB_HMC;
+        var sobu=cmteFindAfter(cmteSobuPM,depAkb+CMTE_XFER);
+        var arrHome=sobu?sobu.min+CMTE_SOBU_AKB:depAkb+CMTE_XFER+CMTE_SOBU_AKB+5;
+        h+='<div class="cmte-conn"><div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">浜松町着 → 山手線/京浜東北線</span><span class="cmte-conn-time">~'+cmteMinToStr(arrHmc)+'</span></div>';
+        h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">秋葉原着 → 総武線</span><span class="cmte-conn-time">~'+cmteMinToStr(depAkb)+'</span></div>';
+        if(sobu)h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🚃</span><span class="cmte-conn-txt">総武線 '+cmteTTStr(sobu.raw)+'発</span><span class="cmte-conn-time">~'+cmteMinToStr(sobu.min+CMTE_SOBU_AKB)+'</span></div>';
+        h+='</div>';
+        h+='<div class="cmte-arrival"><div class="cmte-arr-lbl">下総中山着</div><div class="cmte-arr-time">'+cmteMinToStr(arrHome)+'</div><div class="cmte-arr-total">~'+(arrHome-t.min)+'min total</div></div>';
+      }
+    });
+    h+='</div>';
+  }
+  h+='</div></div>';
+  return h;
+}
+
 // ===== APP LAUNCHER (Table View) =====
 let alEditMode=false;
 let alFilter='all';
@@ -1732,6 +1863,9 @@ function renderOffice(){
     h+=`<span>${g.ico}</span> ${esc(g.name)} <span class="ofc-ql-chip-count">${visItems.length}</span></div>`;
   });
   h+=`</div></div>`;
+
+  // Commute strip (only shows during commute hours)
+  h+=renderCommute();
 
   // Critical surface
   if(topTasks.length){
