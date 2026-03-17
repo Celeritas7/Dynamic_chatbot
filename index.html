@@ -667,6 +667,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cmte-arr-lbl{font-size:8px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:.4px}
 .cmte-arr-time{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#059669}
 .cmte-arr-total{font-size:8px;color:var(--text2)}
+
+/* Train top-bar button */
+.cmte-top-btn{border:none;background:var(--as);width:28px;height:28px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative}
+.cmte-top-btn:active{transform:scale(.9)}
+.cmte-top-btn.has-trains::after{content:'';position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:#059669}
 /* Delay badges */
 .cmte-delay-badge{font-size:7px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:auto;flex-shrink:0;display:flex;align-items:center;gap:3px}
 .cmte-delay-badge.loading{background:#E3F2FD;color:#1565C0;animation:cmtePulse 1.5s infinite}
@@ -792,12 +797,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="app">
   <div class="loading" id="loadingView"><div class="loading-spinner"></div><div class="loading-text">Loading from Supabase...</div></div>
   <div class="pitch" id="pitch" style="display:none">
-    <div class="pitch-top"><div class="pitch-name">ContextFlow</div><div class="pitch-r"><span class="day-badge" id="dayB"></span><button class="hol-btn" id="holB" onclick="toggleHol()">🎌</button><div class="pitch-time" id="timeD"></div></div></div>
+    <div class="pitch-top"><div class="pitch-name">ContextFlow</div><div class="pitch-r"><span class="day-badge" id="dayB"></span><button class="hol-btn" id="holB" onclick="toggleHol()">🎌</button><button class="cmte-top-btn" id="cmteTopBtn" onclick="openTrainOv()" title="Trains">🚃</button><div class="pitch-time" id="timeD"></div></div></div>
     <div class="loc-bar"><div class="loc-g" id="locG"><button class="loc-b active" data-l="home" onclick="setLoc('home')">🏠 Home</button><button class="loc-b" data-l="office" onclick="setLoc('office')">🏢 Office</button><button class="loc-b" data-l="outside" onclick="setLoc('outside')">🌳 Outside</button></div></div>
     <div id="possStrip"></div><div class="pitch-field" id="pitchField"></div>
   </div>
 </div>
 <button class="corner-btn" id="cornerBtn" onclick="openOv()" style="display:none">☰</button>
+
+<!-- TRAIN OVERLAY -->
+<div class="ql-ed-ov" id="trainOv" onclick="if(event.target===this)closeTrainOv()">
+  <div style="background:var(--card);border-radius:20px;width:100%;max-width:440px;max-height:85vh;overflow-y:auto;padding:16px;box-shadow:0 24px 64px rgba(0,0,0,.2)" id="trainOvBody"></div>
+</div>
 
 <!-- CENTERED OVERLAY -->
 <div class="ov-bg" id="ovBg" onclick="if(event.target===this)closeOv()">
@@ -1361,6 +1371,32 @@ function cmteWalkTimes(isShimosa){
   return{run:gpsWalkMin(dist,GPS_SPEEDS.run),fast:gpsWalkMin(dist,GPS_SPEEDS.fast),normal:gpsWalkMin(dist,GPS_SPEEDS.normal),dist:dist,gps:true};
 }
 async function saveCmteSettings(){await memSave('cf_commute',JSON.stringify({visFrom:cmteVisFrom,visTo:cmteVisTo}))}
+
+// Train overlay
+function openTrainOv(){
+  var body=document.getElementById('trainOvBody');
+  var content=renderCommute();
+  if(!content){
+    body.innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:28px;margin-bottom:8px">😴</div><div style="font-size:12px;color:var(--text2)">No trains right now</div><div style="font-size:9px;color:var(--text2);margin-top:4px">Window: '+String(Math.floor(cmteVisFrom/60)).padStart(2,'0')+':'+String(cmteVisFrom%60).padStart(2,'0')+' — '+String(Math.floor(cmteVisTo/60)).padStart(2,'0')+':'+String(cmteVisTo%60).padStart(2,'0')+'</div><button style="border:none;background:var(--as);padding:6px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-top:10px;color:var(--text2)" onclick="closeTrainOv()">Close</button></div>';
+  } else {
+    body.innerHTML=content+'<div style="text-align:center;margin-top:8px"><button style="border:none;background:var(--as);padding:6px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;color:var(--text2)" onclick="closeTrainOv()">Close</button></div>';
+  }
+  document.getElementById('trainOv').classList.add('show');
+  // Trigger delay check
+  if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);
+}
+function closeTrainOv(){document.getElementById('trainOv').classList.remove('show')}
+
+// Update train button indicator
+function cmteUpdateTopBtn(){
+  var btn=document.getElementById('cmteTopBtn');
+  if(!btn)return;
+  var nowMin;
+  if(cmteTestTime!=null){nowMin=cmteTestTime}
+  else{var now=new Date();nowMin=now.getHours()*60+now.getMinutes()}
+  var inWindow=cmteTestTime!=null||(nowMin>=cmteVisFrom&&nowMin<=cmteVisTo);
+  btn.classList.toggle('has-trains',inWindow);
+}
 
 // Delay status
 var cmteDelayState='idle'; // idle|loading|done|error
@@ -2064,9 +2100,7 @@ function renderOffice(){
   });
   h+=`</div></div>`;
 
-  // Commute strip (only shows during commute hours)
-  h+=renderCommute();
-  var _cmteShown=h.indexOf('cmte-card')>-1;
+  // Train info moved to overlay (top-bar icon)
 
   // Critical surface
   if(topTasks.length){
@@ -2112,8 +2146,8 @@ function renderOffice(){
   }
   h+=`</div>`;
   field.innerHTML=h;
-  // Trigger delay check after DOM is ready (if commute strip was rendered)
-  if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);
+  // Train info in overlay now
+  cmteUpdateTopBtn();
 }
 
 // Render pending office tasks on non-office screens
@@ -2469,17 +2503,16 @@ function skipBreak(){endBreak()}
 
 // ===== RENDER PITCH =====
 function renderPitch(){
+  cmteUpdateTopBtn();
   const field=document.getElementById('pitchField'),strip=document.getElementById('possStrip');
   // === OFFICE: render office dashboard instead of pitch ===
   if(loc==='office'){renderOffice();return}
   // Pending office tasks banner on non-office screens
   const pendingBanner=renderOfcPendingBanner();
   const uTiles=renderUniTiles();
-  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+renderCommute()+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner+renderCommute();
-  if(loc==='outside'){let h=renderCommute()+`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);return}
+  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner;
+  if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
   
-  // Trigger delay check if commute shown
-  if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);
   const pt=pitched();
   if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open Coach to rank players</div></div><div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;return}
 
