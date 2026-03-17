@@ -1289,6 +1289,7 @@ async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,ap
 // ===== COMMUTE TIMETABLE =====
 var CMTE_WALK_AM=13,CMTE_WALK_PM=12;
 var CMTE_SOBU_AKB=25,CMTE_AKB_HMC=4,CMTE_XFER=5,CMTE_MONO_RYU=8;
+var cmteTestTime=null; // null=real clock, or minutes since midnight e.g. 510=8:30
 // 下総中山→秋葉原 (総武線 三鷹方面 weekday)
 var cmteSobuAM=[700,703,706,709,712,715,718,720,723,725,728,731,733,736,738,741,744,747,750,752,755,758,800,803,806,809,811,814,818,822,826,830,834,837,840,844,848,852,856,900,904,908,912,916,920,925,930,935,940,945,950,955,1000,1005,1010,1016,1022,1028,1034,1040,1046,1052,1058];
 // 秋葉原→下総中山 (総武線 千葉方面 weekday)
@@ -1323,7 +1324,9 @@ function cmteCD(trainMin,nowMin){
 }
 
 function renderCommute(){
-  var now=new Date(),hr=now.getHours(),mn=now.getMinutes(),nowMin=hr*60+mn;
+  var nowMin;
+  if(cmteTestTime!=null){nowMin=cmteTestTime}
+  else{var now=new Date();nowMin=now.getHours()*60+now.getMinutes()}
   var isAM=nowMin>=480&&nowMin<=630;
   var isPM=nowMin>=1020&&nowMin<=1320;
   if(!isAM&&!isPM)return '';
@@ -2463,6 +2466,17 @@ function renderSettings(){
     h+='<div class="sett-msg-item"><input class="sett-msg-inp" value="'+esc(msg)+'" onchange="ssMessages['+i+']=this.value;saveSS()"><button class="sett-link-del" onclick="ssMessages.splice('+i+',1);saveSS();renderOv()">&#128465;</button></div>';
   });
   h+='<div class="sett-add" onclick="ssMessages.push(\'New message\');saveSS();renderOv()">+ Add Message</div>';
+  h+='</div>';
+
+  // Commute test section
+  h+='<div class="sett-sec"><div class="sett-sec-hd">&#128643; Commute Test</div>';
+  h+='<div class="sett-sec-sub">Override current time to test commute feature</div>';
+  if(cmteTestTime!=null){
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Test time</span><input class="sett-ss-inp" type="number" min="0" max="23" value="'+Math.floor(cmteTestTime/60)+'" id="cmteTestH" style="width:36px">:<input class="sett-ss-inp" type="number" min="0" max="59" value="'+(cmteTestTime%60)+'" id="cmteTestM" style="width:36px"><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="var hh=parseInt(document.getElementById(\'cmteTestH\').value)||0;var mm=parseInt(document.getElementById(\'cmteTestM\').value)||0;cmteTestTime=hh*60+mm;renderOv();renderPitch()">Apply</button><button style="border:none;background:#FFEBEE;color:#C62828;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="cmteTestTime=null;renderOv();renderPitch()">Reset</button></div>';
+    h+='<div style="font-size:8px;color:var(--accent);font-weight:600;margin-top:4px">&#9888; Using test time '+String(Math.floor(cmteTestTime/60)).padStart(2,'0')+':'+String(cmteTestTime%60).padStart(2,'0')+' — commute strip shows on Office tab</div>';
+  } else {
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Currently using real clock</span><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="cmteTestTime=510;renderOv()">Enable Test Mode</button></div>';
+  }
   h+='</div>';
 
   return h;
