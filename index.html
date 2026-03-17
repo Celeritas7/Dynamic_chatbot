@@ -1144,7 +1144,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute']);
   pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
@@ -1165,6 +1165,7 @@ async function loadAll(){
     if(m.key==='cf_ofc_bl_links')try{ofcBlLinks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_screensaver')try{const ss=JSON.parse(m.value);if(ss.messages)ssMessages=ss.messages;if(ss.timeout)ssTimeoutMin=ss.timeout}catch{};
     if(m.key==='cf_pos_ranks')try{posRanks=JSON.parse(m.value)}catch{};
+    if(m.key==='cf_commute')try{var cs=JSON.parse(m.value);if(cs.visFrom!=null)cmteVisFrom=cs.visFrom;if(cs.visTo!=null)cmteVisTo=cs.visTo}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
   });
   // Migrate: convert old pitchSet to posRanks if posRanks is empty
@@ -1301,7 +1302,8 @@ async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,ap
 // ===== COMMUTE TIMETABLE =====
 var CMTE_WALK_AM=13,CMTE_WALK_PM=12;
 var CMTE_SOBU_AKB=25,CMTE_AKB_HMC=4,CMTE_XFER=5,CMTE_MONO_RYU=8;
-var cmteTestTime=null; // null=real clock, or minutes since midnight e.g. 510=8:30
+var cmteTestTime=null;
+var cmteVisFrom=300,cmteVisTo=1380; // visibility window minutes (5:00-23:00)
 
 // ===== GPS AUTO-LOCATION =====
 var GPS_COORDS={
@@ -1329,10 +1331,17 @@ function gpsDetectLoc(){
   if(dO<=GPS_RADIUS)return'office';
   return'outside';
 }
-function gpsDistToStation(isAM){
+function gpsNearestStation(){
+  if(!gpsLat)return(loc==='office')?'ryutsu':'shimosa';
+  var dS=gpsDistM(gpsLat,gpsLng,GPS_COORDS.shimosa.lat,GPS_COORDS.shimosa.lng);
+  var dR=gpsDistM(gpsLat,gpsLng,GPS_COORDS.ryutsu.lat,GPS_COORDS.ryutsu.lng);
+  return dS<=dR?'shimosa':'ryutsu';
+}
+function gpsDistToNearestStation(){
   if(!gpsLat)return null;
-  var stn=isAM?GPS_COORDS.shimosa:GPS_COORDS.ryutsu;
-  return Math.round(gpsDistM(gpsLat,gpsLng,stn.lat,stn.lng));
+  var stn=gpsNearestStation();
+  var c=stn==='shimosa'?GPS_COORDS.shimosa:GPS_COORDS.ryutsu;
+  return Math.round(gpsDistM(gpsLat,gpsLng,c.lat,c.lng));
 }
 function gpsCheck(){
   if(!navigator.geolocation)return;
@@ -1345,12 +1354,13 @@ function gpsCheck(){
 }
 document.addEventListener('visibilitychange',function(){if(!document.hidden)gpsCheck()});
 
-function cmteWalkTimes(isAM){
-  var dist=gpsDistToStation(isAM);
-  var fallback=isAM?CMTE_WALK_AM:CMTE_WALK_PM;
-  if(!dist)return{run:fallback,fast:fallback,normal:fallback,dist:null,gps:false};
+function cmteWalkTimes(isShimosa){
+  if(!gpsLat){var fb=isShimosa?CMTE_WALK_AM:CMTE_WALK_PM;return{run:fb,fast:fb,normal:fb,dist:null,gps:false}}
+  var stn=isShimosa?GPS_COORDS.shimosa:GPS_COORDS.ryutsu;
+  var dist=Math.round(gpsDistM(gpsLat,gpsLng,stn.lat,stn.lng));
   return{run:gpsWalkMin(dist,GPS_SPEEDS.run),fast:gpsWalkMin(dist,GPS_SPEEDS.fast),normal:gpsWalkMin(dist,GPS_SPEEDS.normal),dist:dist,gps:true};
 }
+async function saveCmteSettings(){await memSave('cf_commute',JSON.stringify({visFrom:cmteVisFrom,visTo:cmteVisTo}))}
 
 // Delay status
 var cmteDelayState='idle'; // idle|loading|done|error
@@ -1493,30 +1503,26 @@ function renderCommute(){
   var nowMin;
   if(cmteTestTime!=null){nowMin=cmteTestTime}
   else{var now=new Date();nowMin=now.getHours()*60+now.getMinutes()}
-  var isAM=nowMin>=480&&nowMin<=630;
-  var isPM=nowMin>=1020&&nowMin<=1320;
-  // In test mode, bypass window — decide direction by time value
-  if(cmteTestTime!=null&&!isAM&&!isPM){
-    if(cmteTestTime<720)isAM=true; else isPM=true;
-  }
-  if(!isAM&&!isPM)return '';
-
-  var wt=cmteWalkTimes(isAM);
+  // Visibility window check (bypass in test mode)
+  if(cmteTestTime==null&&(nowMin<cmteVisFrom||nowMin>cmteVisTo))return '';
+  // GPS-based: which station am I closest to?
+  var station=gpsNearestStation(); // 'shimosa' or 'ryutsu'
+  var isShimosa=station==='shimosa';
+  var wt=cmteWalkTimes(isShimosa);
   var h='<div class="cmte"><div class="cmte-card">';
+  var gpsBadge=wt.gps?'<span style="font-size:7px;padding:2px 6px;border-radius:4px;background:#E8F5E9;color:#2E7D32;font-weight:600">📍 '+wt.dist+'m to '+(isShimosa?'下総中山':'流通センター')+'</span>':'<span style="font-size:7px;padding:2px 6px;border-radius:4px;background:#F5F5F5;color:#999;font-weight:600">📍 No GPS</span>';
 
-  // GPS distance badge
-  var gpsBadge=wt.gps?'<span style="font-size:7px;padding:2px 6px;border-radius:4px;background:#E8F5E9;color:#2E7D32;font-weight:600">📍 '+wt.dist+'m</span>':'<span style="font-size:7px;padding:2px 6px;border-radius:4px;background:#F5F5F5;color:#999;font-weight:600">📍 No GPS</span>';
-
-  if(isAM){
-    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Commute</span>'+gpsBadge+'<span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir am">🏠→🏢</span></div>';
+  if(isShimosa){
+    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Trains</span>'+gpsBadge+'<span id="cmteDelayBadge" class="cmte-delay-badge loading">📡</span></div>';
     h+='<div id="cmteDelayBanner"></div>';
     h+='<div class="cmte-route"><span class="cmte-stn home">下総中山</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn office">流通センター</span></div>';
+    var tt=nowMin<720?cmteSobuAM:cmteSobuAM.concat(cmteSobuPM);
     var r=cmteFindTrains3(cmteSobuAM,nowMin,wt);
     h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#FFD700"></div><span class="cmte-line-nm">総武線</span><span class="cmte-line-from">下総中山→秋葉原</span></div>';
     h+=cmteRenderTiers(r,nowMin,'三鷹方面','各停',true);
     h+='</div>';
   } else {
-    h+='<div class="cmte-hd"><span class="cmte-ico">🏠</span><span class="cmte-title">Commute</span>'+gpsBadge+'<span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir pm">🏢→🏠</span></div>';
+    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Trains</span>'+gpsBadge+'<span id="cmteDelayBadge" class="cmte-delay-badge loading">📡</span></div>';
     h+='<div id="cmteDelayBanner"></div>';
     h+='<div class="cmte-route"><span class="cmte-stn office">流通センター</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn home">下総中山</span></div>';
     var r=cmteFindTrains3(cmteMonoPM,nowMin,wt);
@@ -2469,9 +2475,11 @@ function renderPitch(){
   // Pending office tasks banner on non-office screens
   const pendingBanner=renderOfcPendingBanner();
   const uTiles=renderUniTiles();
-  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner;
-  if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
+  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+renderCommute()+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner+renderCommute();
+  if(loc==='outside'){let h=renderCommute()+`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);return}
   
+  // Trigger delay check if commute shown
+  if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);
   const pt=pitched();
   if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open Coach to rank players</div></div><div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;return}
 
@@ -2668,19 +2676,28 @@ function renderSettings(){
   h+='<div class="sett-sec-sub">GPS Auto-Location</div>';
   if(gpsLat){
     var det=gpsDetectLoc()||'unknown';
-    var dist=gpsDistToStation(loc==='home'||loc==='outside');
-    h+='<div style="padding:6px 8px;background:#E8F5E9;border-radius:8px;margin-bottom:8px;font-size:9px;color:#2E7D32;font-weight:600">📍 GPS active — '+det+' (±'+gpsAccuracy+'m)'+(dist?' · '+dist+'m to station':'')+'</div>';
+    var nst=gpsNearestStation();
+    var dist=gpsDistToNearestStation();
+    h+='<div style="padding:8px 10px;background:#E8F5E9;border-radius:8px;margin-bottom:8px;font-size:10px;color:#2E7D32;font-weight:600">&#128205; GPS active — '+det+' (&#177;'+gpsAccuracy+'m)<br><span style="font-size:9px;font-weight:500">Nearest: '+(nst==='shimosa'?'下総中山':'流通センター')+' · '+dist+'m</span></div>';
   } else {
-    h+='<div style="padding:6px 8px;background:#F5F5F5;border-radius:8px;margin-bottom:8px;font-size:9px;color:#999;font-weight:600">📍 No GPS data yet</div>';
+    h+='<div style="padding:8px 10px;background:#F5F5F5;border-radius:8px;margin-bottom:8px;font-size:10px;color:#999;font-weight:600">&#128205; No GPS data yet</div>';
   }
-  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Auto-switch location</span><button class="ql-lnk-hide-sw '+(gpsAutoLoc?'on':'off')+'" onclick="gpsAutoLoc=!gpsAutoLoc;renderOv()" style="position:relative"></button><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:8px" onclick="gpsCheck();setTimeout(renderOv,1500)">📡 Check Now</button></div>';
+  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Auto-switch location</span><button class="ql-lnk-hide-sw '+(gpsAutoLoc?'on':'off')+'" onclick="gpsAutoLoc=!gpsAutoLoc;renderOv()" style="position:relative"></button><button style="border:none;background:var(--accent);color:white;padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:8px" onclick="gpsCheck();setTimeout(renderOv,1500)">&#128225; Check Now</button></div>';
+
+  // Visibility window
+  h+='<div class="sett-sec-sub" style="margin-top:10px">Train Card Visibility</div>';
+  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Show from</span><input class="sett-ss-inp" type="number" min="0" max="23" value="'+Math.floor(cmteVisFrom/60)+'" id="cmteVisFromH" style="width:44px;font-size:13px">:<input class="sett-ss-inp" type="number" min="0" max="59" value="'+(cmteVisFrom%60)+'" id="cmteVisFromM" style="width:44px;font-size:13px"></div>';
+  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Show until</span><input class="sett-ss-inp" type="number" min="0" max="23" value="'+Math.floor(cmteVisTo/60)+'" id="cmteVisToH" style="width:44px;font-size:13px">:<input class="sett-ss-inp" type="number" min="0" max="59" value="'+(cmteVisTo%60)+'" id="cmteVisToM" style="width:44px;font-size:13px"></div>';
+  h+='<button style="border:none;background:var(--accent);color:white;padding:6px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-top:6px" onclick="cmteVisFrom=parseInt(document.getElementById(\'cmteVisFromH\').value)*60+parseInt(document.getElementById(\'cmteVisFromM\').value||0);cmteVisTo=parseInt(document.getElementById(\'cmteVisToH\').value)*60+parseInt(document.getElementById(\'cmteVisToM\').value||0);saveCmteSettings();renderOv();renderPitch()">Save Window</button>';
+  h+='<div style="font-size:8px;color:var(--text2);margin-top:4px">Current: '+String(Math.floor(cmteVisFrom/60)).padStart(2,'0')+':'+String(cmteVisFrom%60).padStart(2,'0')+' — '+String(Math.floor(cmteVisTo/60)).padStart(2,'0')+':'+String(cmteVisTo%60).padStart(2,'0')+'</div>';
+
   // Test time
-  h+='<div class="sett-sec-sub" style="margin-top:8px">Test Mode</div>';
+  h+='<div class="sett-sec-sub" style="margin-top:10px">Test Mode</div>';
   if(cmteTestTime!=null){
-    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Test time</span><input class="sett-ss-inp" type="number" min="0" max="23" value="'+Math.floor(cmteTestTime/60)+'" id="cmteTestH" style="width:36px">:<input class="sett-ss-inp" type="number" min="0" max="59" value="'+(cmteTestTime%60)+'" id="cmteTestM" style="width:36px"><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="var hh=parseInt(document.getElementById(\'cmteTestH\').value)||0;var mm=parseInt(document.getElementById(\'cmteTestM\').value)||0;cmteTestTime=hh*60+mm;renderOv();renderPitch()">Apply</button><button style="border:none;background:#FFEBEE;color:#C62828;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="cmteTestTime=null;renderOv();renderPitch()">Reset</button></div>';
-    h+='<div style="font-size:8px;color:var(--accent);font-weight:600;margin-top:4px">&#9888; Using test time '+String(Math.floor(cmteTestTime/60)).padStart(2,'0')+':'+String(cmteTestTime%60).padStart(2,'0')+' — commute strip shows on Office tab</div>';
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Test time</span><input class="sett-ss-inp" type="number" min="0" max="23" value="'+Math.floor(cmteTestTime/60)+'" id="cmteTestH" style="width:44px;font-size:13px">:<input class="sett-ss-inp" type="number" min="0" max="59" value="'+(cmteTestTime%60)+'" id="cmteTestM" style="width:44px;font-size:13px"><button style="border:none;background:var(--accent);color:white;padding:5px 12px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:6px" onclick="var hh=parseInt(document.getElementById(\'cmteTestH\').value)||0;var mm=parseInt(document.getElementById(\'cmteTestM\').value)||0;cmteTestTime=hh*60+mm;renderOv();renderPitch()">Apply</button><button style="border:none;background:#FFEBEE;color:#C62828;padding:5px 12px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="cmteTestTime=null;renderOv();renderPitch()">Reset</button></div>';
+    h+='<div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:6px;padding:6px 10px;background:#E8EAF6;border-radius:8px">&#9888; Test time: '+String(Math.floor(cmteTestTime/60)).padStart(2,'0')+':'+String(cmteTestTime%60).padStart(2,'0')+' — train card shows on ALL tabs</div>';
   } else {
-    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Currently using real clock</span><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="cmteTestTime=510;renderOv()">Enable Test Mode</button></div>';
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Using real clock</span><button style="border:none;background:var(--accent);color:white;padding:5px 12px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:6px" onclick="cmteTestTime=510;renderOv()">Enable Test Mode</button></div>';
   }
   h+='</div>';
 
