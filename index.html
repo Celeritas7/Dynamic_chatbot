@@ -1303,6 +1303,55 @@ var CMTE_WALK_AM=13,CMTE_WALK_PM=12;
 var CMTE_SOBU_AKB=25,CMTE_AKB_HMC=4,CMTE_XFER=5,CMTE_MONO_RYU=8;
 var cmteTestTime=null; // null=real clock, or minutes since midnight e.g. 510=8:30
 
+// ===== GPS AUTO-LOCATION =====
+var GPS_COORDS={
+  home:{lat:35.7089,lng:139.9454},
+  office:{lat:35.5791,lng:139.7485},
+  shimosa:{lat:35.7156,lng:139.9425},
+  ryutsu:{lat:35.5876,lng:139.7494}
+};
+var GPS_RADIUS=500;
+var GPS_SPEEDS={run:130,fast:100,normal:80};
+var gpsLat=null,gpsLng=null,gpsAccuracy=null,gpsTime=null;
+var gpsAutoLoc=true;
+
+function gpsDistM(lat1,lng1,lat2,lng2){
+  var R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function gpsWalkMin(distM,speed){return Math.ceil(distM/speed)}
+function gpsDetectLoc(){
+  if(!gpsLat)return null;
+  var dH=gpsDistM(gpsLat,gpsLng,GPS_COORDS.home.lat,GPS_COORDS.home.lng);
+  var dO=gpsDistM(gpsLat,gpsLng,GPS_COORDS.office.lat,GPS_COORDS.office.lng);
+  if(dH<=GPS_RADIUS)return'home';
+  if(dO<=GPS_RADIUS)return'office';
+  return'outside';
+}
+function gpsDistToStation(isAM){
+  if(!gpsLat)return null;
+  var stn=isAM?GPS_COORDS.shimosa:GPS_COORDS.ryutsu;
+  return Math.round(gpsDistM(gpsLat,gpsLng,stn.lat,stn.lng));
+}
+function gpsCheck(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(function(pos){
+    gpsLat=pos.coords.latitude;gpsLng=pos.coords.longitude;
+    gpsAccuracy=Math.round(pos.coords.accuracy);gpsTime=Date.now();
+    if(gpsAutoLoc){var det=gpsDetectLoc();if(det&&det!==loc)setLoc(det)}
+    else renderPitch();
+  },function(err){console.log('GPS:',err.message)},{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
+}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)gpsCheck()});
+
+function cmteWalkTimes(isAM){
+  var dist=gpsDistToStation(isAM);
+  var fallback=isAM?CMTE_WALK_AM:CMTE_WALK_PM;
+  if(!dist)return{run:fallback,fast:fallback,normal:fallback,dist:null,gps:false};
+  return{run:gpsWalkMin(dist,GPS_SPEEDS.run),fast:gpsWalkMin(dist,GPS_SPEEDS.fast),normal:gpsWalkMin(dist,GPS_SPEEDS.normal),dist:dist,gps:true};
+}
+
 // Delay status
 var cmteDelayState='idle'; // idle|loading|done|error
 var cmteDelayData=null; // {sobu:{ok,text},yamanote:{ok,text},monorail:{ok,text}}
@@ -1400,15 +1449,35 @@ function cmteTimeToMin(t){return Math.floor(t/100)*60+(t%100)}
 function cmteMinToStr(m){var h=Math.floor(m/60),mi=m%60;return String(h).padStart(2,'0')+':'+String(mi).padStart(2,'0')}
 function cmteTTStr(t){return String(Math.floor(t/100)).padStart(2,'0')+':'+String(t%100).padStart(2,'0')}
 
-function cmteFindTrains(tt,nowMin,walkMin){
+function cmteFindTrains3(tt,nowMin,wt){
+  // wt = {run, fast, normal, dist, gps}
+  // 3 tiers: trains you can catch by running, fast walking, or normal walking
+  // Plus next 2 comfortable trains after normal walk time
   var trains=tt.map(function(t){return{raw:t,min:cmteTimeToMin(t)}});
-  var run=null,next=[];
-  var comfort=nowMin+walkMin;
+  var runT=null,fastT=null,normalT=null,next=[];
+  var runCut=nowMin+wt.run,fastCut=nowMin+wt.fast,normalCut=nowMin+wt.normal;
   for(var i=0;i<trains.length;i++){
-    if(trains[i].min>nowMin&&trains[i].min<comfort)run=trains[i];
-    else if(trains[i].min>=comfort&&next.length<3)next.push(trains[i]);
+    var t=trains[i];
+    if(t.min<=nowMin)continue; // already departed
+    if(t.min<runCut){runT=t} // can only catch running
+    else if(t.min<fastCut){if(!fastT)fastT=t;else runT=t} // can catch fast walking
+    else if(t.min<normalCut){if(!normalT)normalT=t;else if(!fastT)fastT=t}
+    else{if(next.length<2)next.push(t)}
   }
-  return{run:run,next:next};
+  // If no GPS, fall back to simple: run=null, next3
+  if(!wt.gps){
+    var simple=[];
+    for(var i=0;i<trains.length;i++){
+      if(trains[i].min>nowMin+wt.normal&&simple.length<3)simple.push(trains[i]);
+    }
+    // Find last train in run zone
+    var lastRun=null;
+    for(var i=0;i<trains.length;i++){
+      if(trains[i].min>nowMin&&trains[i].min<nowMin+wt.normal)lastRun=trains[i];
+    }
+    return{run:lastRun,fast:null,normal:null,next:simple,gps:false};
+  }
+  return{run:runT,fast:fastT,normal:normalT,next:next,gps:true};
 }
 function cmteFindAfter(tt,afterMin){
   for(var i=0;i<tt.length;i++){var m=cmteTimeToMin(tt[i]);if(m>=afterMin)return{raw:tt[i],min:m}}
@@ -1426,55 +1495,78 @@ function renderCommute(){
   else{var now=new Date();nowMin=now.getHours()*60+now.getMinutes()}
   var isAM=nowMin>=480&&nowMin<=630;
   var isPM=nowMin>=1020&&nowMin<=1320;
+  // In test mode, bypass window — decide direction by time value
+  if(cmteTestTime!=null&&!isAM&&!isPM){
+    if(cmteTestTime<720)isAM=true; else isPM=true;
+  }
   if(!isAM&&!isPM)return '';
 
+  var wt=cmteWalkTimes(isAM);
   var h='<div class="cmte"><div class="cmte-card">';
+
+  // GPS distance badge
+  var gpsBadge=wt.gps?'<span style="font-size:7px;padding:2px 6px;border-radius:4px;background:#E8F5E9;color:#2E7D32;font-weight:600">📍 '+wt.dist+'m</span>':'<span style="font-size:7px;padding:2px 6px;border-radius:4px;background:#F5F5F5;color:#999;font-weight:600">📍 No GPS</span>';
+
   if(isAM){
-    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Commute</span><span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir am">🏠→🏢</span></div>';
+    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Commute</span>'+gpsBadge+'<span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir am">🏠→🏢</span></div>';
     h+='<div id="cmteDelayBanner"></div>';
     h+='<div class="cmte-route"><span class="cmte-stn home">下総中山</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn office">流通センター</span></div>';
-    var r=cmteFindTrains(cmteSobuAM,nowMin,CMTE_WALK_AM);
+    var r=cmteFindTrains3(cmteSobuAM,nowMin,wt);
     h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#FFD700"></div><span class="cmte-line-nm">総武線</span><span class="cmte-line-from">下総中山→秋葉原</span></div>';
-    if(r.run){var cd=cmteCD(r.run.min,nowMin);h+='<div class="cmte-tr run"><div class="cmte-tr-time">'+cmteTTStr(r.run.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">三鷹方面</div><div class="cmte-tr-type">🏃 Run! Leaves in '+cd.t+'</div></div><div class="cmte-tr-cd soon">'+cd.t+'</div></div>'}
-    r.next.forEach(function(t,i){
-      var cd=cmteCD(t.min,nowMin);var best=i===0;
-      h+='<div class="cmte-tr '+(best?'best':'nxt')+'"><div class="cmte-tr-time">'+cmteTTStr(t.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">三鷹方面</div><div class="cmte-tr-type">'+(best?'⭐ Best':'各停')+'</div></div><div class="cmte-tr-cd '+cd.c+'">'+cd.t+'</div></div>';
-      if(best){
-        var arrAkb=t.min+CMTE_SOBU_AKB;var depHmc=arrAkb+CMTE_XFER+CMTE_AKB_HMC;
-        var mono=cmteFindAfter(cmteMonoAM,depHmc+CMTE_XFER);
-        var arrRyu=mono?mono.min+CMTE_MONO_RYU:depHmc+CMTE_XFER+CMTE_MONO_RYU+5;
-        h+='<div class="cmte-conn"><div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">秋葉原着 → 山手線/京浜東北線</span><span class="cmte-conn-time">~'+cmteMinToStr(arrAkb)+'</span></div>';
-        h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">浜松町着 → モノレール</span><span class="cmte-conn-time">~'+cmteMinToStr(depHmc)+'</span></div>';
-        if(mono)h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🚝</span><span class="cmte-conn-txt">モノレール '+cmteTTStr(mono.raw)+'発</span><span class="cmte-conn-time">~'+cmteMinToStr(mono.min+CMTE_MONO_RYU)+'</span></div>';
-        h+='</div>';
-        h+='<div class="cmte-arrival"><div class="cmte-arr-lbl">流通センター着</div><div class="cmte-arr-time">'+cmteMinToStr(arrRyu)+'</div><div class="cmte-arr-total">~'+(arrRyu-t.min)+'min total</div></div>';
-      }
-    });
+    h+=cmteRenderTiers(r,nowMin,'三鷹方面','各停',true);
     h+='</div>';
   } else {
-    h+='<div class="cmte-hd"><span class="cmte-ico">🏠</span><span class="cmte-title">Commute</span><span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir pm">🏢→🏠</span></div>';
+    h+='<div class="cmte-hd"><span class="cmte-ico">🏠</span><span class="cmte-title">Commute</span>'+gpsBadge+'<span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir pm">🏢→🏠</span></div>';
     h+='<div id="cmteDelayBanner"></div>';
     h+='<div class="cmte-route"><span class="cmte-stn office">流通センター</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn home">下総中山</span></div>';
-    var r=cmteFindTrains(cmteMonoPM,nowMin,CMTE_WALK_PM);
+    var r=cmteFindTrains3(cmteMonoPM,nowMin,wt);
     h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#00BCD4"></div><span class="cmte-line-nm">モノレール</span><span class="cmte-line-from">流通センター→浜松町</span></div>';
-    if(r.run){var cd=cmteCD(r.run.min,nowMin);h+='<div class="cmte-tr run"><div class="cmte-tr-time">'+cmteTTStr(r.run.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">浜松町方面</div><div class="cmte-tr-type">🏃 Run! Leaves in '+cd.t+'</div></div><div class="cmte-tr-cd soon">'+cd.t+'</div></div>'}
-    r.next.forEach(function(t,i){
-      var cd=cmteCD(t.min,nowMin);var best=i===0;
-      h+='<div class="cmte-tr '+(best?'best':'nxt')+'"><div class="cmte-tr-time">'+cmteTTStr(t.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">浜松町方面</div><div class="cmte-tr-type">'+(best?'⭐ Best':'普通')+'</div></div><div class="cmte-tr-cd '+cd.c+'">'+cd.t+'</div></div>';
-      if(best){
-        var arrHmc=t.min+CMTE_MONO_RYU;var depAkb=arrHmc+CMTE_XFER+CMTE_AKB_HMC;
-        var sobu=cmteFindAfter(cmteSobuPM,depAkb+CMTE_XFER);
-        var arrHome=sobu?sobu.min+CMTE_SOBU_AKB:depAkb+CMTE_XFER+CMTE_SOBU_AKB+5;
-        h+='<div class="cmte-conn"><div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">浜松町着 → 山手線/京浜東北線</span><span class="cmte-conn-time">~'+cmteMinToStr(arrHmc)+'</span></div>';
-        h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">秋葉原着 → 総武線</span><span class="cmte-conn-time">~'+cmteMinToStr(depAkb)+'</span></div>';
-        if(sobu)h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🚃</span><span class="cmte-conn-txt">総武線 '+cmteTTStr(sobu.raw)+'発</span><span class="cmte-conn-time">~'+cmteMinToStr(sobu.min+CMTE_SOBU_AKB)+'</span></div>';
-        h+='</div>';
-        h+='<div class="cmte-arrival"><div class="cmte-arr-lbl">下総中山着</div><div class="cmte-arr-time">'+cmteMinToStr(arrHome)+'</div><div class="cmte-arr-total">~'+(arrHome-t.min)+'min total</div></div>';
-      }
-    });
+    h+=cmteRenderTiers(r,nowMin,'浜松町方面','普通',false);
     h+='</div>';
   }
   h+='</div></div>';
+  return h;
+}
+
+function cmteRenderTiers(r,nowMin,dest,typeLabel,isAM){
+  var h='';
+  // Run tier
+  if(r.run){var cd=cmteCD(r.run.min,nowMin);h+='<div class="cmte-tr run"><div class="cmte-tr-time">'+cmteTTStr(r.run.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">'+dest+'</div><div class="cmte-tr-type">🏃 Run! '+cd.t+'</div></div><div class="cmte-tr-cd soon">'+cd.t+'</div></div>'}
+  // Fast walk tier
+  if(r.fast){var cd=cmteCD(r.fast.min,nowMin);h+='<div class="cmte-tr" style="background:#FFF8E1;border-color:#FFE082"><div class="cmte-tr-time">'+cmteTTStr(r.fast.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">'+dest+'</div><div class="cmte-tr-type">🚶‍♂️ Fast walk! '+cd.t+'</div></div><div class="cmte-tr-cd soon">'+cd.t+'</div></div>'}
+  // Normal walk tier (best comfortable option)
+  if(r.normal){var cd=cmteCD(r.normal.min,nowMin);h+='<div class="cmte-tr best"><div class="cmte-tr-time">'+cmteTTStr(r.normal.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">'+dest+'</div><div class="cmte-tr-type">🚶 Normal walk '+cd.t+'</div></div><div class="cmte-tr-cd ok">'+cd.t+'</div></div>';h+=cmteRenderChain(r.normal,nowMin,isAM)}
+  // Next trains (comfortable)
+  r.next.forEach(function(t,i){
+    var cd=cmteCD(t.min,nowMin);
+    var isBest=!r.normal&&!r.fast&&i===0;
+    h+='<div class="cmte-tr '+(isBest?'best':'nxt')+'"><div class="cmte-tr-time">'+cmteTTStr(t.raw)+'</div><div class="cmte-tr-info"><div class="cmte-tr-dest">'+dest+'</div><div class="cmte-tr-type">'+(isBest?'⭐ Best':typeLabel)+' '+cd.t+'</div></div><div class="cmte-tr-cd '+cd.c+'">'+cd.t+'</div></div>';
+    if(isBest)h+=cmteRenderChain(t,nowMin,isAM);
+  });
+  return h;
+}
+
+function cmteRenderChain(t,nowMin,isAM){
+  var h='';
+  if(isAM){
+    var arrAkb=t.min+CMTE_SOBU_AKB;var depHmc=arrAkb+CMTE_XFER+CMTE_AKB_HMC;
+    var mono=cmteFindAfter(cmteMonoAM,depHmc+CMTE_XFER);
+    var arrRyu=mono?mono.min+CMTE_MONO_RYU:depHmc+CMTE_XFER+CMTE_MONO_RYU+5;
+    h+='<div class="cmte-conn"><div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">秋葉原着 → 山手線/京浜東北線</span><span class="cmte-conn-time">~'+cmteMinToStr(arrAkb)+'</span></div>';
+    h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">浜松町着 → モノレール</span><span class="cmte-conn-time">~'+cmteMinToStr(depHmc)+'</span></div>';
+    if(mono)h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🚝</span><span class="cmte-conn-txt">モノレール '+cmteTTStr(mono.raw)+'発</span><span class="cmte-conn-time">~'+cmteMinToStr(mono.min+CMTE_MONO_RYU)+'</span></div>';
+    h+='</div>';
+    h+='<div class="cmte-arrival"><div class="cmte-arr-lbl">流通センター着</div><div class="cmte-arr-time">'+cmteMinToStr(arrRyu)+'</div><div class="cmte-arr-total">~'+(arrRyu-t.min)+'min total</div></div>';
+  } else {
+    var arrHmc=t.min+CMTE_MONO_RYU;var depAkb=arrHmc+CMTE_XFER+CMTE_AKB_HMC;
+    var sobu=cmteFindAfter(cmteSobuPM,depAkb+CMTE_XFER);
+    var arrHome=sobu?sobu.min+CMTE_SOBU_AKB:depAkb+CMTE_XFER+CMTE_SOBU_AKB+5;
+    h+='<div class="cmte-conn"><div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">浜松町着 → 山手線/京浜東北線</span><span class="cmte-conn-time">~'+cmteMinToStr(arrHmc)+'</span></div>';
+    h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🔄</span><span class="cmte-conn-txt">秋葉原着 → 総武線</span><span class="cmte-conn-time">~'+cmteMinToStr(depAkb)+'</span></div>';
+    if(sobu)h+='<div class="cmte-conn-row"><span class="cmte-conn-ico">🚃</span><span class="cmte-conn-txt">総武線 '+cmteTTStr(sobu.raw)+'発</span><span class="cmte-conn-time">~'+cmteMinToStr(sobu.min+CMTE_SOBU_AKB)+'</span></div>';
+    h+='</div>';
+    h+='<div class="cmte-arrival"><div class="cmte-arr-lbl">下総中山着</div><div class="cmte-arr-time">'+cmteMinToStr(arrHome)+'</div><div class="cmte-arr-total">~'+(arrHome-t.min)+'min total</div></div>';
+  }
   return h;
 }
 
@@ -2571,8 +2663,19 @@ function renderSettings(){
   h+='</div>';
 
   // Commute test section
-  h+='<div class="sett-sec"><div class="sett-sec-hd">&#128643; Commute Test</div>';
-  h+='<div class="sett-sec-sub">Override current time to test commute feature</div>';
+  h+='<div class="sett-sec"><div class="sett-sec-hd">&#128643; Commute &amp; GPS</div>';
+  // GPS status
+  h+='<div class="sett-sec-sub">GPS Auto-Location</div>';
+  if(gpsLat){
+    var det=gpsDetectLoc()||'unknown';
+    var dist=gpsDistToStation(loc==='home'||loc==='outside');
+    h+='<div style="padding:6px 8px;background:#E8F5E9;border-radius:8px;margin-bottom:8px;font-size:9px;color:#2E7D32;font-weight:600">📍 GPS active — '+det+' (±'+gpsAccuracy+'m)'+(dist?' · '+dist+'m to station':'')+'</div>';
+  } else {
+    h+='<div style="padding:6px 8px;background:#F5F5F5;border-radius:8px;margin-bottom:8px;font-size:9px;color:#999;font-weight:600">📍 No GPS data yet</div>';
+  }
+  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Auto-switch location</span><button class="ql-lnk-hide-sw '+(gpsAutoLoc?'on':'off')+'" onclick="gpsAutoLoc=!gpsAutoLoc;renderOv()" style="position:relative"></button><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:8px" onclick="gpsCheck();setTimeout(renderOv,1500)">📡 Check Now</button></div>';
+  // Test time
+  h+='<div class="sett-sec-sub" style="margin-top:8px">Test Mode</div>';
   if(cmteTestTime!=null){
     h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Test time</span><input class="sett-ss-inp" type="number" min="0" max="23" value="'+Math.floor(cmteTestTime/60)+'" id="cmteTestH" style="width:36px">:<input class="sett-ss-inp" type="number" min="0" max="59" value="'+(cmteTestTime%60)+'" id="cmteTestM" style="width:36px"><button style="border:none;background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="var hh=parseInt(document.getElementById(\'cmteTestH\').value)||0;var mm=parseInt(document.getElementById(\'cmteTestM\').value)||0;cmteTestTime=hh*60+mm;renderOv();renderPitch()">Apply</button><button style="border:none;background:#FFEBEE;color:#C62828;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:4px" onclick="cmteTestTime=null;renderOv();renderPitch()">Reset</button></div>';
     h+='<div style="font-size:8px;color:var(--accent);font-weight:600;margin-top:4px">&#9888; Using test time '+String(Math.floor(cmteTestTime/60)).padStart(2,'0')+':'+String(cmteTestTime%60).padStart(2,'0')+' — commute strip shows on Office tab</div>';
@@ -2665,7 +2768,7 @@ function ssInitListeners(){
   ssResetTimer();
 }
 
-async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();renderPitch()}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch()}
 init();
 </script>
 </body>

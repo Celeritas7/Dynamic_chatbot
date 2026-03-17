@@ -667,6 +667,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cmte-arr-lbl{font-size:8px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:.4px}
 .cmte-arr-time{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#059669}
 .cmte-arr-total{font-size:8px;color:var(--text2)}
+/* Delay badges */
+.cmte-delay-badge{font-size:7px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:auto;flex-shrink:0;display:flex;align-items:center;gap:3px}
+.cmte-delay-badge.loading{background:#E3F2FD;color:#1565C0;animation:cmtePulse 1.5s infinite}
+.cmte-delay-badge.ok{background:#E8F5E9;color:#2E7D32}
+.cmte-delay-badge.delay{background:#FFF3E0;color:#E65100}
+.cmte-delay-badge.error{background:#F5F5F5;color:#999}
+@keyframes cmtePulse{0%,100%{opacity:1}50%{opacity:.5}}
+.cmte-delay-banner{padding:6px 8px;border-radius:8px;margin-bottom:8px;font-size:9px;font-weight:600;display:flex;align-items:center;gap:5px}
+.cmte-delay-banner.warn{background:#FFF3E0;border:1px solid #FFE0B2;color:#E65100}
+.cmte-delay-banner.ok{background:#E8F5E9;border:1px solid #C8E6C9;color:#2E7D32}
+.cmte-delay-banner .cmte-delay-line{font-weight:700}
+.cmte-delay-banner .cmte-delay-txt{flex:1;font-size:8px;font-weight:500}
 
 /* Square box cards */
 .ofc-box-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
@@ -1290,6 +1302,91 @@ async function saveAppDB(){await memSave('cf_app_db',JSON.stringify({uniTiles,ap
 var CMTE_WALK_AM=13,CMTE_WALK_PM=12;
 var CMTE_SOBU_AKB=25,CMTE_AKB_HMC=4,CMTE_XFER=5,CMTE_MONO_RYU=8;
 var cmteTestTime=null; // null=real clock, or minutes since midnight e.g. 510=8:30
+
+// Delay status
+var cmteDelayState='idle'; // idle|loading|done|error
+var cmteDelayData=null; // {sobu:{ok,text},yamanote:{ok,text},monorail:{ok,text}}
+var cmteDelayLastFetch=0;
+var CMTE_DELAY_INTERVAL=120000; // re-fetch every 2 min
+var CMTE_LINES={
+  sobu:'odpt.Railway:JR-East.ChuoSobuLocal',
+  yamanote:'odpt.Railway:JR-East.Yamanote',
+  keihin:'odpt.Railway:JR-East.KeihinTohokuNegishi',
+  monorail:'odpt.Railway:TokyoMonorail.HanedaAirportLine'
+};
+
+function cmteCheckDelays(){
+  if(Date.now()-cmteDelayLastFetch<CMTE_DELAY_INTERVAL&&cmteDelayState==='done')return;
+  cmteDelayState='loading';
+  cmteUpdateBadge();
+  fetch('https://api-public.odpt.org/api/v4/odpt:TrainInformation.json')
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+    .then(function(data){
+      cmteDelayData={sobu:{ok:true,text:''},yamanote:{ok:true,text:''},keihin:{ok:true,text:''},monorail:{ok:true,text:''}};
+      data.forEach(function(item){
+        var rail=item['odpt:railway']||'';
+        var status=item['odpt:trainInformationStatus']||{};
+        var text=item['odpt:trainInformationText']||{};
+        var statusJa=typeof status==='object'?(status.ja||''):(status||'');
+        var textJa=typeof text==='object'?(text.ja||''):(text||'');
+        var isNormal=!statusJa||statusJa==='平常運転';
+        for(var key in CMTE_LINES){
+          if(rail===CMTE_LINES[key]&&!isNormal){
+            cmteDelayData[key]={ok:false,text:textJa||statusJa};
+          }
+        }
+      });
+      cmteDelayState='done';
+      cmteDelayLastFetch=Date.now();
+      cmteUpdateBadge();
+      cmteUpdateBanner();
+    })
+    .catch(function(e){
+      cmteDelayState='error';
+      cmteDelayData=null;
+      cmteUpdateBadge();
+    });
+}
+
+function cmteUpdateBadge(){
+  var el=document.getElementById('cmteDelayBadge');
+  if(!el)return;
+  if(cmteDelayState==='loading'){
+    el.className='cmte-delay-badge loading';
+    el.innerHTML='📡 Checking...';
+  } else if(cmteDelayState==='error'){
+    el.className='cmte-delay-badge error';
+    el.innerHTML='❌ Offline';
+  } else if(cmteDelayState==='done'&&cmteDelayData){
+    var hasDelay=false;
+    for(var k in cmteDelayData)if(!cmteDelayData[k].ok)hasDelay=true;
+    if(hasDelay){
+      el.className='cmte-delay-badge delay';
+      el.innerHTML='⚠️ Delay';
+    } else {
+      el.className='cmte-delay-badge ok';
+      el.innerHTML='✅ On time';
+    }
+  }
+}
+
+function cmteUpdateBanner(){
+  var el=document.getElementById('cmteDelayBanner');
+  if(!el||!cmteDelayData)return;
+  var h='';
+  var lineNames={sobu:'総武線',yamanote:'山手線',keihin:'京浜東北線',monorail:'モノレール'};
+  var hasAny=false;
+  for(var k in cmteDelayData){
+    if(!cmteDelayData[k].ok){
+      hasAny=true;
+      var txt=cmteDelayData[k].text;
+      if(txt.length>60)txt=txt.slice(0,60)+'…';
+      h+='<div class="cmte-delay-banner warn"><span>⚠️</span><span class="cmte-delay-line">'+lineNames[k]+'</span><span class="cmte-delay-txt">'+esc(txt)+'</span></div>';
+    }
+  }
+  if(!hasAny)h='<div class="cmte-delay-banner ok"><span>✅</span><span class="cmte-delay-txt">All lines running normally</span></div>';
+  el.innerHTML=h;
+}
 // 下総中山→秋葉原 (総武線 三鷹方面 weekday)
 var cmteSobuAM=[700,703,706,709,712,715,718,720,723,725,728,731,733,736,738,741,744,747,750,752,755,758,800,803,806,809,811,814,818,822,826,830,834,837,840,844,848,852,856,900,904,908,912,916,920,925,930,935,940,945,950,955,1000,1005,1010,1016,1022,1028,1034,1040,1046,1052,1058];
 // 秋葉原→下総中山 (総武線 千葉方面 weekday)
@@ -1333,7 +1430,8 @@ function renderCommute(){
 
   var h='<div class="cmte"><div class="cmte-card">';
   if(isAM){
-    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Commute</span><span class="cmte-dir am">🏠→🏢</span></div>';
+    h+='<div class="cmte-hd"><span class="cmte-ico">🚃</span><span class="cmte-title">Commute</span><span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir am">🏠→🏢</span></div>';
+    h+='<div id="cmteDelayBanner"></div>';
     h+='<div class="cmte-route"><span class="cmte-stn home">下総中山</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn office">流通センター</span></div>';
     var r=cmteFindTrains(cmteSobuAM,nowMin,CMTE_WALK_AM);
     h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#FFD700"></div><span class="cmte-line-nm">総武線</span><span class="cmte-line-from">下総中山→秋葉原</span></div>';
@@ -1354,7 +1452,8 @@ function renderCommute(){
     });
     h+='</div>';
   } else {
-    h+='<div class="cmte-hd"><span class="cmte-ico">🏠</span><span class="cmte-title">Commute</span><span class="cmte-dir pm">🏢→🏠</span></div>';
+    h+='<div class="cmte-hd"><span class="cmte-ico">🏠</span><span class="cmte-title">Commute</span><span id="cmteDelayBadge" class="cmte-delay-badge loading">📡 Checking...</span><span class="cmte-dir pm">🏢→🏠</span></div>';
+    h+='<div id="cmteDelayBanner"></div>';
     h+='<div class="cmte-route"><span class="cmte-stn office">流通センター</span><span class="cmte-leg">→モノレール 8m→</span><span class="cmte-stn xfer">浜松町</span><span class="cmte-leg">→山手線 4m→</span><span class="cmte-stn xfer">秋葉原</span><span class="cmte-leg">→総武線 25m→</span><span class="cmte-stn home">下総中山</span></div>';
     var r=cmteFindTrains(cmteMonoPM,nowMin,CMTE_WALK_PM);
     h+='<div class="cmte-trains"><div class="cmte-trains-hd"><div class="cmte-line-dot" style="background:#00BCD4"></div><span class="cmte-line-nm">モノレール</span><span class="cmte-line-from">流通センター→浜松町</span></div>';
@@ -1869,6 +1968,7 @@ function renderOffice(){
 
   // Commute strip (only shows during commute hours)
   h+=renderCommute();
+  var _cmteShown=h.indexOf('cmte-card')>-1;
 
   // Critical surface
   if(topTasks.length){
@@ -1914,6 +2014,8 @@ function renderOffice(){
   }
   h+=`</div>`;
   field.innerHTML=h;
+  // Trigger delay check after DOM is ready (if commute strip was rendered)
+  if(document.getElementById('cmteDelayBadge'))setTimeout(cmteCheckDelays,300);
 }
 
 // Render pending office tasks on non-office screens
