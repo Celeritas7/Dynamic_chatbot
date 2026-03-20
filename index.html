@@ -841,6 +841,41 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
 .huddle-coach{background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:12px;padding:10px 12px;margin-top:8px;border:1px solid rgba(99,102,241,.2)}
 .huddle-coach-hdr{font-size:9px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
 .huddle-coach-text{font-size:11px;line-height:1.6;color:rgba(255,255,255,.85)}
+
+/* ===== TEAM TAKEOVER ===== */
+.tkv-ov{display:none;position:fixed;inset:0;z-index:9997;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.tkv-ov.show{display:flex;animation:lockIn .6s ease}
+.tkv-ov.executive{background:linear-gradient(160deg,#450a0a,#7f1d1d,#991b1b)}
+.tkv-ov.exercise{background:linear-gradient(160deg,#022c22,#064e3b,#065f46)}
+.tkv-ov.food{background:linear-gradient(160deg,#451a03,#78350f,#92400e)}
+.tkv-ov.sleep{background:linear-gradient(160deg,#0c0a2e,#1e1b4b,#312e81)}
+.tkv-ov.cleaning{background:linear-gradient(160deg,#042f2e,#134e4a,#0f766e)}
+.tkv-ov.fashion{background:linear-gradient(160deg,#4a044e,#701a75,#86198f)}
+.tkv-ov::before{content:'';position:absolute;top:10%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.04),transparent 70%);border-radius:50%}
+.tkv-ico{font-size:48px;margin-bottom:10px;position:relative;z-index:1}
+.tkv-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:white;margin-bottom:2px;position:relative;z-index:1}
+.tkv-tone{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:16px;font-style:italic;position:relative;z-index:1}
+.tkv-brief{background:rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;margin-bottom:16px;max-width:340px;width:100%;position:relative;z-index:1}
+.tkv-brief-text{font-size:12px;line-height:1.6;color:rgba(255,255,255,.9);font-weight:500}
+.tkv-brief-meta{font-size:8px;color:rgba(255,255,255,.3);margin-top:6px}
+.tkv-tasks{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;margin-bottom:16px;position:relative;z-index:1}
+.tkv-task{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);padding:11px 14px;border-radius:11px;color:white;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.tkv-task.checked{opacity:.5}.tkv-task.checked .tkv-task-text{text-decoration:line-through}
+.tkv-task-cb{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.tkv-task-cb.checked{background:white;border-color:white}
+.tkv-task-cb.checked::after{content:'✓';font-size:12px;font-weight:700;color:#991b1b}
+.tkv-task-text{flex:1;text-align:left}
+.tkv-task-ico{font-size:16px;flex-shrink:0}
+.tkv-timer{position:relative;z-index:1;margin-bottom:12px}
+.tkv-timer-text{font-size:32px;font-weight:700;color:white}
+.tkv-timer-lbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.tkv-streak{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:16px;position:relative;z-index:1}
+.tkv-btns{display:flex;gap:10px;position:relative;z-index:1}
+.tkv-btn{border:none;padding:11px 24px;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
+.tkv-btn.done{background:white;color:#1a1a1a;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tkv-btn.skip{background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.5);font-size:11px;padding:8px 16px}
+.tkv-btn.waiting{background:rgba(255,255,255,.1);color:rgba(255,255,255,.3);cursor:not-allowed}
+.tkv-penalty{font-size:9px;color:rgba(255,255,255,.35);margin-top:8px;position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -995,6 +1030,20 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
   <div class="ofc-bl-actions"><button class="ofc-bl-btn dim" id="ofcEvBtn0" onclick="ofcEvMark(0)">✓ Checkout done</button><button class="ofc-bl-btn dim" id="ofcEvBtn1" onclick="ofcEvMark(1)">✓ Timesheet done</button></div>
   <div class="ofc-bl-hint">⚠️ Complete both to stop reminders</div>
   <button class="ofc-bl-btn dim" style="margin-top:8px;width:100%;max-width:360px" onclick="ofcEvSkip()">Still working — remind me in 15 min</button>
+</div>
+
+<!-- TEAM TAKEOVER -->
+<div class="tkv-ov" id="tkvOv">
+  <div class="tkv-ico" id="tkvIco"></div>
+  <div class="tkv-title" id="tkvTitle"></div>
+  <div class="tkv-tone" id="tkvTone"></div>
+  <div class="tkv-brief" id="tkvBrief"><div class="tkv-brief-text" id="tkvBriefText"></div><div class="tkv-brief-meta" id="tkvBriefMeta"></div></div>
+  <div class="tkv-streak" id="tkvStreak"></div>
+  <div class="tkv-tasks" id="tkvTasks"></div>
+  <div class="tkv-timer" id="tkvTimer"><div class="tkv-timer-text" id="tkvTimerText">15:00</div><div class="tkv-timer-lbl">minimum focus time</div></div>
+  <div class="tkv-btns"><button class="tkv-btn done waiting" id="tkvDoneBtn" onclick="tkvFinish()">✓ Done</button></div>
+  <button class="tkv-btn skip" id="tkvSkipBtn" onclick="tkvSkip()" style="margin-top:10px">Skip — streak resets</button>
+  <div class="tkv-penalty" id="tkvPenalty"></div>
 </div>
 
 <!-- SCREENSAVER -->
@@ -1610,6 +1659,176 @@ function renderHuddle(){
   return h;
 }
 
+// ===== TEAM TAKEOVER ENGINE =====
+// Config: { squadName: { enabled:true, hardLock:false, timeFrom:10, timeTo:10.5, days:['weekday'], loc:['home','outside'], tasks:[...], timerMin:15 } }
+let takeoverConfig={
+  Executive:{enabled:true,hardLock:false,timeFrom:10,timeTo:10,days:['weekday','weekend'],loc:['home','outside'],
+    tasks:[
+      {id:'tx1',text:'Update resume (1 section)',ico:'📄',done:false},
+      {id:'tx2',text:'Check LinkedIn — 3 job posts',ico:'💼',done:false},
+      {id:'tx3',text:'Work on portfolio or profile',ico:'🌐',done:false},
+    ],timerMin:15},
+};
+let tkvActive=null; // active takeover squad name
+let tkvTimerRem=0,tkvTimerInt=null;
+let tkvChecked=new Set();
+let tkvFiredToday={}; // { 'Executive_2026-03-21': true } — prevents re-trigger same day
+let tkvBriefText=''; // briefing text shown during takeover
+
+function tkvSaveConfig(){memSave('cf_takeover_cfg',JSON.stringify(takeoverConfig))}
+function tkvSaveFired(){memSave('cf_takeover_fired',JSON.stringify(tkvFiredToday))}
+
+// Check if any takeover should fire right now
+function tkvCheck(){
+  if(tkvActive)return; // already showing
+  if(emergencyMode)return; // no takeovers in emergency
+  const hr=new Date().getHours()+(new Date().getMinutes()/60);
+  const dt=dayType();
+  const today=todayK();
+
+  for(const[sqN,cfg] of Object.entries(takeoverConfig)){
+    if(!cfg.enabled)continue;
+    const firedKey=sqN+'_'+today;
+    if(tkvFiredToday[firedKey])continue; // already fired today
+    // Check day type
+    if(!cfg.days.includes(dt)&&!(dt==='holiday'&&cfg.days.includes('weekend')))continue;
+    // Check location
+    if(cfg.loc&&cfg.loc.length&&!cfg.loc.includes(loc))continue;
+    // Check time window — fire if current hour matches timeFrom (within 30 min window)
+    if(hr>=cfg.timeFrom&&hr<cfg.timeFrom+0.5){
+      tkvTrigger(sqN);
+      return;
+    }
+  }
+}
+
+async function tkvTrigger(sqN){
+  const cfg=takeoverConfig[sqN];
+  const p=PERSONALITIES[sqN];
+  if(!cfg||!p)return;
+
+  tkvActive=sqN;
+  tkvChecked=new Set();
+  tkvTimerRem=cfg.timerMin*60;
+  tkvBriefText='';
+
+  // Mark as fired today
+  tkvFiredToday[sqN+'_'+todayK()]=true;
+  tkvSaveFired();
+
+  // Generate briefing
+  if(ccApiKey){
+    // AI briefing in background
+    tkvBriefText='Generating...';
+    tkvRender();
+    const result=await generateBriefing(sqN,true);
+    tkvBriefText=result?result.text:ruleBriefing(sqN);
+  } else {
+    tkvBriefText=ruleBriefing(sqN);
+  }
+
+  // Start timer
+  clearInterval(tkvTimerInt);
+  tkvTimerInt=setInterval(()=>{
+    if(tkvTimerRem>0)tkvTimerRem--;
+    tkvRender();
+  },1000);
+
+  tkvRender();
+  document.getElementById('tkvOv').classList.add('show');
+  document.getElementById('tkvOv').className='tkv-ov show '+sqN.toLowerCase().replace(/\s/g,'');
+}
+
+function tkvRender(){
+  const sqN=tkvActive;if(!sqN)return;
+  const cfg=takeoverConfig[sqN];
+  const p=PERSONALITIES[sqN];
+  const streak=streakData[sqN]||{lastDone:null,streak:0};
+
+  document.getElementById('tkvIco').textContent=p.ico;
+  document.getElementById('tkvTitle').textContent=p.name+' Team — Takeover';
+  document.getElementById('tkvTone').textContent='"'+p.tone+'" mode active';
+  document.getElementById('tkvBriefText').textContent=tkvBriefText||'...';
+  document.getElementById('tkvBriefMeta').textContent=ccApiKey?'🤖 AI briefing':'📝 Rule-based';
+  document.getElementById('tkvStreak').textContent=streak.streak>0?'🔥 Current streak: '+streak.streak+' days':'No streak yet — start one now';
+
+  // Tasks
+  const tasksEl=document.getElementById('tkvTasks');
+  tasksEl.innerHTML=(cfg.tasks||[]).map(t=>{
+    const ck=tkvChecked.has(t.id);
+    return`<div class="tkv-task${ck?' checked':''}" onclick="tkvToggle('${t.id}')"><div class="tkv-task-cb${ck?' checked':''}"></div><div class="tkv-task-text">${t.text}</div><div class="tkv-task-ico">${t.ico}</div></div>`;
+  }).join('');
+
+  // Timer
+  const m=Math.floor(tkvTimerRem/60),s=tkvTimerRem%60;
+  document.getElementById('tkvTimerText').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('tkvTimer').style.display=tkvTimerRem>0?'':'none';
+
+  // Done button — requires at least 1 task checked + timer expired (for hard lock) or just 1 checked (soft lock)
+  const hasChecked=tkvChecked.size>=1;
+  const timerDone=tkvTimerRem<=0;
+  const canFinish=cfg.hardLock?(hasChecked&&timerDone):hasChecked;
+  const btn=document.getElementById('tkvDoneBtn');
+  btn.className='tkv-btn '+(canFinish?'done':'waiting');
+  btn.textContent=canFinish?'✓ Done — unlock app':'✓ Done';
+
+  // Skip button — only for soft lock
+  document.getElementById('tkvSkipBtn').style.display=cfg.hardLock?'none':'';
+  document.getElementById('tkvPenalty').textContent=cfg.hardLock?'Hard lock — complete tasks + timer to unlock':'Soft lock — skip resets your '+p.name+' streak';
+
+  // Update task cb color to match team
+  document.querySelectorAll('#tkvTasks .tkv-task-cb.checked::after');
+}
+
+function tkvToggle(taskId){
+  if(tkvChecked.has(taskId))tkvChecked.delete(taskId);
+  else tkvChecked.add(taskId);
+  tkvRender();
+}
+
+function tkvFinish(){
+  const cfg=takeoverConfig[tkvActive];
+  const hasChecked=tkvChecked.size>=1;
+  const timerDone=tkvTimerRem<=0;
+  const canFinish=cfg.hardLock?(hasChecked&&timerDone):hasChecked;
+  if(!canFinish)return;
+
+  // Update streak
+  const sqN=tkvActive;
+  const today=todayK();
+  const s=streakData[sqN]||{lastDone:null,streak:0};
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const yKey=`${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+  if(s.lastDone===yKey)s.streak++;
+  else if(s.lastDone!==today)s.streak=1;
+  s.lastDone=today;
+  streakData[sqN]=s;
+  memSave('cf_streaks',JSON.stringify(streakData));
+
+  // Reset tasks for next time
+  cfg.tasks.forEach(t=>t.done=false);
+  tkvClose();
+}
+
+function tkvSkip(){
+  // Reset streak as penalty
+  const sqN=tkvActive;
+  streakData[sqN]={lastDone:null,streak:0};
+  memSave('cf_streaks',JSON.stringify(streakData));
+  tkvClose();
+}
+
+function tkvClose(){
+  tkvActive=null;
+  clearInterval(tkvTimerInt);
+  tkvChecked=new Set();
+  document.getElementById('tkvOv').classList.remove('show');
+  renderPitch();
+}
+
+// Run takeover check every minute
+setInterval(tkvCheck,60000);
+
 // Helpers
 function todayK(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function isWknd(){const d=new Date().getDay();return d===0||d===6}
@@ -1707,7 +1926,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks','cf_takeover_cfg','cf_takeover_fired']);
   pitchSet=new Set();const dp={
     'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',
     'AI study':'attacker','Executive':'attacker','Manager Tasks':'attacker','Reminders':'attacker','People Tasks':'attacker',
@@ -1740,6 +1959,8 @@ async function loadAll(){
     if(m.key==='cf_api_key')try{ccApiKey=m.value||''}catch{};
     if(m.key==='cf_briefing_cache')try{briefingCache=JSON.parse(m.value)}catch{};
     if(m.key==='cf_streaks')try{streakData=JSON.parse(m.value)}catch{};
+    if(m.key==='cf_takeover_cfg')try{const tc=JSON.parse(m.value);Object.keys(tc).forEach(k=>{takeoverConfig[k]={...takeoverConfig[k],...tc[k]}})}catch{};
+    if(m.key==='cf_takeover_fired')try{tkvFiredToday=JSON.parse(m.value)}catch{};
   });
   // Migrate: convert old pitchSet to posRanks if posRanks is empty
   if(Object.keys(posRanks).length===0&&pitchSet.size>0){
@@ -3486,6 +3707,70 @@ function renderSettings(){
   });
   h+='</div>';
 
+  // Team Takeover section
+  h+='<div class="sett-sec"><div class="sett-sec-hd">🔒 Team Takeovers</div>';
+  h+='<div class="sett-sec-sub">Teams take over the screen at set times. Hard lock = must complete. Soft lock = can skip (streak resets).</div>';
+  Object.entries(takeoverConfig).forEach(function(e){
+    var sqN=e[0],cfg=e[1];
+    var p=PERSONALITIES[sqN]||{ico:'❓',name:sqN};
+    var streak=streakData[sqN]||{lastDone:null,streak:0};
+    var firedKey=sqN+'_'+todayK();
+    var firedToday=!!tkvFiredToday[firedKey];
+    h+='<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border:1.5px solid var(--as)">';
+    // Header row
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+    h+='<span style="font-size:18px">'+p.ico+'</span>';
+    h+='<span style="font-size:12px;font-weight:700;flex:1">'+p.name+'</span>';
+    if(streak.streak>0)h+='<span class="brief-streak" style="background:var(--as);color:var(--accent);font-size:8px">🔥 '+streak.streak+'d</span>';
+    if(firedToday)h+='<span style="font-size:8px;padding:2px 6px;border-radius:4px;background:#E6FFED;color:#059669;font-weight:600">✓ Done today</span>';
+    h+='</div>';
+    // Enable toggle
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Enabled</span><button class="ql-lnk-hide-sw '+(cfg.enabled?'on':'off')+'" onclick="takeoverConfig.'+sqN+'.enabled=!takeoverConfig.'+sqN+'.enabled;tkvSaveConfig();renderOv()"></button></div>';
+    // Hard/soft lock
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Lock type</span><button style="border:1.5px solid var(--as);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:600;font-family:DM Sans,sans-serif;cursor:pointer;background:'+(cfg.hardLock?'#DC262622':'var(--card)')+';color:'+(cfg.hardLock?'#DC2626':'var(--text2)')+'" onclick="takeoverConfig.'+sqN+'.hardLock=!takeoverConfig.'+sqN+'.hardLock;tkvSaveConfig();renderOv()">'+(cfg.hardLock?'🔴 Hard Lock':'🟡 Soft Lock')+'</button></div>';
+    // Time
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Trigger at</span><select class="rule-sel" id="tkv_time_'+sqN+'" onchange="takeoverConfig.'+sqN+'.timeFrom=parseInt(this.value);tkvSaveConfig()">';
+    for(var hh=5;hh<=23;hh++){h+='<option value="'+hh+'" '+(cfg.timeFrom===hh?'selected':'')+'>'+String(hh).padStart(2,'0')+':00</option>'}
+    h+='</select></div>';
+    // Timer minutes
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Min. timer</span><input class="sett-ss-inp" type="number" min="0" max="60" value="'+(cfg.timerMin||0)+'" onchange="takeoverConfig.'+sqN+'.timerMin=parseInt(this.value)||0;tkvSaveConfig()"><span style="font-size:9px;color:var(--text2)">min</span></div>';
+    // Days
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Days</span><div style="display:flex;gap:4px">';
+    ['weekday','weekend'].forEach(function(d){
+      var on=cfg.days&&cfg.days.includes(d);
+      h+='<button style="border:1.5px solid var(--as);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:600;font-family:DM Sans,sans-serif;cursor:pointer;background:'+(on?'var(--accent)':'var(--card)')+';color:'+(on?'white':'var(--text2)')+'" onclick="var d=takeoverConfig.'+sqN+'.days||[];var i=d.indexOf(\''+d+'\');if(i>=0)d.splice(i,1);else d.push(\''+d+'\');takeoverConfig.'+sqN+'.days=d;tkvSaveConfig();renderOv()">'+d+'</button>';
+    });
+    h+='</div></div>';
+    // Locations
+    h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Locations</span><div style="display:flex;gap:4px">';
+    ['home','office','outside'].forEach(function(l){
+      var ico={home:'🏠',office:'🏢',outside:'🌳'}[l];
+      var on=cfg.loc&&cfg.loc.includes(l);
+      h+='<button style="border:1.5px solid var(--as);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:600;font-family:DM Sans,sans-serif;cursor:pointer;background:'+(on?'var(--accent)':'var(--card)')+';color:'+(on?'white':'var(--text2)')+'" onclick="var a=takeoverConfig.'+sqN+'.loc||[];var i=a.indexOf(\''+l+'\');if(i>=0)a.splice(i,1);else a.push(\''+l+'\');takeoverConfig.'+sqN+'.loc=a;tkvSaveConfig();renderOv()">'+ico+'</button>';
+    });
+    h+='</div></div>';
+    // Tasks editor
+    h+='<div style="font-size:9px;font-weight:600;color:var(--text2);margin-top:6px;margin-bottom:4px">Checklist tasks:</div>';
+    (cfg.tasks||[]).forEach(function(t,i){
+      h+='<div style="display:flex;gap:4px;align-items:center;margin-bottom:3px"><input style="width:24px;border:1px solid var(--as);border-radius:4px;padding:2px;font-size:12px;text-align:center;outline:none" value="'+esc(t.ico)+'" onchange="takeoverConfig.'+sqN+'.tasks['+i+'].ico=this.value;tkvSaveConfig()"><input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:4px 6px;font-size:10px;font-family:DM Sans,sans-serif;outline:none" value="'+esc(t.text)+'" onchange="takeoverConfig.'+sqN+'.tasks['+i+'].text=this.value;tkvSaveConfig()"><button style="border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.5" onclick="takeoverConfig.'+sqN+'.tasks.splice('+i+',1);tkvSaveConfig();renderOv()">✕</button></div>';
+    });
+    h+='<div style="border:1px dashed var(--as);border-radius:6px;padding:5px;text-align:center;font-size:9px;color:var(--text2);cursor:pointer;margin-top:4px" onclick="takeoverConfig.'+sqN+'.tasks.push({id:\'tx\'+Date.now(),text:\'New task\',ico:\'📋\',done:false});tkvSaveConfig();renderOv()">+ Add task</div>';
+    // Test button
+    h+='<button style="border:none;background:var(--accent);color:white;padding:6px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-top:8px;width:100%" onclick="closeOv();tkvTrigger(\''+sqN+'\')">⚡ Test Takeover Now</button>';
+    h+='</div>';
+  });
+  // Add new takeover button
+  h+='<div style="margin-top:8px"><div style="font-size:9px;color:var(--text2);margin-bottom:4px">Add takeover for another personality:</div>';
+  h+='<div style="display:flex;gap:4px;flex-wrap:wrap">';
+  Object.entries(PERSONALITIES).forEach(function(e){
+    var nm=e[0];
+    if(takeoverConfig[nm])return; // already configured
+    var p=e[1];
+    h+='<button style="border:1.5px solid var(--as);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;background:var(--card);color:var(--text)" onclick="takeoverConfig.'+nm+'={enabled:true,hardLock:false,timeFrom:9,timeTo:9,days:[\'weekday\'],loc:[\'home\'],tasks:[{id:\'tx\'+Date.now(),text:\'Complete one task\',ico:\'📋\',done:false}],timerMin:10};tkvSaveConfig();renderOv()">+ '+p.ico+' '+p.name+'</button>';
+  });
+  h+='</div></div>';
+  h+='</div>';
+
   return h;
 }
 
@@ -3570,7 +3855,7 @@ function ssInitListeners(){
   ssResetTimer();
 }
 
-async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';document.getElementById('emgBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch()}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';document.getElementById('emgBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch();setTimeout(tkvCheck,3000)}
 init();
 </script>
 </body>

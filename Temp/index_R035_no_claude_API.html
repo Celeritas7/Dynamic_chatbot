@@ -822,25 +822,6 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
 .brief-btn.refresh{background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
 .brief-btn.refresh:active{background:rgba(255,255,255,.25)}
 .brief-streak{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600}
-
-/* Morning Huddle */
-.huddle{background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:14px;padding:12px 14px;margin-bottom:10px;color:white;position:relative;overflow:hidden}
-.huddle::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.15),transparent);pointer-events:none}
-.huddle-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.huddle-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.6;display:flex;align-items:center;gap:5px}
-.huddle-actions{display:flex;gap:4px}
-.huddle-btn{border:none;padding:3px 8px;border-radius:6px;font-size:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);transition:all .2s}
-.huddle-btn:active{background:rgba(255,255,255,.2)}
-.huddle-btn.ai{background:rgba(99,102,241,.3);color:#a5b4fc}
-.huddle-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.huddle-row:last-child{border-bottom:none}
-.huddle-ico{font-size:16px;flex-shrink:0;margin-top:1px}
-.huddle-msg{font-size:11px;line-height:1.5;flex:1;font-weight:400}
-.huddle-msg.loading{opacity:.4;animation:rankPulse 1.5s ease infinite}
-.huddle-dismiss{border:none;background:none;color:rgba(255,255,255,.3);font-size:14px;cursor:pointer;padding:0 2px;flex-shrink:0}
-.huddle-coach{background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:12px;padding:10px 12px;margin-top:8px;border:1px solid rgba(99,102,241,.2)}
-.huddle-coach-hdr{font-size:9px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
-.huddle-coach-text{font-size:11px;line-height:1.6;color:rgba(255,255,255,.85)}
 </style>
 </head>
 <body>
@@ -1476,138 +1457,6 @@ function updateStreak(cat){
   s.lastDone=today;
   streakData[sn]=s;
   memSave('cf_streaks',JSON.stringify(streakData));
-}
-
-// ===== MORNING HUDDLE =====
-let huddleData=null; // {date:'2026-03-21', lines:[{sqN,ico,text}], coach:null, aiMode:false, dismissed:false}
-let huddleLoading=false;
-
-function getLocPersonalities(){
-  // Get personalities active at current location
-  const locSq=squadForLoc(loc);
-  const active=[];
-  locSq.forEach(s=>{if(PERSONALITIES[s.name])active.push(s.name)});
-  // Also check category aliases that map to personality names
-  const onPitch=positionsOnPitch();
-  onPitch.forEach(p=>{const sn=squadName(p.cat);if(PERSONALITIES[sn]&&!active.includes(sn))active.push(sn)});
-  return[...new Set(active)];
-}
-
-function generateHuddleRule(){
-  const names=getLocPersonalities();
-  const lines=[];
-  names.forEach(sqN=>{
-    const p=PERSONALITIES[sqN];
-    if(!p)return;
-    if(emergencyMode&&p.emergencyBehavior==='SILENT')return;
-    lines.push({sqN,ico:p.ico,text:ruleBriefing(sqN)});
-  });
-  return lines;
-}
-
-async function generateHuddleAI(){
-  const names=getLocPersonalities();
-  if(!ccApiKey||!names.length)return null;
-  huddleLoading=true;
-  renderPitch();
-  try{
-    const context=buildPersonalityContext(names[0]);
-    // Single API call: ask Claude to generate ALL personality briefings at once
-    const persDescs=names.map(sqN=>{
-      const p=PERSONALITIES[sqN];
-      const isEmg=emergencyMode;
-      if(isEmg&&p.emergencyBehavior==='SILENT')return null;
-      let desc=`${p.ico} ${p.name} (${p.tone})`;
-      if(isEmg&&p.emergencyBehavior==='CAPTAIN')desc+=' [EMERGENCY: you are captain, be grounding]';
-      if(isEmg&&p.emergencyBehavior==='GENTLE')desc+=' [EMERGENCY: be very gentle]';
-      return desc;
-    }).filter(Boolean);
-
-    const sysPrompt=`You are the Command Centre AI Coach managing Aniket's squad of personality coaches. Generate a morning huddle briefing.
-
-For each personality listed, write ONE line (max 20 words) in their voice/tone. Then write a Coach summary (2-3 sentences) with today's recommended priority order.
-
-PERSONALITIES:
-${persDescs.join('\n')}
-
-PERSONALITY TONES:
-- Executive: aggressive, direct, career-focused. Short punchy sentences.
-- Psychology: calm Bhagavad Gita philosophy. Acceptance, dharma, karma.
-- Exercise: military drill sergeant. No excuses. Adapts intensity.
-
-FORMAT your response as JSON only, no markdown:
-{"lines":[{"name":"Executive","text":"..."},{"name":"Psychology","text":"..."}],"coach":"..."}`;
-
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ccApiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:sysPrompt,messages:[{role:'user',content:'Morning huddle. Context:\n'+context}]})
-    });
-    const data=await resp.json();
-    huddleLoading=false;
-    if(data.error)return null;
-    const raw=data.content.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
-    // Parse JSON response
-    const cleaned=raw.replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(cleaned);
-    const lines=[];
-    (parsed.lines||[]).forEach(l=>{
-      const p=PERSONALITIES[l.name];
-      if(p)lines.push({sqN:l.name,ico:p.ico,text:l.text});
-    });
-    return{lines,coach:parsed.coach||null};
-  }catch(e){
-    huddleLoading=false;
-    console.error('Huddle AI error:',e);
-    return null;
-  }
-}
-
-function initHuddle(){
-  const today=todayK();
-  if(huddleData&&huddleData.date===today)return; // already generated today
-  const lines=generateHuddleRule();
-  huddleData={date:today,lines,coach:null,aiMode:false,dismissed:false};
-}
-
-async function upgradeHuddleAI(){
-  const result=await generateHuddleAI();
-  if(result){
-    huddleData.lines=result.lines.length?result.lines:huddleData.lines;
-    huddleData.coach=result.coach;
-    huddleData.aiMode=true;
-  }
-  renderPitch();
-}
-
-function renderHuddle(){
-  if(!huddleData||huddleData.dismissed||!huddleData.lines.length)return'';
-  const hasKey=!!ccApiKey;
-  let h='<div class="huddle">';
-  h+='<div class="huddle-hdr"><div class="huddle-title">🏟️ Morning Huddle</div><div class="huddle-actions">';
-  h+='<button class="huddle-btn" onclick="event.stopPropagation();huddleData.lines=generateHuddleRule();huddleData.coach=null;huddleData.aiMode=false;renderPitch()">↻</button>';
-  if(hasKey&&!huddleData.aiMode)h+='<button class="huddle-btn ai" onclick="event.stopPropagation();upgradeHuddleAI()">🤖 AI</button>';
-  h+='<button class="huddle-dismiss" onclick="event.stopPropagation();huddleData.dismissed=true;renderPitch()">✕</button>';
-  h+='</div></div>';
-  if(huddleLoading){
-    h+='<div class="huddle-row"><div class="huddle-msg loading">🤖 AI generating huddle...</div></div>';
-  } else {
-    huddleData.lines.forEach(l=>{
-      h+=`<div class="huddle-row"><div class="huddle-ico">${l.ico}</div><div class="huddle-msg">${esc(l.text)}</div></div>`;
-    });
-  }
-  // AI Coach game plan
-  if(huddleData.coach){
-    h+='<div class="huddle-coach"><div class="huddle-coach-hdr">🧑‍⚖️ Coach Game Plan</div>';
-    h+='<div class="huddle-coach-text">'+esc(huddleData.coach)+'</div></div>';
-  } else if(hasKey&&huddleData.aiMode){
-    // AI was used but no coach text came back
-  } else if(hasKey){
-    // Offer AI coach
-    h+='<div style="text-align:center;margin-top:6px"><button class="huddle-btn ai" onclick="event.stopPropagation();upgradeHuddleAI()">🧑‍⚖️ Generate AI Game Plan</button></div>';
-  }
-  h+='</div>';
-  return h;
 }
 
 // Helpers
@@ -3173,9 +3022,6 @@ function renderPitch(){
       stripH+=`<div style="display:flex;gap:4px;margin-bottom:6px">${gpsInd}</div>`;
     }
   }
-  // Morning Huddle (all locations)
-  initHuddle();
-  stripH+=renderHuddle();
   strip.innerHTML=stripH;
   
   const pt=pitched();
