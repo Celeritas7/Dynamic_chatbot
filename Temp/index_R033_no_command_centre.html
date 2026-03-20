@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Command Centre 📡</title>
+<title>ContextFlow</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
@@ -791,33 +791,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sett-msg-item{display:flex;gap:4px;align-items:center;margin-bottom:5px}
 .sett-msg-inp{flex:1;border:1px solid var(--as);border-radius:6px;padding:6px 8px;font-family:'DM Sans',sans-serif;font-size:10px;background:var(--card);color:var(--text);outline:none;border:1px solid var(--as)}
 .sett-msg-inp:focus{border-color:var(--accent)}
-
-/* ===== EMERGENCY MODE ===== */
-body.emergency-mode{--bg:#FFF5F5;--accent:#BE185D;--as:#FFF0F3;--card:#FFF;--text:#4A1942;--text2:#9B7A9B}
-body.emergency-mode .fp{background:linear-gradient(180deg,#7C3E6B 0%,#9B5A8A 20%,#7C3E6B 40%,#9B5A8A 60%,#7C3E6B 80%,#9B5A8A 100%)!important;box-shadow:inset 0 0 0 3px rgba(255,255,255,.2),0 8px 32px rgba(124,62,107,.25)!important}
-body.emergency-mode .fp-ball.atk{opacity:.2!important;filter:blur(2px)!important;pointer-events:none!important}
-body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D174D)!important;transform:scale(1.15)!important;box-shadow:0 0 0 4px rgba(190,24,93,.3),0 4px 16px rgba(190,24,93,.4)!important}
-.emg-btn{position:fixed;bottom:20px;left:20px;width:44px;height:44px;border-radius:50%;border:none;background:#DC2626;color:white;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(220,38,38,.3);z-index:200;display:flex;align-items:center;justify-content:center;transition:all .3s}
-.emg-btn.active{background:#BE185D;box-shadow:0 0 0 4px rgba(190,24,93,.25),0 4px 16px rgba(190,24,93,.4);animation:emgPulse 2s ease infinite}
-@keyframes emgPulse{0%,100%{box-shadow:0 0 0 4px rgba(190,24,93,.25),0 4px 16px rgba(190,24,93,.4)}50%{box-shadow:0 0 0 8px rgba(190,24,93,.15),0 4px 24px rgba(190,24,93,.5)}}
-/* GPS indicator */
-.gps-ind{font-size:8px;padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
-.gps-ind.auto{background:#E6FFED;color:#059669}
-.gps-ind.manual{background:#FEF3C7;color:#D97706}
-.gps-ind.emg{background:#FFF0F3;color:#BE185D}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="loading" id="loadingView"><div class="loading-spinner"></div><div class="loading-text">Command Centre loading...</div></div>
+  <div class="loading" id="loadingView"><div class="loading-spinner"></div><div class="loading-text">Loading from Supabase...</div></div>
   <div class="pitch" id="pitch" style="display:none">
-    <div class="pitch-top"><div class="pitch-name">Command Centre 📡</div><div class="pitch-r"><span class="day-badge" id="dayB"></span><button class="hol-btn" id="holB" onclick="toggleHol()">🎌</button><button class="cmte-top-btn" id="cmteTopBtn" onclick="openTrainOv()" title="Trains">🚃</button><div class="pitch-time" id="timeD"></div></div></div>
-    <div class="loc-bar"><div class="loc-g" id="locG"><button class="loc-b active" data-l="home" onclick="setLoc('home',true)">🏠 Home</button><button class="loc-b" data-l="office" onclick="setLoc('office',true)">🏢 Office</button><button class="loc-b" data-l="outside" onclick="setLoc('outside',true)">🌳 Outside</button></div></div>
+    <div class="pitch-top"><div class="pitch-name">ContextFlow</div><div class="pitch-r"><span class="day-badge" id="dayB"></span><button class="hol-btn" id="holB" onclick="toggleHol()">🎌</button><button class="cmte-top-btn" id="cmteTopBtn" onclick="openTrainOv()" title="Trains">🚃</button><div class="pitch-time" id="timeD"></div></div></div>
+    <div class="loc-bar"><div class="loc-g" id="locG"><button class="loc-b active" data-l="home" onclick="setLoc('home')">🏠 Home</button><button class="loc-b" data-l="office" onclick="setLoc('office')">🏢 Office</button><button class="loc-b" data-l="outside" onclick="setLoc('outside')">🌳 Outside</button></div></div>
     <div id="possStrip"></div><div class="pitch-field" id="pitchField"></div>
   </div>
 </div>
 <button class="corner-btn" id="cornerBtn" onclick="openOv()" style="display:none">☰</button>
-<button class="emg-btn" id="emgBtn" onclick="toggleEmergency()" style="display:none" title="Emergency Mode">🚨</button>
 
 <!-- TRAIN OVERLAY -->
 <div class="ql-ed-ov" id="trainOv" onclick="if(event.target===this)closeTrainOv()">
@@ -838,7 +823,7 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
 </div>
 
 <!-- MODALS -->
-<div class="cat-modal-ov" id="catModal"><div class="cat-modal"><h3 id="catModalTitle">New Category</h3><input id="catModalInput" placeholder="Category name..."><select id="catModalPlayer"><option value="attacker">⚔️ Attacker</option><option value="midfielder">🏃 Midfielder</option><option value="defender">🪞 Defender</option></select><div style="margin:8px 0 4px;font-size:10px;font-weight:600;color:var(--text2)">📍 Available at:</div><div style="display:flex;gap:8px;margin-bottom:8px"><label style="font-size:11px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="catLocHome" checked> 🏠 Home</label><label style="font-size:11px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="catLocOffice"> 🏢 Office</label><label style="font-size:11px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="catLocOutside"> 🌳 Outside</label></div><div class="cat-modal-btns"><button class="cancel" onclick="closeCatModal()">Cancel</button><button class="save" onclick="saveCatModal()">Save</button></div></div></div>
+<div class="cat-modal-ov" id="catModal"><div class="cat-modal"><h3 id="catModalTitle">New Category</h3><input id="catModalInput" placeholder="Category name..."><select id="catModalPlayer"><option value="attacker">⚔️ Attacker</option><option value="midfielder">🍱 Midfielder</option><option value="defender">🪞 Defender</option></select><div class="cat-modal-btns"><button class="cancel" onclick="closeCatModal()">Cancel</button><button class="save" onclick="saveCatModal()">Save</button></div></div></div>
 
 <!-- REGEN POPUP -->
 <div class="regen-ov" id="regenPopup">
@@ -1021,7 +1006,7 @@ let ofcQLGroups=[
 let ofcApps=[
   {ico:'📊',name:'Eagle Eye',url:''},{ico:'🗾',name:'JP Grammar',url:''},
   {ico:'📝',name:'JLPT N1',url:''},{ico:'🍳',name:'Cooking',url:''},
-  {ico:'💰',name:'Commute Calc',url:''},{ico:'⚽',name:'Command Centre',url:''},
+  {ico:'💰',name:'Commute Calc',url:''},{ico:'⚽',name:'ContextFlow',url:''},
 ];
 // Demo office tasks (will connect to Supabase later)
 let ofcMgrTasks=[
@@ -1078,80 +1063,9 @@ let alOpen={};// id → boolean
 const LOC_MAP={home:['Room','Share house'],office:['Company'],outside:['Train','Park','Cafe','Anywhere']};
 const STUDY_CATS=['Paper study','Quick study','Reading'];
 const DEV_CATS=['Coding','App generation'];
-const PLAYER_INFO={attacker:{icon:'⚔️',name:'Attackers',cl:'atk'},midfielder:{icon:'🏃',name:'Midfield',cl:'mid'},defender:{icon:'🪞',name:'Defenders',cl:'def'}};
+const PLAYER_INFO={attacker:{icon:'⚔️',name:'Attackers',cl:'atk'},midfielder:{icon:'🍱',name:'Midfield',cl:'mid'},defender:{icon:'🪞',name:'Defenders',cl:'def'}};
 const PRI_ORDER=['critical','high','medium','low','someday'];
 const PITCH_LIMIT=3;
-
-// ===== SQUAD SYSTEM (Phase 1) =====
-// 13 team positions with type + location assignments
-const SQUADS=[
-  // ⚔️ ATTACKERS — Output & Growth
-  {name:'App Gen',type:'attacker',locs:['home']},
-  {name:'Quick Study',type:'attacker',locs:['home','outside']},
-  {name:'AI Study',type:'attacker',locs:['home']},
-  {name:'Executive',type:'attacker',locs:['outside']},
-  {name:'Manager Tasks',type:'attacker',locs:['office']},
-  {name:'Reminders',type:'attacker',locs:['office']},
-  {name:'People Tasks',type:'attacker',locs:['office']},
-  // 🏃 MIDFIELDERS — Self-Love
-  {name:'Food',type:'midfielder',locs:['home','outside']},
-  {name:'Cost',type:'midfielder',locs:['home','outside']},
-  {name:'Weather',type:'midfielder',locs:['outside']},
-  {name:'Health',type:'midfielder',locs:['home','outside']},
-  {name:'Exercise',type:'midfielder',locs:['home']},
-  {name:'Eagle Eye',type:'midfielder',locs:['office']},
-  {name:'Ghost Tracker',type:'midfielder',locs:['office']},
-  {name:'Part Inventory',type:'midfielder',locs:['office']},
-  // 🪞 DEFENDERS — Self-Respect
-  {name:'Sleep',type:'defender',locs:['home']},
-  {name:'Psychology',type:'defender',locs:['office','outside']},
-  {name:'Fashion',type:'defender',locs:['home','outside']},
-  {name:'Cleaning',type:'defender',locs:['home']},
-];
-// Map category names to squad names (handles aliases from Supabase tags)
-const SQUAD_ALIASES={
-  'App generation':'App Gen','Paper study':'Quick Study','Quick study':'Quick Study',
-  'AI study':'AI Study','Executive':'Executive',
-  'Manager Tasks':'Manager Tasks','Reminders':'Reminders','People Tasks':'People Tasks',
-  'Food':'Food','Cooking':'Food','Cost':'Cost','Errands':'Cost',
-  'Weather':'Weather','Health':'Health','Exercise':'Exercise',
-  'Eagle Eye':'Eagle Eye','Ghost Tracker':'Ghost Tracker','Part Inventory':'Part Inventory',
-  'Sleep':'Sleep','Psychology':'Psychology','Fashion':'Fashion','Cleaning':'Cleaning',
-  'Reading':'Quick Study','Documentation':'Quick Study','Coding':'App Gen',
-};
-function squadName(cat){return SQUAD_ALIASES[cat]||cat}
-function squadDef(cat){
-  const sn=squadName(cat);
-  const built=SQUADS.find(s=>s.name===sn);
-  if(built)return built;
-  // Check custom squads (user-created categories)
-  if(customSquads[cat])return customSquads[cat];
-  if(customSquads[sn])return customSquads[sn];
-  return null;
-}
-function squadForLoc(l){return SQUADS.filter(s=>s.locs.includes(l))}
-function isSquadInLoc(cat,l){const sd=squadDef(cat);return sd?sd.locs.includes(l):true; /* unknown cats show everywhere */}
-
-// Emergency Mode
-let emergencyMode=false;
-function toggleEmergency(){
-  emergencyMode=!emergencyMode;
-  const btn=document.getElementById('emgBtn');
-  if(emergencyMode){
-    document.body.classList.add('emergency-mode');
-    btn.classList.add('active');
-    btn.title='Exit Emergency Mode';
-  } else {
-    document.body.classList.remove('emergency-mode');
-    btn.classList.remove('active');
-    btn.title='Emergency Mode';
-  }
-  renderPitch();
-}
-
-// Manual location override with 10-min cooldown
-let manualLocOverride=null; // null = GPS active, else 'home'|'office'|'outside'
-let manualLocTimeout=null;
 
 // Helpers
 function todayK(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -1173,22 +1087,16 @@ function isDev(t){return DEV_CATS.includes(tCategory(t))}
 function priColor(p){return{critical:'#c0392b',high:'#e74c3c',medium:'#f39c12',low:'#95a5a6',someday:'#bdc3c7'}[p]||'#f39c12'}
 function locTasks(){return allTasks.filter(t=>t.status!=='done'&&tInLoc(t,loc))}
 function pitched(){
-  // Derive from posRanks: all tasks that are ranked in any position AND belong to current location's squads
+  // Derive from posRanks: all tasks that are ranked in any position
   const ids=new Set();
-  for(const cat in posRanks){
-    if(!isSquadInLoc(cat,loc))continue; // skip positions not in current location
-    if(emergencyMode&&catPlayer(cat)==='attacker')continue; // emergency: silence attackers
-    (posRanks[cat]||[]).forEach(id=>ids.add(id));
-  }
+  for(const cat in posRanks)(posRanks[cat]||[]).forEach(id=>ids.add(id));
   pitchSet=ids; // keep pitchSet in sync
   return allTasks.filter(t=>ids.has(t.id)&&t.status!=='done'&&!isInCooldown(t));
 }
 function positionsOnPitch(){
-  // Returns categories that have at least one valid ranked task AND belong to current location
+  // Returns categories that have at least one valid ranked task
   const result=[];
   for(const cat in posRanks){
-    if(!isSquadInLoc(cat,loc))continue;
-    if(emergencyMode&&catPlayer(cat)==='attacker')continue;
     const valid=(posRanks[cat]||[]).filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&!isInCooldown(t)});
     if(valid.length)result.push({cat,tasks:valid.map(id=>allTasks.find(x=>x.id===id)).filter(Boolean)});
   }
@@ -1201,11 +1109,7 @@ function moveRankUp(cat,taskId){const list=posRanks[cat]||[];const idx=list.inde
 function moveRankDown(cat,taskId){const list=posRanks[cat]||[];const idx=list.indexOf(taskId);if(idx>=0&&idx<list.length-1){[list[idx],list[idx+1]]=[list[idx+1],list[idx]];saveRanks();renderCatDetail()}}
 function clearRanks(cat){delete posRanks[cat];saveRanks();renderCatDetail()}
 async function saveRanks(){await memSave('cf_pos_ranks',JSON.stringify(posRanks))}
-function catPlayer(c){
-  if(playerMap[c])return playerMap[c];
-  const sd=squadDef(c);
-  return sd?sd.type:'';
-}
+function catPlayer(c){return playerMap[c]||''}
 function taskPlayer(t){return catPlayer(tCategory(t))}
 function pitchCountForCat(cat){return[...pitchSet].filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'&&tCategory(t)===cat}).length}
 function canPitch(t){if(isInCooldown(t))return false;const cat=tCategory(t);if(!cat)return pitchSet.size<10;return pitchCountForCat(cat)<PITCH_LIMIT}
@@ -1250,14 +1154,8 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads']);
-  pitchSet=new Set();const dp={
-    'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',
-    'AI study':'attacker','Executive':'attacker','Manager Tasks':'attacker','Reminders':'attacker','People Tasks':'attacker',
-    Exercise:'midfielder',Errands:'midfielder',Food:'midfielder',Cooking:'midfielder',Cost:'midfielder',
-    Weather:'midfielder',Health:'midfielder','Eagle Eye':'midfielder','Ghost Tracker':'midfielder','Part Inventory':'midfielder',
-    Sleep:'defender',Psychology:'defender',Fashion:'defender',Cleaning:'defender'
-  };
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute']);
+  pitchSet=new Set();const dp={'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',Exercise:'midfielder',Errands:'midfielder'};
   playerMap={...dp};regenDefaults={};regenTasks={};timeSlotRules={};
   (mem||[]).forEach(m=>{
     if(m.key==='cf_pitch')try{pitchSet=new Set(JSON.parse(m.value))}catch{};
@@ -1279,7 +1177,6 @@ async function loadAll(){
     if(m.key==='cf_pos_ranks')try{posRanks=JSON.parse(m.value)}catch{};
     if(m.key==='cf_commute')try{var cs=JSON.parse(m.value);if(cs.visFrom!=null)cmteVisFrom=cs.visFrom;if(cs.visTo!=null)cmteVisTo=cs.visTo}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
-    if(m.key==='cf_custom_squads')try{customSquads=JSON.parse(m.value)}catch{};
   });
   // Migrate: convert old pitchSet to posRanks if posRanks is empty
   if(Object.keys(posRanks).length===0&&pitchSet.size>0){
@@ -1438,14 +1335,10 @@ function gpsDistM(lat1,lng1,lat2,lng2){
 function gpsWalkMin(distM,speed){return Math.ceil(distM/speed)}
 function gpsDetectLoc(){
   if(!gpsLat)return null;
-  if(manualLocOverride)return null; // manual override active, don't auto-switch
   var dH=gpsDistM(gpsLat,gpsLng,GPS_COORDS.home.lat,GPS_COORDS.home.lng);
   var dO=gpsDistM(gpsLat,gpsLng,GPS_COORDS.office.lat,GPS_COORDS.office.lng);
   if(dH<=GPS_RADIUS)return'home';
-  if(dO<=GPS_RADIUS){
-    // Office mode = GPS near office + Jobcan checked in
-    return ofcCheckedIn?'office':'outside';
-  }
+  if(dO<=GPS_RADIUS)return'office';
   return'outside';
 }
 function gpsNearestStation(){
@@ -2427,14 +2320,7 @@ async function createTask(name,catName){
 
 // Theme/UI
 function applyTheme(l){const r=document.documentElement,p='--'+l;['bg','accent','as','card','text','text2'].forEach(k=>r.style.setProperty('--'+k,getComputedStyle(r).getPropertyValue(p+'-'+k)))}
-function setLoc(l,manual){
-  if(manual){
-    manualLocOverride=l;
-    if(manualLocTimeout)clearTimeout(manualLocTimeout);
-    manualLocTimeout=setTimeout(()=>{manualLocOverride=null;manualLocTimeout=null;gpsCheck()},10*60*1000);
-  }
-  loc=l;applyTheme(l);document.querySelectorAll('#locG .loc-b').forEach(b=>b.classList.toggle('active',b.dataset.l===l));checkPoss();ofcUpdateBlockers();renderPitch()
-}
+function setLoc(l){loc=l;applyTheme(l);document.querySelectorAll('#locG .loc-b').forEach(b=>b.classList.toggle('active',b.dataset.l===l));checkPoss();ofcUpdateBlockers();renderPitch()}
 function setMood(m){mood=m;renderPitch()}
 function toggleHol(){manHol=!manHol;updateBadge();checkPoss();renderPitch()}
 function updateBadge(){const dt=dayType(),b=document.getElementById('dayB');b.textContent=dt==='holiday'?'Holiday':dt==='weekend'?'Weekend':'Weekday';b.className='day-badge '+dt;document.getElementById('holB').classList.toggle('active',manHol)}
@@ -2471,10 +2357,7 @@ function benchHTML(t){
 function renderDC(){
   const allActive=allTasks.filter(t=>t.status!=='done'&&!isInCooldown(t));const players={attacker:{},midfielder:{},defender:{}};
   allActive.filter(hasCategory).forEach(t=>{const cat=tCategory(t),pl=catPlayer(cat);if(pl&&players[pl]){if(!players[pl][cat])players[pl][cat]=[];players[pl][cat].push(t)}});
-  // Location filter info
-  const locSquads=squadForLoc(loc);
-  const locNames=locSquads.map(s=>s.name);
-  let h=`<div style="margin-bottom:14px;padding:10px 12px;background:var(--card);border-radius:12px;border:1.5px solid var(--as);display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;color:var(--text2)">📍 ${loc==='home'?'🏠 Home':loc==='office'?'🏢 Office':'🌳 Outside'} Squad</span>${locSquads.map(s=>{const cl=s.type==='attacker'?'atk':s.type==='midfielder'?'mid':'def';const ico=s.type==='attacker'?'⚔️':s.type==='midfielder'?'🏃':'🪞';return`<span style="font-size:9px;padding:2px 7px;border-radius:6px;font-weight:600;background:${{atk:'rgba(220,38,38,.08)',mid:'rgba(245,158,11,.08)',def:'rgba(59,130,246,.08)'}[cl]};color:${{atk:'#DC2626',mid:'#D97706',def:'#2563EB'}[cl]}">${ico} ${s.name}</span>`}).join('')}</div>`;
+  let h='';
   ['attacker','midfielder','defender'].forEach(pl=>{
     const info=PLAYER_INFO[pl];const cats=Object.entries(players[pl]);
     const assigned=Object.entries(playerMap).filter(([,p])=>p===pl).map(([c])=>c);
@@ -2485,10 +2368,7 @@ function renderDC(){
     if(allCats.length){h+=`<div class="dc-chips">${allCats.map(cat=>{
       const list=players[pl][cat]||[];const rankedN=(posRanks[cat]||[]).filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'}).length;
       const critCount=list.filter(t=>tPriority(t)==='critical').length;
-      const inLoc=isSquadInLoc(cat,loc);
-      const sd=squadDef(cat);
-      const locIcos=sd?sd.locs.map(l=>({home:'🏠',office:'🏢',outside:'🌳'}[l])).join(''):'';
-      return`<div class="dc-chip" style="${inLoc?'':'opacity:.4;border-style:dashed'}" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span>${locIcos?`<span style="font-size:7px;opacity:.6">${locIcos}</span>`:''}${critCount?`<span class="dc-chip-count" style="background:#DC262622;color:#DC2626">&#128308;${critCount}</span>`:`<span class="dc-chip-count">${list.length}</span>`}${rankedN?`<span style="font-size:8px;color:#6366F1">&#127941;${rankedN}</span>`:''}</div>`
+      return`<div class="dc-chip" onclick="openCatDetail('${cat.replace(/'/g,"\\'")}')"><span>${cat}</span>${critCount?`<span class="dc-chip-count" style="background:#DC262622;color:#DC2626">&#128308;${critCount}</span>`:`<span class="dc-chip-count">${list.length}</span>`}${rankedN?`<span style="font-size:8px;color:#6366F1">&#127941;${rankedN}</span>`:''}</div>`
     }).join('')}</div>`}else{h+=`<div style="font-size:10px;color:var(--text2);opacity:.5;padding:4px">No categories assigned</div>`}
     h+=`</div>`;
   });
@@ -2510,12 +2390,6 @@ function renderCatDetail(){
   const rankedCount=(posRanks[cat]||[]).filter(id=>{const t=allTasks.find(x=>x.id===id);return t&&t.status!=='done'}).length;
 
   let h=`<div class="cat-top"><div class="cat-back" onclick="closeCatDetail()">←</div><div class="cat-name">${esc(cat)}</div>${info?`<div class="cat-badge ${info.cl}">${info.icon} ${info.name}</div>`:''}</div>`;
-  // Squad location info
-  const sd=squadDef(cat);
-  if(sd){
-    const locMap={home:'🏠 Home',office:'🏢 Office',outside:'🌳 Outside'};
-    h+=`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">${sd.locs.map(l=>`<span style="font-size:9px;padding:2px 8px;border-radius:6px;font-weight:600;background:${{home:'#FFF0E5',office:'#E5EAFF',outside:'#E6FFED'}[l]};color:${{home:'#E8722A',office:'#3B5BDB',outside:'#38A169'}[l]}">${locMap[l]}</span>`).join('')}</div>`;
-  }
   h+=`<div class="cat-stats"><div class="cat-stat"><div class="cat-stat-num">${tasksInCat.length}</div><div class="cat-stat-lbl">Active</div></div><div class="cat-stat"><div class="cat-stat-num">${rankedCount}</div><div class="cat-stat-lbl">On Pitch</div></div><div class="cat-stat"><div class="cat-stat-num">${cooldownTasks.length}</div><div class="cat-stat-lbl">Cooldown</div></div><div class="cat-stat"><div class="cat-stat-num">${doneInCat.length}</div><div class="cat-stat-lbl">Done</div></div></div>`;
 
   // Regen default setting
@@ -2583,24 +2457,14 @@ async function addTaskToCat(){const inp=document.getElementById('catNewTask');co
 
 // ===== NEW CATEGORY MODAL =====
 let catModalForPlayer='attacker';
-let customSquads={}; // { categoryName: {type:'attacker',locs:['home','office']} }
-function openNewCatModal(pl){catModalForPlayer=pl;document.getElementById('catModalTitle').textContent='New Category';document.getElementById('catModalInput').value='';document.getElementById('catModalPlayer').value=pl;document.getElementById('catLocHome').checked=true;document.getElementById('catLocOffice').checked=false;document.getElementById('catLocOutside').checked=false;document.getElementById('catModal').classList.add('show')}
+function openNewCatModal(pl){catModalForPlayer=pl;document.getElementById('catModalTitle').textContent='New Category';document.getElementById('catModalInput').value='';document.getElementById('catModalPlayer').value=pl;document.getElementById('catModal').classList.add('show')}
 function closeCatModal(){document.getElementById('catModal').classList.remove('show')}
 async function saveCatModal(){
   const player=document.getElementById('catModalPlayer').value;
   const name=document.getElementById('catModalInput').value.trim();if(!name){alert('Enter a name');return}
-  const locs=[];
-  if(document.getElementById('catLocHome').checked)locs.push('home');
-  if(document.getElementById('catLocOffice').checked)locs.push('office');
-  if(document.getElementById('catLocOutside').checked)locs.push('outside');
-  if(!locs.length){alert('Select at least one location');return}
   let catTag=allTags.find(t=>t.type==='category'&&t.name.toLowerCase()===name.toLowerCase());
   if(!catTag){const{data,error}=await sb.from('mind_map_app_tags').insert({id:crypto.randomUUID(),name,type:'category',color:'#7f8c8d',is_focused:false,sort_order:0,created_at:new Date().toISOString()}).select().single();if(error){alert('Error: '+error.message);return}if(data){allTags.push(data);tagMap[data.id]=data;catTag=data}}
-  playerMap[catTag?catTag.name:name]=player;await savePlayerMap();
-  // Save custom squad location assignment
-  customSquads[catTag?catTag.name:name]={type:player,locs};
-  await memSave('cf_custom_squads',JSON.stringify(customSquads));
-  closeCatModal();renderOv();
+  playerMap[catTag?catTag.name:name]=player;await savePlayerMap();closeCatModal();renderOv();
 }
 
 // ===== POSSESSION =====
@@ -2641,21 +2505,13 @@ function skipBreak(){endBreak()}
 function renderPitch(){
   cmteUpdateTopBtn();
   const field=document.getElementById('pitchField'),strip=document.getElementById('possStrip');
-  // Update emergency button state
-  const emgBtn=document.getElementById('emgBtn');
-  if(emgBtn)emgBtn.classList.toggle('active',emergencyMode);
   // === OFFICE: render office dashboard instead of pitch ===
-  if(loc==='office'&&!emergencyMode){renderOffice();return}
-  // GPS/location indicator
-  const gpsInd=manualLocOverride?'<span class="gps-ind manual">📍 Manual</span>':gpsLat?'<span class="gps-ind auto">📡 GPS</span>':'';
-  const emgInd=emergencyMode?'<span class="gps-ind emg">🚨 Emergency</span>':'';
+  if(loc==='office'){renderOffice();return}
   // Pending office tasks banner on non-office screens
   const pendingBanner=renderOfcPendingBanner();
   const uTiles=renderUniTiles();
-  if(emergencyMode){
-    strip.innerHTML=uTiles+'<div class="poss-strip" style="background:linear-gradient(135deg,rgba(190,24,93,.1),rgba(190,24,93,.05))"><div class="poss-dot" style="background:#BE185D"></div><span class="poss-text">🚨 Emergency Mode</span><span class="poss-sub">Psychology active · Attackers silenced</span>'+emgInd+'</div>';
-  } else if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${gpsInd}${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner+(gpsInd||emgInd?`<div style="display:flex;gap:4px;margin-bottom:6px">${gpsInd}${emgInd}</div>`:'');
-  if(loc==='outside'&&!emergencyMode){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
+  if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner;
+  if(loc==='outside'){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
   
   const pt=pitched();
   if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open Coach to rank players</div></div><div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;return}
@@ -2685,31 +2541,6 @@ function renderPitch(){
     else if(n===4){positions.push({x:25,y:yCenter-ySpread},{x:75,y:yCenter-ySpread},{x:25,y:yCenter+ySpread},{x:75,y:yCenter+ySpread})}
     else{for(let i=0;i<n;i++){const angle=(i/(n))*Math.PI*2-Math.PI/2;positions.push({x:50+Math.cos(angle)*25,y:yCenter+Math.sin(angle)*ySpread})}}
     return positions;
-  }
-
-  // Emergency mode: Psychology takes center, no attackers
-  if(emergencyMode){
-    // Find Psychology in defenders
-    const psychIdx=zones.defender.findIndex(g=>squadName(g.cat)==='Psychology');
-    const psychGroup=psychIdx>=0?zones.defender.splice(psychIdx,1)[0]:null;
-    // Remaining mid + def spread around center
-    const others=[...zones.midfielder,...zones.defender];
-    const otherPos=getPositions(others,50,14);
-    let dots='';
-    // Psychology at dead center, larger
-    if(psychGroup){
-      const isSel=selectedPosition===psychGroup.cat;
-      const tc=psychGroup.tasks.length;
-      dots+=`<div class="fp-dot ${isSel?'active':''}" style="left:50%;top:45%;z-index:8" onclick="event.stopPropagation();toggleDot('${psychGroup.cat.replace(/'/g,"\\'")}')"><div class="fp-ball def" style="position:relative;width:56px;height:56px;font-size:10px;background:linear-gradient(135deg,#BE185D,#9D174D);box-shadow:0 0 0 4px rgba(190,24,93,.3),0 4px 20px rgba(190,24,93,.4)${isSel?';box-shadow:0 0 0 5px rgba(255,255,255,.7)':''}"><span style="line-height:1.2">Psychology</span>${tc>1?`<div class="fp-count">${tc}</div>`:''}</div><div class="fp-lbl" style="font-size:9px">🪞 Center</div></div>`;
-    }
-    others.forEach((g,i)=>{
-      const pos=otherPos[i]||{x:50,y:50};const tc=g.tasks.length;
-      const cl=catPlayer(g.cat)==='midfielder'?'mid':'def';
-      const isSel=selectedPosition===g.cat;
-      dots+=`<div class="fp-dot ${isSel?'active':''}" style="left:${pos.x}%;top:${pos.y}%" onclick="event.stopPropagation();toggleDot('${g.cat.replace(/'/g,"\\'")}')"><div class="fp-ball ${cl}" style="position:relative${isSel?';box-shadow:0 0 0 3px rgba(255,255,255,.6)':''}"><span style="font-size:${g.cat.length>6?'7':'8'}px;line-height:1.2">${g.cat.length>10?g.cat.slice(0,9)+'…':g.cat}</span>${tc>1?`<div class="fp-count">${tc}</div>`:''}</div><div class="fp-lbl">${g.cat}</div></div>`;
-    });
-    field.innerHTML=`<div class="fp" onclick="event.stopPropagation()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}<div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;
-    return;
   }
 
   const atkPos=getPositions(zones.attacker,18,7);
@@ -2987,7 +2818,7 @@ function ssInitListeners(){
   ssResetTimer();
 }
 
-async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';document.getElementById('emgBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch()}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch()}
 init();
 </script>
 </body>
