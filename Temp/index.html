@@ -932,6 +932,12 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
   <div class="fp-queue" id="queuePanel"></div>
 </div>
 
+<!-- OFFICE DASHBOARD OVERLAY -->
+<div class="coach-ov" id="ofcDashOv">
+  <div class="coach-hd"><div class="coach-title">🏢 Office Dashboard</div><button class="coach-close" onclick="closeOfcDashboard()">&#10005;</button></div>
+  <div class="coach-body" id="ofcDashBody"></div>
+</div>
+
 <!-- COACH OVERLAY -->
 <div class="coach-ov" id="coachOv">
   <div class="coach-hd"><div class="coach-title">&#129489;&#8205;&#9878;&#65039; Coach</div><button class="coach-close" onclick="closeCoach()">&#10005;</button></div>
@@ -2146,9 +2152,19 @@ setInterval(()=>{if(loc==='office')ofcUpdateBlockers()},60000);
 // Close QL overlay on outside click is handled by the overlay itself
 
 // ===== OFFICE RENDER =====
+function openOfcDashboard(){
+  document.getElementById('ofcDashBody').innerHTML=renderOfficeContent();
+  document.getElementById('ofcDashOv').classList.add('show');
+}
+function closeOfcDashboard(){document.getElementById('ofcDashOv').classList.remove('show')}
+function refreshOfcDash(){if(document.getElementById('ofcDashOv').classList.contains('show'))document.getElementById('ofcDashBody').innerHTML=renderOfficeContent()}
 function renderOffice(){
+  // Legacy — now the full office dashboard renders inside the overlay
   const field=document.getElementById('pitchField'),strip=document.getElementById('possStrip');
   strip.innerHTML='';ofcUpdateBlockers();
+  field.innerHTML='<div class="ofc-dash">'+renderOfficeContent()+'</div>';
+}
+function renderOfficeContent(){
   const hr=new Date().getHours(),isWork=ofcCheckedIn&&hr>=10&&hr<20;
   const showFreee=ofcIsFreeeDay()&&!ofcFreeeDone;
   const topTasks=ofcTopPri();
@@ -2252,9 +2268,7 @@ function renderOffice(){
     h+=`</div>`;
   }
   h+=`</div>`;
-  field.innerHTML=h;
-  // Train info in overlay now
-  cmteUpdateTopBtn();
+  return h;
 }
 
 // Render pending office tasks on non-office screens
@@ -2644,21 +2658,69 @@ function renderPitch(){
   // Update emergency button state
   const emgBtn=document.getElementById('emgBtn');
   if(emgBtn)emgBtn.classList.toggle('active',emergencyMode);
-  // === OFFICE: render office dashboard instead of pitch ===
-  if(loc==='office'&&!emergencyMode){renderOffice();return}
   // GPS/location indicator
   const gpsInd=manualLocOverride?'<span class="gps-ind manual">📍 Manual</span>':gpsLat?'<span class="gps-ind auto">📡 GPS</span>':'';
   const emgInd=emergencyMode?'<span class="gps-ind emg">🚨 Emergency</span>':'';
-  // Pending office tasks banner on non-office screens
-  const pendingBanner=renderOfcPendingBanner();
   const uTiles=renderUniTiles();
+  const pendingBanner=loc!=='office'?renderOfcPendingBanner():'';
+
+  // === Build strip (above the pitch) per location ===
+  let stripH=uTiles;
+
   if(emergencyMode){
-    strip.innerHTML=uTiles+'<div class="poss-strip" style="background:linear-gradient(135deg,rgba(190,24,93,.1),rgba(190,24,93,.05))"><div class="poss-dot" style="background:#BE185D"></div><span class="poss-text">🚨 Emergency Mode</span><span class="poss-sub">Psychology active · Attackers silenced</span>'+emgInd+'</div>';
-  } else if(loc==='home'&&isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};strip.innerHTML=uTiles+pendingBanner+`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${gpsInd}${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`}else strip.innerHTML=uTiles+pendingBanner+(gpsInd||emgInd?`<div style="display:flex;gap:4px;margin-bottom:6px">${gpsInd}${emgInd}</div>`:'');
-  if(loc==='outside'&&!emergencyMode){let h=`<div style="width:100%"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;if(mood==='Sleepy')h+=`<a class="link-c" href="https://youtube.com" target="_blank"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;const pt=pitched();if(pt.length)h+=pt.map(t=>`<div class="dev-card"><div class="dev-cb" onclick="toggleTask('${t.id}')"></div><div class="dev-title">${esc(t.name)}</div><div class="dev-tag">${tCategory(t)}</div><button class="dev-rm" onclick="rmPitch('${t.id}')">✕</button></div>`).join('');field.innerHTML=h;return}
+    stripH+='<div class="poss-strip" style="background:linear-gradient(135deg,rgba(190,24,93,.1),rgba(190,24,93,.05))"><div class="poss-dot" style="background:#BE185D"></div><span class="poss-text">🚨 Emergency Mode</span><span class="poss-sub">Psychology active · Attackers silenced</span>'+emgInd+'</div>';
+  } else if(loc==='office'){
+    ofcUpdateBlockers();
+    const topTasks=ofcTopPri();
+    const mgrC=ofcCounts(ofcMgrTasks),remC=ofcCounts(ofcReminders),pplC=ofcCounts(ofcPplTasks);
+    const totalPending=mgrC.total+remC.total+pplC.total;
+    // Office header badge
+    stripH+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:14px">🏢</span><span style="font-family:'Fraunces',serif;font-size:14px;font-weight:700">Office</span><span class="ofc-badge">${dayType().toUpperCase()}</span>${gpsInd}</div><button style="border:none;background:var(--as);padding:4px 10px;border-radius:8px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--accent)" onclick="openOfcDashboard()">📋 Dashboard</button></div>`;
+    // Compact quick links row
+    const visGroups=qlSorted().filter(g=>qlIsVisible(g)&&g.items.filter(it=>!it.hidden).length);
+    if(visGroups.length){
+      stripH+=`<div style="display:flex;gap:4px;overflow-x:auto;margin-bottom:8px;padding-bottom:2px">`;
+      visGroups.forEach(g=>{
+        const visItems=g.items.filter(it=>!it.hidden);const isR=g.rank>0;
+        if(visItems.length===1&&visItems[0].url){
+          stripH+=`<div class="ofc-ql-chip${isR?' ranked':''}" style="font-size:9px;padding:5px 8px" onclick="window.open('${esc(visItems[0].url)}','_blank')">`;
+        } else {
+          stripH+=`<div class="ofc-ql-chip${isR?' ranked':''}" style="font-size:9px;padding:5px 8px" onclick="ofcOpenQLOverlay('${g.id}')">`;
+        }
+        if(isR)stripH+=`<div class="ofc-ql-rank-badge" style="width:14px;height:14px;font-size:7px">${g.rank}</div>`;
+        stripH+=`${g.ico} ${esc(g.name)} <span class="ofc-ql-chip-count">${visItems.length}</span></div>`;
+      });
+      stripH+=`</div>`;
+    }
+    // Critical tasks summary strip
+    if(topTasks.length){
+      stripH+=`<div style="background:var(--card);border-radius:10px;padding:8px 10px;margin-bottom:8px;border:1.5px solid rgba(220,38,38,.1)"><div style="font-size:9px;font-weight:700;color:#DC2626;margin-bottom:4px">🔥 ${topTasks.length} HIGH PRIORITY</div>`;
+      topTasks.slice(0,3).forEach(t=>{
+        stripH+=`<div style="display:flex;align-items:center;gap:6px;padding:3px 0"><span style="width:6px;height:6px;border-radius:50%;background:${OFC_PRI[t.pri].c};flex-shrink:0"></span><span style="font-size:10px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.name)}</span><span style="font-size:8px;color:var(--text2)">${t.srcLabel}</span></div>`;
+      });
+      if(topTasks.length>3)stripH+=`<div style="font-size:8px;color:var(--text2);text-align:center;margin-top:2px">+${topTasks.length-3} more</div>`;
+      stripH+=`</div>`;
+    }
+    // Task box summary (compact)
+    stripH+=`<div style="display:flex;gap:6px;margin-bottom:8px">${[{k:'mgr',m:OFC_BOX.mgr,c:mgrC},{k:'rem',m:OFC_BOX.rem,c:remC},{k:'ppl',m:OFC_BOX.ppl,c:pplC}].map(b=>`<div style="flex:1;background:var(--card);border-radius:8px;padding:6px;text-align:center;cursor:pointer;border:1.5px solid var(--as)" onclick="openOfcDashboard();ofcOpenBox='${b.k}';refreshOfcDash()"><span style="font-size:14px">${b.m.ico}</span><div style="font-size:12px;font-weight:700">${b.c.total}</div><div style="font-size:8px;color:var(--text2)">${b.m.name}</div></div>`).join('')}</div>`;
+  } else if(loc==='outside'){
+    stripH+=pendingBanner;
+    // Mood bar
+    stripH+=`<div style="width:100%;margin-bottom:8px"><div class="mood-bar">${[['Energetic','💪'],['Bit tired','😊'],['Tired','😔'],['Sleepy','😴']].map(([m,e])=>`<div class="mood-btn ${mood===m?'active':''}" onclick="setMood('${m}')"><span class="mood-emoji">${e}</span><span class="mood-lbl">${m}</span></div>`).join('')}</div></div>`;
+    if(mood==='Sleepy')stripH+=`<a class="link-c" href="https://youtube.com" target="_blank" style="margin-bottom:8px"><span style="font-size:24px">📺</span><div style="font-size:13px;font-weight:600">YouTube</div></a>`;
+    if(gpsInd)stripH+=`<div style="display:flex;gap:4px;margin-bottom:6px">${gpsInd}</div>`;
+  } else if(loc==='home'){
+    stripH+=pendingBanner;
+    if(isOff()){const p={attacker:{d:'d-atk',cl:'atk',t:'⚔️ Attackers',s:'Focus'},attacker2:{d:'d-atk',cl:'atk',t:'⚔️ Second Half',s:'Keep going'},mid_morning:{d:'d-mid',cl:'mid',t:'☕ Midfield',s:'Morning'},mid_lunch:{d:'d-mid',cl:'mid',t:'🍱 Midfield',s:'Lunch'},defender:{d:'d-def',cl:'def',t:'🪞 Defenders',s:'Self-care'},done:{d:'d-done',cl:'done',t:'✅ Done',s:'Great day!'}}[possession]||{d:'d-atk',cl:'atk',t:'⚔️',s:''};
+      stripH+=`<div class="poss-strip ${p.cl}"><div class="poss-dot ${p.d}"></div><span class="poss-text">${p.t}</span><span class="poss-sub">${p.s}</span>${gpsInd}${(possession==='attacker'||possession==='attacker2')?`<button class="pass-def-btn" onclick="triggerDef()">🪞 Defenders</button>`:''}</div>`;
+    } else if(gpsInd){
+      stripH+=`<div style="display:flex;gap:4px;margin-bottom:6px">${gpsInd}</div>`;
+    }
+  }
+  strip.innerHTML=stripH;
   
   const pt=pitched();
-  if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open Coach to rank players</div></div><div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;return}
+  if(!pt.length){field.innerHTML=`<div class="fp"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div><div class="fp-empty"><div class="fp-empty-icon">⚽</div><div class="fp-empty-text">The pitch is empty</div><div class="fp-empty-sub">Open Coach to rank players</div></div><div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;refreshOfcDash();return}
 
   // Group pitched tasks by category → player type (filter by timeslot)
   const catGroups={};
@@ -2709,7 +2771,7 @@ function renderPitch(){
       dots+=`<div class="fp-dot ${isSel?'active':''}" style="left:${pos.x}%;top:${pos.y}%" onclick="event.stopPropagation();toggleDot('${g.cat.replace(/'/g,"\\'")}')"><div class="fp-ball ${cl}" style="position:relative${isSel?';box-shadow:0 0 0 3px rgba(255,255,255,.6)':''}"><span style="font-size:${g.cat.length>6?'7':'8'}px;line-height:1.2">${g.cat.length>10?g.cat.slice(0,9)+'…':g.cat}</span>${tc>1?`<div class="fp-count">${tc}</div>`:''}</div><div class="fp-lbl">${g.cat}</div></div>`;
     });
     field.innerHTML=`<div class="fp" onclick="event.stopPropagation()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}<div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;
-    return;
+    refreshOfcDash();return;
   }
 
   const atkPos=getPositions(zones.attacker,18,7);
@@ -2743,6 +2805,7 @@ function renderPitch(){
   else if(lastDoneAtkCat&&zones.attacker.some(g=>g.cat===lastDoneAtkCat))lockMsg=`<div class="fp-lock-msg">🔒 ${lastDoneAtkCat} resting — use other attackers</div>`;
 
   field.innerHTML=`<div class="fp" onclick="event.stopPropagation()"><div class="fp-lines"><svg viewBox="0 0 300 450" preserveAspectRatio="none"><line x1="0" y1="225" x2="300" y2="225"/><circle cx="150" cy="225" r="45"/><circle cx="150" cy="225" r="2" fill="rgba(255,255,255,.3)"/><rect x="75" y="0" width="150" height="70"/><rect x="110" y="0" width="80" height="25"/><rect x="75" y="380" width="150" height="70"/><rect x="110" y="425" width="80" height="25"/><line x1="0" y1="0" x2="300" y2="0"/><line x1="0" y1="450" x2="300" y2="450"/><line x1="0" y1="0" x2="0" y2="450"/><line x1="300" y1="0" x2="300" y2="450"/></svg></div>${dots}${timerHtml}${lockMsg}<div class="fp-coach" onclick="event.stopPropagation();openCoach()"><div class="fp-coach-icon">🧑‍⚖️</div><div class="fp-coach-lbl">Coach</div></div></div>`;
+  refreshOfcDash();
 }
 function toggleDot(cat){
   if(selectedPosition===cat){closeQueue();return}
