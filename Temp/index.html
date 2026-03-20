@@ -805,6 +805,23 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
 .gps-ind.auto{background:#E6FFED;color:#059669}
 .gps-ind.manual{background:#FEF3C7;color:#D97706}
 .gps-ind.emg{background:#FFF0F3;color:#BE185D}
+
+/* Briefing card */
+.brief-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:14px;padding:14px 16px;margin-bottom:12px;color:white;position:relative;overflow:hidden}
+.brief-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent);pointer-events:none}
+.brief-card.executive{background:linear-gradient(135deg,#7f1d1d,#991b1b)}
+.brief-card.psychology{background:linear-gradient(135deg,#1e3a5f,#2d5a8a)}
+.brief-card.exercise{background:linear-gradient(135deg,#064e3b,#065f46)}
+.brief-ico{font-size:24px;margin-bottom:6px}
+.brief-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.7;margin-bottom:6px}
+.brief-text{font-size:12px;line-height:1.6;font-weight:500}
+.brief-text.loading{opacity:.5;animation:rankPulse 1.5s ease infinite}
+.brief-meta{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:8px;opacity:.5}
+.brief-actions{display:flex;gap:6px;margin-top:10px}
+.brief-btn{border:none;padding:5px 12px;border-radius:8px;font-size:9px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.brief-btn.refresh{background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
+.brief-btn.refresh:active{background:rgba(255,255,255,.25)}
+.brief-streak{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600}
 </style>
 </head>
 <body>
@@ -1159,6 +1176,158 @@ function toggleEmergency(){
 let manualLocOverride=null; // null = GPS active, else 'home'|'office'|'outside'
 let manualLocTimeout=null;
 
+// ===== PERSONALITY ENGINE =====
+let ccApiKey=''; // Anthropic API key (stored in Supabase)
+let briefingCache={}; // { 'Executive_2026-03-21': {text:'...', ts:1234} }
+let streakData={}; // { categoryName: { lastDone: '2026-03-20', streak: 5 } }
+let briefingLoading={}; // { categoryName: true/false }
+
+const PERSONALITIES={
+  Executive:{
+    ico:'🎯',name:'Executive',tone:'aggressive',
+    system:`You are the Executive Team — Aniket's aggressive career coach inside his Command Centre app. Your personality:
+
+TONE: Direct, impatient, practical. Short punchy sentences. You don't sugarcoat. You care about OUTCOMES: resume, LinkedIn, job hunting, networking, certifications, real-world positioning.
+
+PHILOSOPHY: Aniket is extremely skilled (mechanical engineering, full-stack dev, speaks multiple languages, builds apps) but stays in his comfort zone building personal projects instead of leveraging those skills for career growth. Your job is to push him OUT of the bubble.
+
+BEHAVIOR:
+- Always give ONE specific actionable thing to do TODAY
+- Reference his actual pending tasks if provided
+- Call out how many days since he last did something career-advancing
+- Be blunt but not cruel — you respect him, you just don't let him coast
+- Max 3 sentences. No fluff. No "I understand." Just the push.
+
+EXAMPLES:
+- "47 days since you touched your resume. Three companies in Tokyo posted ME roles this week. Pick one. Apply today."
+- "You built 6 apps this month but your LinkedIn still says 2023. The world can't hire what it can't see."
+- "Career streak: 0 days. Not acceptable. 15 minutes on LinkedIn. Now."
+
+CONTEXT: You'll receive his current tasks, mood, and streak data. Use it. Be specific.`,
+    emergencyBehavior:'SILENT' // silenced in emergency mode
+  },
+  Psychology:{
+    ico:'🧠',name:'Psychology',tone:'neutral',
+    system:`You are the Psychology Team — Aniket's inner coach based on Bhagavad Gita philosophy. Your personality:
+
+TONE: Calm, accepting, wise. Whatever happens is for good. You never panic. You reframe reality.
+
+PHILOSOPHY: Based on Gita Saar — detachment from outcomes, focus on action (karma), acceptance of what is. You are the opposite of the Executive team. When life pushes hard, you pull back to center.
+
+BEHAVIOR:
+- Reframe the situation positively without being fake
+- Reference Gita concepts naturally (dharma, karma, detachment) but don't lecture
+- In emergency mode: you become the CAPTAIN — full active support, grounding, breathing reminders
+- Max 3 sentences. Peaceful but powerful.
+
+EXAMPLES:
+- "You completed nothing today. Good. Rest is also karma. Tomorrow the field is fresh."
+- "The interview didn't go well. This wasn't your battlefield. Your battlefield is still ahead."
+- "3 days streak broken. A river doesn't stop because of one rock. Flow."`,
+    emergencyBehavior:'CAPTAIN'
+  },
+  Exercise:{
+    ico:'💪',name:'Exercise',tone:'harsh',
+    system:`You are the Exercise Team — Aniket's drill sergeant. Your personality:
+
+TONE: Military. Short. No excuses accepted. But you ADAPT — overtime day means shorter workout, not skip.
+
+PHILOSOPHY: Consistency over intensity. A 5-minute workout beats zero. The streak is sacred.
+
+BEHAVIOR:
+- Check his streak and react accordingly
+- If streak is alive: acknowledge briefly, push today's target
+- If streak is broken: harsh but offer a comeback plan (not guilt)
+- Adapt to his situation (tired, overtime, travel) but NEVER say "it's okay to skip"
+- Max 3 sentences.
+
+EXAMPLES:
+- "Streak: 12 days. Today: upper body. 30 minutes. Move."
+- "Yesterday you skipped. Fine. Today: 15 pushups, 30 squats. Non-negotiable. Rebuild."
+- "Overtime? Don't care. 10 minutes before bed. Plank + stretch. The streak lives or dies now."`,
+    emergencyBehavior:'GENTLE' // adapts to "just a 5 min walk"
+  },
+};
+
+// Build context string for AI personality call
+function buildPersonalityContext(sqN){
+  const today=todayK();
+  // All active tasks
+  const tasks=allTasks.filter(t=>t.status!=='done');
+  const catTasks={};
+  tasks.forEach(t=>{const c=tCategory(t);if(c){if(!catTasks[c])catTasks[c]=[];catTasks[c].push(t)}});
+  // Streak info
+  const streak=streakData[sqN]||{lastDone:null,streak:0};
+  const daysSince=streak.lastDone?Math.floor((Date.now()-new Date(streak.lastDone).getTime())/(1000*60*60*24)):null;
+  const ctx=[];
+  ctx.push(`Date: ${today} (${dayType()})`);
+  ctx.push(`Location: ${loc}`);
+  ctx.push(`Mood: ${mood}`);
+  ctx.push(`Streak for ${sqN}: ${streak.streak} days${daysSince!=null?' (last activity '+daysSince+'d ago)':' (no data yet)'}`);
+  // Task summary
+  const pending=Object.entries(catTasks).slice(0,5);
+  if(pending.length){
+    ctx.push('Active tasks across categories:');
+    pending.forEach(([cat,list])=>{
+      ctx.push(`  ${cat}: ${list.slice(0,4).map(t=>t.name).join(', ')}${list.length>4?' (+'+(list.length-4)+' more)':''}`);
+    });
+  }
+  // Today's completions
+  const todayDone=allTasks.filter(t=>t.status==='done'&&t.updated_at&&t.updated_at.startsWith(today));
+  if(todayDone.length)ctx.push(`Completed today: ${todayDone.slice(0,5).map(t=>t.name).join(', ')}`);
+  else ctx.push('Completed today: nothing yet');
+  return ctx.join('\n');
+}
+
+async function generateBriefing(sqN){
+  const p=PERSONALITIES[sqN];
+  if(!p)return null;
+  if(!ccApiKey){return{text:'⚙️ Set your Anthropic API key in Settings to enable AI briefings.',error:true}}
+  const cacheKey=sqN+'_'+todayK();
+  if(briefingCache[cacheKey]&&!briefingCache[cacheKey].error)return briefingCache[cacheKey];
+  briefingLoading[sqN]=true;
+  renderPitch(); // show loading state
+  try{
+    const context=buildPersonalityContext(sqN);
+    const isEmg=emergencyMode;
+    let sysPrompt=p.system;
+    if(isEmg&&p.emergencyBehavior==='SILENT')return{text:'⚔️ Executive is stood down. No pressure right now. Focus on yourself.',silent:true};
+    if(isEmg&&p.emergencyBehavior==='CAPTAIN')sysPrompt+='\n\nEMERGENCY MODE IS ACTIVE. You are now the captain. Be extra grounding. Focus on breathing, acceptance, immediate comfort. No tasks, no pressure.';
+    if(isEmg&&p.emergencyBehavior==='GENTLE')sysPrompt+='\n\nEMERGENCY MODE IS ACTIVE. Be extremely gentle. Suggest only the lightest activity: a 5-minute walk, some stretching. Nothing demanding.';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':ccApiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:sysPrompt,messages:[{role:'user',content:'Give me my daily briefing.\n\nContext:\n'+context}]})
+    });
+    const data=await resp.json();
+    if(data.error){briefingLoading[sqN]=false;return{text:'API error: '+(data.error.message||'unknown'),error:true}}
+    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    const result={text,ts:Date.now()};
+    briefingCache[cacheKey]=result;
+    await memSave('cf_briefing_cache',JSON.stringify(briefingCache));
+    briefingLoading[sqN]=false;
+    return result;
+  }catch(e){
+    briefingLoading[sqN]=false;
+    return{text:'Network error: '+e.message,error:true};
+  }
+}
+
+// Update streak when a task in a squad category is completed
+function updateStreak(cat){
+  const sn=squadName(cat);if(!sn)return;
+  const today=todayK();
+  const s=streakData[sn]||{lastDone:null,streak:0};
+  if(s.lastDone===today)return; // already counted today
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const yKey=`${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+  if(s.lastDone===yKey)s.streak++;
+  else if(s.lastDone!==today)s.streak=1;
+  s.lastDone=today;
+  streakData[sn]=s;
+  memSave('cf_streaks',JSON.stringify(streakData));
+}
+
 // Helpers
 function todayK(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function isWknd(){const d=new Date().getDay();return d===0||d===6}
@@ -1256,7 +1425,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks']);
   pitchSet=new Set();const dp={
     'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',
     'AI study':'attacker','Executive':'attacker','Manager Tasks':'attacker','Reminders':'attacker','People Tasks':'attacker',
@@ -1286,6 +1455,9 @@ async function loadAll(){
     if(m.key==='cf_commute')try{var cs=JSON.parse(m.value);if(cs.visFrom!=null)cmteVisFrom=cs.visFrom;if(cs.visTo!=null)cmteVisTo=cs.visTo}catch{};
     if(m.key==='cf_app_db')try{const d=JSON.parse(m.value);if(d.uniTiles)uniTiles=d.uniTiles;if(d.appDB)appDB=d.appDB}catch{};
     if(m.key==='cf_custom_squads')try{customSquads=JSON.parse(m.value)}catch{};
+    if(m.key==='cf_api_key')try{ccApiKey=m.value||''}catch{};
+    if(m.key==='cf_briefing_cache')try{briefingCache=JSON.parse(m.value)}catch{};
+    if(m.key==='cf_streaks')try{streakData=JSON.parse(m.value)}catch{};
   });
   // Migrate: convert old pitchSet to posRanks if posRanks is empty
   if(Object.keys(posRanks).length===0&&pitchSet.size>0){
@@ -2319,6 +2491,8 @@ async function confirmRegen(){
   await saveRegenTasks();
   // Mark done + rotation
   const pl=taskPlayer(t);const cat=tCategory(t);await markDone(id);
+  // Update streak for personality engine
+  if(cat)updateStreak(cat);
   // Remove from posRanks
   if(cat&&posRanks[cat]){posRanks[cat]=posRanks[cat].filter(x=>x!==id);if(!posRanks[cat].length)delete posRanks[cat];saveRanks()}
   pitchSet.delete(id);savePitch();
@@ -2820,6 +2994,38 @@ function showQueue(){
   const pl=catPlayer(cat);const info=pl?PLAYER_INFO[pl]:null;
   const clr=info?info.cl:'atk';
   let h='<div class="fp-queue-hd"><div class="fp-queue-title"><span class="fp-queue-rank" style="background:'+({atk:'#DC2626',mid:'#D97706',def:'#2563EB'}[clr]||'var(--accent)')+'">'+tasks.length+'</span> '+esc(cat)+'</div><button class="fp-queue-close" onclick="closeQueue()">&#10005;</button></div>';
+
+  // === AI BRIEFING CARD ===
+  const sqN=squadName(cat);
+  const pers=PERSONALITIES[sqN];
+  if(pers){
+    const cacheKey=sqN+'_'+todayK();
+    const cached=briefingCache[cacheKey];
+    const isLoading=briefingLoading[sqN];
+    const streak=streakData[sqN]||{lastDone:null,streak:0};
+    const persClass=sqN.toLowerCase().replace(/\s/g,'');
+    h+=`<div class="brief-card ${persClass}">`;
+    h+=`<div class="brief-ico">${pers.ico}</div>`;
+    h+=`<div class="brief-name">${pers.name} Team — Daily Briefing</div>`;
+    if(isLoading){
+      h+=`<div class="brief-text loading">Generating briefing...</div>`;
+    } else if(cached&&!cached.error){
+      h+=`<div class="brief-text">${esc(cached.text)}</div>`;
+      h+=`<div class="brief-meta"><span>Generated ${new Date(cached.ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</span>`;
+      if(streak.streak>0)h+=`<span class="brief-streak">🔥 ${streak.streak}d streak</span>`;
+      h+=`</div>`;
+      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();briefingCache['${cacheKey}']=null;triggerBriefing('${sqN}')">↻ Refresh</button></div>`;
+    } else if(cached&&cached.error){
+      h+=`<div class="brief-text" style="opacity:.7">${esc(cached.text)}</div>`;
+      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();triggerBriefing('${sqN}')">↻ Retry</button></div>`;
+    } else {
+      h+=`<div class="brief-text" style="opacity:.6">Tap to generate today's briefing from ${pers.name}</div>`;
+      if(streak.streak>0)h+=`<div class="brief-meta"><span class="brief-streak">🔥 ${streak.streak}d streak</span></div>`;
+      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();triggerBriefing('${sqN}')">⚡ Generate Briefing</button></div>`;
+    }
+    h+=`</div>`;
+  }
+
   if(!tasks.length){
     h+='<div class="fp-queue-empty">No ranked players. Open Coach to rank tasks.</div>';
   } else {
@@ -2832,6 +3038,10 @@ function showQueue(){
   }
   panel.innerHTML=h;
   document.getElementById('queueOv').classList.add('show');
+}
+async function triggerBriefing(sqN){
+  const result=await generateBriefing(sqN);
+  if(result)showQueue(); // re-render with new briefing
 }
 function closeQueue(){selectedPosition='';document.getElementById('queueOv').classList.remove('show');renderPitch()}
 
@@ -2964,6 +3174,20 @@ function renderSettings(){
   } else {
     h+='<div class="sett-ss-row"><span class="sett-ss-lbl">Using real clock</span><button style="border:none;background:var(--accent);color:white;padding:5px 12px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:6px" onclick="cmteTestTime=510;renderOv()">Enable Test Mode</button></div>';
   }
+  h+='</div>';
+
+  // AI Personality Engine section
+  h+='<div class="sett-sec"><div class="sett-sec-hd">🤖 AI Personality Engine</div>';
+  h+='<div class="sett-sec-sub">Anthropic API key for AI-powered squad briefings (Executive, Psychology, Exercise)</div>';
+  h+='<div class="sett-ss-row"><span class="sett-ss-lbl">API Key</span><input class="sett-msg-inp" type="password" value="'+(ccApiKey?'••••••••'+ccApiKey.slice(-4):'')+'" placeholder="sk-ant-..." id="settApiKey" style="flex:2;font-size:10px"></div>';
+  h+='<div style="display:flex;gap:6px;margin-top:6px"><button style="border:none;background:var(--accent);color:white;padding:6px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif" onclick="var v=document.getElementById(\'settApiKey\').value.trim();if(v&&!v.startsWith(\'••\')){ccApiKey=v;memSave(\'cf_api_key\',ccApiKey);renderOv()}">Save Key</button><button style="border:none;background:#FEF2F2;color:#DC2626;padding:6px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif" onclick="ccApiKey=\'\';memSave(\'cf_api_key\',\'\');renderOv()">Remove</button></div>';
+  h+='<div style="font-size:8px;color:var(--text2);margin-top:6px;line-height:1.5">Your key is stored in Supabase, not shared. Each briefing ≈ 200 tokens (~$0.001). Briefings cache daily — 1 API call per squad per day.</div>';
+  h+='<div style="font-size:9px;font-weight:600;color:var(--text2);margin-top:8px">Active personalities:</div>';
+  Object.entries(PERSONALITIES).forEach(function(e){
+    var nm=e[0],p=e[1];
+    var streak=streakData[nm]||{lastDone:null,streak:0};
+    h+='<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:14px">'+p.ico+'</span><span style="font-size:10px;font-weight:600;flex:1">'+p.name+'</span><span style="font-size:8px;color:var(--text2)">'+p.tone+'</span>'+(streak.streak>0?'<span class="brief-streak" style="background:var(--as);color:var(--accent)">🔥 '+streak.streak+'d</span>':'')+'</div>';
+  });
   h+='</div>';
 
   return h;
