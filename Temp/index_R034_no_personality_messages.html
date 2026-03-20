@@ -822,25 +822,6 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
 .brief-btn.refresh{background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)}
 .brief-btn.refresh:active{background:rgba(255,255,255,.25)}
 .brief-streak{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600}
-
-/* Morning Huddle */
-.huddle{background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:14px;padding:12px 14px;margin-bottom:10px;color:white;position:relative;overflow:hidden}
-.huddle::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.15),transparent);pointer-events:none}
-.huddle-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.huddle-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;opacity:.6;display:flex;align-items:center;gap:5px}
-.huddle-actions{display:flex;gap:4px}
-.huddle-btn{border:none;padding:3px 8px;border-radius:6px;font-size:8px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);transition:all .2s}
-.huddle-btn:active{background:rgba(255,255,255,.2)}
-.huddle-btn.ai{background:rgba(99,102,241,.3);color:#a5b4fc}
-.huddle-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.huddle-row:last-child{border-bottom:none}
-.huddle-ico{font-size:16px;flex-shrink:0;margin-top:1px}
-.huddle-msg{font-size:11px;line-height:1.5;flex:1;font-weight:400}
-.huddle-msg.loading{opacity:.4;animation:rankPulse 1.5s ease infinite}
-.huddle-dismiss{border:none;background:none;color:rgba(255,255,255,.3);font-size:14px;cursor:pointer;padding:0 2px;flex-shrink:0}
-.huddle-coach{background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:12px;padding:10px 12px;margin-top:8px;border:1px solid rgba(99,102,241,.2)}
-.huddle-coach-hdr{font-size:9px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
-.huddle-coach-text{font-size:11px;line-height:1.6;color:rgba(255,255,255,.85)}
 </style>
 </head>
 <body>
@@ -1298,150 +1279,19 @@ function buildPersonalityContext(sqN){
   return ctx.join('\n');
 }
 
-// ===== RULE-BASED BRIEFING ENGINE =====
-function getPersonalityContext(sqN){
-  const streak=streakData[sqN]||{lastDone:null,streak:0};
-  const daysSince=streak.lastDone?Math.floor((Date.now()-new Date(streak.lastDone).getTime())/(1000*60*60*24)):null;
-  const today=todayK();
-  const todayDone=allTasks.filter(t=>t.status==='done'&&t.updated_at&&t.updated_at.startsWith(today));
-  const totalActive=allTasks.filter(t=>t.status!=='done').length;
-  const hr=new Date().getHours();
-  const isAM=hr<12;const isPM=hr>=12&&hr<18;const isEve=hr>=18;
-  return{streak:streak.streak,daysSince,mood,loc,dayType:dayType(),hr,isAM,isPM,isEve,todayDoneCount:todayDone.length,totalActive,isOff:isOff()};
-}
-
-function ruleBriefing(sqN){
-  const c=getPersonalityContext(sqN);
-  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
-
-  if(sqN==='Executive'){
-    if(emergencyMode)return'⚔️ Executive is stood down. No pressure right now. Focus on yourself.';
-    // Streak-based
-    if(c.streak===0&&c.daysSince!=null&&c.daysSince>3)return pick([
-      `${c.daysSince} days since you did anything career-related. Zero momentum. Pick one thing today — resume, LinkedIn, anything. Just start.`,
-      `Career streak: zero. ${c.daysSince} days dark. The world moves without you when you hide. 15 minutes on something real. Now.`,
-      `You've been building apps for ${c.daysSince} days but the world can't see any of it. One public move today. LinkedIn post, resume update, anything visible.`,
-    ]);
-    if(c.streak===0)return pick([
-      'No career streak yet. Day one starts now. Update one line on your resume. That\'s all. But do it today.',
-      'Streak: zero. Not acceptable. Open LinkedIn, look at 3 job posts in your field. 10 minutes. Go.',
-      'You build impressive things but nobody knows. Start a streak today — one career action, however small.',
-    ]);
-    if(c.streak>=7)return pick([
-      `Streak: ${c.streak} days. Good momentum — don't waste it. What's today's career move?`,
-      `${c.streak}-day streak. You're building something real. Push harder today — reach out to someone new.`,
-      `${c.streak} days consistent. This is when most people quit. You won't. Next action, now.`,
-    ]);
-    if(c.streak>=1)return pick([
-      `Streak: ${c.streak} day${c.streak>1?'s':''}. Alive. Keep it going — one career action before ${c.isAM?'lunch':'bed'}.`,
-      `${c.streak}-day streak building. Don't let it die. Something visible today — update, post, apply.`,
-    ]);
-    // Mood-based
-    if(c.mood==='Sleepy'||c.mood==='Tired')return 'Tired? Fine. But tired people still update resumes. 5 minutes. Then rest.';
-    // Time-based
-    if(c.isEve&&c.todayDoneCount===0)return 'The day is almost over. You completed nothing career-related. Even 10 minutes counts. Don\'t let today be zero.';
-    return pick([
-      'What did you do for your career today? If the answer is nothing — fix that now.',
-      'Your skills are worth more than your current position reflects. One step to close that gap today.',
-      'Comfort zone is warm. Growth is cold. Step out for 15 minutes today.',
-    ]);
-  }
-
-  if(sqN==='Psychology'){
-    if(emergencyMode)return pick([
-      'Breathe. You are here. That is enough. Nothing else matters right now.',
-      'Whatever brought you here — it will pass. Like every storm before. You are the sky, not the weather.',
-      'Stop. Breathe in for 4, hold for 4, out for 4. You are safe. The rest can wait.',
-      'This moment is difficult. That is okay. Difficulty is not danger. You have survived every hard day so far.',
-    ]);
-    if(c.mood==='Sleepy')return 'Rest is dharma too. The body speaks — listen. Tomorrow is another field.';
-    if(c.mood==='Tired')return pick([
-      'Fatigue is not failure. It is the body asking for balance. Honor it.',
-      'The Gita says: do your duty, then release. You have worked. Now release.',
-    ]);
-    if(c.streak===0&&c.daysSince!=null&&c.daysSince>5)return pick([
-      `${c.daysSince} days of silence in this area. That is not failure — it is the field lying fallow. When you return, you return stronger.`,
-      'A river doesn\'t stop because of one drought. The water is still there, underground. Trust the flow.',
-    ]);
-    if(c.streak>=7)return pick([
-      `${c.streak} days of consistent action. This is karma in motion. The fruit will come — don't chase it, just keep acting.`,
-      `${c.streak}-day streak. You're in flow. The Gita says: focus on action, not results. You're living it.`,
-    ]);
-    if(c.todayDoneCount===0&&c.isPM)return pick([
-      'Nothing completed yet today. Good. The afternoon is fresh. Begin without pressure.',
-      'An empty morning means nothing about the day. Some of your best work comes late. Trust your rhythm.',
-    ]);
-    if(c.todayDoneCount>=3)return pick([
-      `${c.todayDoneCount} tasks done today. You are in motion. Don't forget to pause and appreciate the progress.`,
-      'You\'ve been productive. Now balance it with stillness. Action and rest — both are dharma.',
-    ]);
-    return pick([
-      'You are exactly where you need to be. Not behind, not ahead. Here.',
-      'Whatever happens today is exactly what should happen. Act with focus, release the outcome.',
-      'The mind creates urgency where none exists. Breathe. Then choose one thing with full attention.',
-      'You are not your tasks. You are the one who observes. Start from that stillness.',
-    ]);
-  }
-
-  if(sqN==='Exercise'){
-    if(emergencyMode)return pick([
-      'Emergency mode. No workout pressure. But if you can — just a 5-minute walk. Fresh air. That\'s it.',
-      'Take it easy. A gentle stretch if you feel like it. Nothing mandatory. Your body, your pace today.',
-    ]);
-    if(c.streak===0&&c.daysSince!=null&&c.daysSince>7)return pick([
-      `${c.daysSince} days since last workout. The streak is dead. Today we bury it and start a new one. 15 pushups. Now.`,
-      `${c.daysSince} days dark. Your body doesn't forget and neither do I. 10 minutes. Anything. Just move. Rebuild starts today.`,
-    ]);
-    if(c.streak===0)return pick([
-      'No streak. Day one. 20 pushups, 30 squats, 1-minute plank. Done in 5 minutes. No excuses.',
-      'Streak: zero. We fix that today. 15 minutes of anything — walk, pushups, stretch. Non-negotiable.',
-    ]);
-    if(c.streak>=14)return pick([
-      `Streak: ${c.streak} days. Beast mode. Today: push your limits. Add weight, add time, add intensity.`,
-      `${c.streak}-day streak. Your body is adapting. Time to level up — longer session or harder exercises today.`,
-    ]);
-    if(c.streak>=7)return pick([
-      `${c.streak} days strong. The habit is forming. Today: full session. No shortcuts.`,
-      `Streak: ${c.streak}. Good soldier. Don't get comfortable — push today harder than yesterday.`,
-    ]);
-    if(c.streak>=1)return pick([
-      `${c.streak}-day streak alive. Keep it breathing. Today's workout — ${c.mood==='Tired'?'light: 10 min stretch + walk':'standard: 30 min, no excuses'}.`,
-      `Streak: ${c.streak}. ${c.mood==='Sleepy'?'You\'re tired. I don\'t care. 10 pushups before bed. The streak lives.':'Full session today. Move.'}`,
-    ]);
-    if(c.mood==='Tired'||c.mood==='Sleepy')return pick([
-      'Tired? Fine. Adjusted target: 10 pushups, 1-minute plank, 5-minute walk. Still counts. Still a streak.',
-      'Low energy noted. Doesn\'t change the mission — just the intensity. Light workout. 10 minutes. Go.',
-    ]);
-    return pick([
-      'Body check: when did you last move? If you have to think about it, the answer is too long ago. 15 minutes. Now.',
-      'Your muscles don\'t build themselves. 30 minutes today. Upper or lower — your pick. But you WILL pick.',
-    ]);
-  }
-
-  return 'Tap to generate a briefing.';
-}
-
-// Main briefing function — rule-based by default, API as upgrade
-async function generateBriefing(sqN,useAI){
+async function generateBriefing(sqN){
   const p=PERSONALITIES[sqN];
   if(!p)return null;
-
-  // Rule-based (default, always available)
-  if(!useAI||!ccApiKey){
-    const text=ruleBriefing(sqN);
-    return{text,ts:Date.now(),mode:'rule'};
-  }
-
-  // AI mode — check cache first
-  const cacheKey=sqN+'_ai_'+todayK();
+  if(!ccApiKey){return{text:'⚙️ Set your Anthropic API key in Settings to enable AI briefings.',error:true}}
+  const cacheKey=sqN+'_'+todayK();
   if(briefingCache[cacheKey]&&!briefingCache[cacheKey].error)return briefingCache[cacheKey];
   briefingLoading[sqN]=true;
-  renderPitch();
+  renderPitch(); // show loading state
   try{
     const context=buildPersonalityContext(sqN);
     const isEmg=emergencyMode;
     let sysPrompt=p.system;
-    if(isEmg&&p.emergencyBehavior==='SILENT'){briefingLoading[sqN]=false;return{text:'⚔️ Executive is stood down. No pressure right now. Focus on yourself.',silent:true,mode:'ai'}}
+    if(isEmg&&p.emergencyBehavior==='SILENT')return{text:'⚔️ Executive is stood down. No pressure right now. Focus on yourself.',silent:true};
     if(isEmg&&p.emergencyBehavior==='CAPTAIN')sysPrompt+='\n\nEMERGENCY MODE IS ACTIVE. You are now the captain. Be extra grounding. Focus on breathing, acceptance, immediate comfort. No tasks, no pressure.';
     if(isEmg&&p.emergencyBehavior==='GENTLE')sysPrompt+='\n\nEMERGENCY MODE IS ACTIVE. Be extremely gentle. Suggest only the lightest activity: a 5-minute walk, some stretching. Nothing demanding.';
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -1450,16 +1300,16 @@ async function generateBriefing(sqN,useAI){
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:sysPrompt,messages:[{role:'user',content:'Give me my daily briefing.\n\nContext:\n'+context}]})
     });
     const data=await resp.json();
-    if(data.error){briefingLoading[sqN]=false;return{text:'API error: '+(data.error.message||'unknown'),error:true,mode:'ai'}}
+    if(data.error){briefingLoading[sqN]=false;return{text:'API error: '+(data.error.message||'unknown'),error:true}}
     const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
-    const result={text,ts:Date.now(),mode:'ai'};
+    const result={text,ts:Date.now()};
     briefingCache[cacheKey]=result;
     await memSave('cf_briefing_cache',JSON.stringify(briefingCache));
     briefingLoading[sqN]=false;
     return result;
   }catch(e){
     briefingLoading[sqN]=false;
-    return{text:'Network error: '+e.message,error:true,mode:'ai'};
+    return{text:'Network error: '+e.message,error:true};
   }
 }
 
@@ -1476,138 +1326,6 @@ function updateStreak(cat){
   s.lastDone=today;
   streakData[sn]=s;
   memSave('cf_streaks',JSON.stringify(streakData));
-}
-
-// ===== MORNING HUDDLE =====
-let huddleData=null; // {date:'2026-03-21', lines:[{sqN,ico,text}], coach:null, aiMode:false, dismissed:false}
-let huddleLoading=false;
-
-function getLocPersonalities(){
-  // Get personalities active at current location
-  const locSq=squadForLoc(loc);
-  const active=[];
-  locSq.forEach(s=>{if(PERSONALITIES[s.name])active.push(s.name)});
-  // Also check category aliases that map to personality names
-  const onPitch=positionsOnPitch();
-  onPitch.forEach(p=>{const sn=squadName(p.cat);if(PERSONALITIES[sn]&&!active.includes(sn))active.push(sn)});
-  return[...new Set(active)];
-}
-
-function generateHuddleRule(){
-  const names=getLocPersonalities();
-  const lines=[];
-  names.forEach(sqN=>{
-    const p=PERSONALITIES[sqN];
-    if(!p)return;
-    if(emergencyMode&&p.emergencyBehavior==='SILENT')return;
-    lines.push({sqN,ico:p.ico,text:ruleBriefing(sqN)});
-  });
-  return lines;
-}
-
-async function generateHuddleAI(){
-  const names=getLocPersonalities();
-  if(!ccApiKey||!names.length)return null;
-  huddleLoading=true;
-  renderPitch();
-  try{
-    const context=buildPersonalityContext(names[0]);
-    // Single API call: ask Claude to generate ALL personality briefings at once
-    const persDescs=names.map(sqN=>{
-      const p=PERSONALITIES[sqN];
-      const isEmg=emergencyMode;
-      if(isEmg&&p.emergencyBehavior==='SILENT')return null;
-      let desc=`${p.ico} ${p.name} (${p.tone})`;
-      if(isEmg&&p.emergencyBehavior==='CAPTAIN')desc+=' [EMERGENCY: you are captain, be grounding]';
-      if(isEmg&&p.emergencyBehavior==='GENTLE')desc+=' [EMERGENCY: be very gentle]';
-      return desc;
-    }).filter(Boolean);
-
-    const sysPrompt=`You are the Command Centre AI Coach managing Aniket's squad of personality coaches. Generate a morning huddle briefing.
-
-For each personality listed, write ONE line (max 20 words) in their voice/tone. Then write a Coach summary (2-3 sentences) with today's recommended priority order.
-
-PERSONALITIES:
-${persDescs.join('\n')}
-
-PERSONALITY TONES:
-- Executive: aggressive, direct, career-focused. Short punchy sentences.
-- Psychology: calm Bhagavad Gita philosophy. Acceptance, dharma, karma.
-- Exercise: military drill sergeant. No excuses. Adapts intensity.
-
-FORMAT your response as JSON only, no markdown:
-{"lines":[{"name":"Executive","text":"..."},{"name":"Psychology","text":"..."}],"coach":"..."}`;
-
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ccApiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:sysPrompt,messages:[{role:'user',content:'Morning huddle. Context:\n'+context}]})
-    });
-    const data=await resp.json();
-    huddleLoading=false;
-    if(data.error)return null;
-    const raw=data.content.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
-    // Parse JSON response
-    const cleaned=raw.replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(cleaned);
-    const lines=[];
-    (parsed.lines||[]).forEach(l=>{
-      const p=PERSONALITIES[l.name];
-      if(p)lines.push({sqN:l.name,ico:p.ico,text:l.text});
-    });
-    return{lines,coach:parsed.coach||null};
-  }catch(e){
-    huddleLoading=false;
-    console.error('Huddle AI error:',e);
-    return null;
-  }
-}
-
-function initHuddle(){
-  const today=todayK();
-  if(huddleData&&huddleData.date===today)return; // already generated today
-  const lines=generateHuddleRule();
-  huddleData={date:today,lines,coach:null,aiMode:false,dismissed:false};
-}
-
-async function upgradeHuddleAI(){
-  const result=await generateHuddleAI();
-  if(result){
-    huddleData.lines=result.lines.length?result.lines:huddleData.lines;
-    huddleData.coach=result.coach;
-    huddleData.aiMode=true;
-  }
-  renderPitch();
-}
-
-function renderHuddle(){
-  if(!huddleData||huddleData.dismissed||!huddleData.lines.length)return'';
-  const hasKey=!!ccApiKey;
-  let h='<div class="huddle">';
-  h+='<div class="huddle-hdr"><div class="huddle-title">🏟️ Morning Huddle</div><div class="huddle-actions">';
-  h+='<button class="huddle-btn" onclick="event.stopPropagation();huddleData.lines=generateHuddleRule();huddleData.coach=null;huddleData.aiMode=false;renderPitch()">↻</button>';
-  if(hasKey&&!huddleData.aiMode)h+='<button class="huddle-btn ai" onclick="event.stopPropagation();upgradeHuddleAI()">🤖 AI</button>';
-  h+='<button class="huddle-dismiss" onclick="event.stopPropagation();huddleData.dismissed=true;renderPitch()">✕</button>';
-  h+='</div></div>';
-  if(huddleLoading){
-    h+='<div class="huddle-row"><div class="huddle-msg loading">🤖 AI generating huddle...</div></div>';
-  } else {
-    huddleData.lines.forEach(l=>{
-      h+=`<div class="huddle-row"><div class="huddle-ico">${l.ico}</div><div class="huddle-msg">${esc(l.text)}</div></div>`;
-    });
-  }
-  // AI Coach game plan
-  if(huddleData.coach){
-    h+='<div class="huddle-coach"><div class="huddle-coach-hdr">🧑‍⚖️ Coach Game Plan</div>';
-    h+='<div class="huddle-coach-text">'+esc(huddleData.coach)+'</div></div>';
-  } else if(hasKey&&huddleData.aiMode){
-    // AI was used but no coach text came back
-  } else if(hasKey){
-    // Offer AI coach
-    h+='<div style="text-align:center;margin-top:6px"><button class="huddle-btn ai" onclick="event.stopPropagation();upgradeHuddleAI()">🧑‍⚖️ Generate AI Game Plan</button></div>';
-  }
-  h+='</div>';
-  return h;
 }
 
 // Helpers
@@ -3173,9 +2891,6 @@ function renderPitch(){
       stripH+=`<div style="display:flex;gap:4px;margin-bottom:6px">${gpsInd}</div>`;
     }
   }
-  // Morning Huddle (all locations)
-  initHuddle();
-  stripH+=renderHuddle();
   strip.innerHTML=stripH;
   
   const pt=pitched();
@@ -3280,44 +2995,33 @@ function showQueue(){
   const clr=info?info.cl:'atk';
   let h='<div class="fp-queue-hd"><div class="fp-queue-title"><span class="fp-queue-rank" style="background:'+({atk:'#DC2626',mid:'#D97706',def:'#2563EB'}[clr]||'var(--accent)')+'">'+tasks.length+'</span> '+esc(cat)+'</div><button class="fp-queue-close" onclick="closeQueue()">&#10005;</button></div>';
 
-  // === PERSONALITY BRIEFING CARD ===
+  // === AI BRIEFING CARD ===
   const sqN=squadName(cat);
   const pers=PERSONALITIES[sqN];
   if(pers){
-    const aiCacheKey=sqN+'_ai_'+todayK();
-    const aiCached=briefingCache[aiCacheKey];
+    const cacheKey=sqN+'_'+todayK();
+    const cached=briefingCache[cacheKey];
     const isLoading=briefingLoading[sqN];
     const streak=streakData[sqN]||{lastDone:null,streak:0};
     const persClass=sqN.toLowerCase().replace(/\s/g,'');
-    const hasApiKey=!!ccApiKey;
-
-    // Generate rule-based briefing (instant, always available)
-    const ruleTxt=ruleBriefing(sqN);
-
     h+=`<div class="brief-card ${persClass}">`;
-    h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:24px">${pers.ico}</span><div><div class="brief-name" style="margin:0">${pers.name} Team</div><div style="font-size:8px;opacity:.5;margin-top:1px">${pers.tone} · ${pers.emergencyBehavior==='SILENT'?'silenced in emergency':pers.emergencyBehavior==='CAPTAIN'?'emergency captain':'adapts in emergency'}</div></div>`;
-    if(streak.streak>0)h+=`<span class="brief-streak" style="margin-left:auto">🔥 ${streak.streak}d</span>`;
-    h+=`</div>`;
-
+    h+=`<div class="brief-ico">${pers.ico}</div>`;
+    h+=`<div class="brief-name">${pers.name} Team — Daily Briefing</div>`;
     if(isLoading){
-      // AI is generating
-      h+=`<div class="brief-text loading">🤖 AI generating briefing...</div>`;
-    } else if(aiCached&&!aiCached.error){
-      // Show AI briefing (upgraded)
-      h+=`<div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.4;margin-bottom:4px">🤖 AI Briefing</div>`;
-      h+=`<div class="brief-text">${esc(aiCached.text)}</div>`;
-      h+=`<div class="brief-meta"><span>${new Date(aiCached.ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</span></div>`;
-      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();delete briefingCache['${aiCacheKey}'];triggerBriefing('${sqN}',true)">↻ Refresh AI</button><button class="brief-btn refresh" onclick="event.stopPropagation();showQueue()">↻ New rule</button></div>`;
-    } else {
-      // Show rule-based briefing (default)
-      h+=`<div class="brief-text">${esc(ruleTxt)}</div>`;
-      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();showQueue()">↻ Another</button>`;
-      if(hasApiKey)h+=`<button class="brief-btn refresh" style="background:rgba(255,255,255,.25)" onclick="event.stopPropagation();triggerBriefing('${sqN}',true)">🤖 AI Upgrade</button>`;
-      else h+=`<button class="brief-btn refresh" style="opacity:.4;cursor:default" title="Add API key in Settings">🔒 AI</button>`;
+      h+=`<div class="brief-text loading">Generating briefing...</div>`;
+    } else if(cached&&!cached.error){
+      h+=`<div class="brief-text">${esc(cached.text)}</div>`;
+      h+=`<div class="brief-meta"><span>Generated ${new Date(cached.ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</span>`;
+      if(streak.streak>0)h+=`<span class="brief-streak">🔥 ${streak.streak}d streak</span>`;
       h+=`</div>`;
-    }
-    if(aiCached&&aiCached.error){
-      h+=`<div style="font-size:9px;opacity:.5;margin-top:6px">${esc(aiCached.text)}</div>`;
+      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();briefingCache['${cacheKey}']=null;triggerBriefing('${sqN}')">↻ Refresh</button></div>`;
+    } else if(cached&&cached.error){
+      h+=`<div class="brief-text" style="opacity:.7">${esc(cached.text)}</div>`;
+      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();triggerBriefing('${sqN}')">↻ Retry</button></div>`;
+    } else {
+      h+=`<div class="brief-text" style="opacity:.6">Tap to generate today's briefing from ${pers.name}</div>`;
+      if(streak.streak>0)h+=`<div class="brief-meta"><span class="brief-streak">🔥 ${streak.streak}d streak</span></div>`;
+      h+=`<div class="brief-actions"><button class="brief-btn refresh" onclick="event.stopPropagation();triggerBriefing('${sqN}')">⚡ Generate Briefing</button></div>`;
     }
     h+=`</div>`;
   }
@@ -3335,9 +3039,9 @@ function showQueue(){
   panel.innerHTML=h;
   document.getElementById('queueOv').classList.add('show');
 }
-async function triggerBriefing(sqN,useAI){
-  const result=await generateBriefing(sqN,useAI);
-  if(result)showQueue();
+async function triggerBriefing(sqN){
+  const result=await generateBriefing(sqN);
+  if(result)showQueue(); // re-render with new briefing
 }
 function closeQueue(){selectedPosition='';document.getElementById('queueOv').classList.remove('show');renderPitch()}
 
