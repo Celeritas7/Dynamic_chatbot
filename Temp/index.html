@@ -2790,6 +2790,13 @@ function alRenderColNormal(cat, ci){
 // Edit mode column
 function alRenderColEdit(cat, ci){
   var h='';
+  // Category header — editable name + icon
+  h+='<div style="display:flex;gap:4px;align-items:center;margin-bottom:6px;padding:4px 0">';
+  h+='<input style="width:28px;border:1px solid var(--as);border-radius:4px;padding:2px;font-size:14px;text-align:center;outline:none;background:white" value="'+esc(cat.ico)+'" onchange="appDB['+ci+'].ico=this.value;openAppLaunch()">';
+  h+='<input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:4px 6px;font-size:11px;font-weight:700;font-family:DM Sans,sans-serif;outline:none;background:white;color:var(--text)" value="'+esc(cat.name)+'" onchange="appDB['+ci+'].name=this.value;openAppLaunch()">';
+  h+='<button style="border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.5" onclick="alAskDel(\'alcat\','+ci+',null,null)" title="Delete category">🗑️</button>';
+  h+='</div>';
+
   if(cat.subs){
     cat.subs.forEach(function(sub,si){
       var filtered=(sub.apps||[]).filter(function(a){
@@ -2797,8 +2804,13 @@ function alRenderColEdit(cat, ci){
         if(alFilter==='inactive')return a.active===false;
         return true;
       });
-      if(!filtered.length)return;
-      h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+filtered.length+')</span></div></div>';
+      // SHOW group even if empty (in edit mode) — so you can rename/add apps
+      h+='<div class="al-sub-hd" style="display:flex;align-items:center;gap:4px">';
+      h+='<input style="width:22px;border:1px solid var(--as);border-radius:3px;padding:1px;font-size:11px;text-align:center;outline:none;background:white" value="'+esc(sub.ico)+'" onchange="appDB['+ci+'].subs['+si+'].ico=this.value;openAppLaunch()">';
+      h+='<input style="flex:1;border:1px solid var(--as);border-radius:3px;padding:3px 5px;font-size:10px;font-weight:700;font-family:DM Sans,sans-serif;outline:none;background:white;color:var(--text);text-transform:uppercase;letter-spacing:.5px" value="'+esc(sub.name)+'" onchange="appDB['+ci+'].subs['+si+'].name=this.value;openAppLaunch()">';
+      h+='<span style="font-size:8px;color:var(--text2)">('+filtered.length+')</span>';
+      h+='<button style="border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.4" onclick="alAskDel(\'alsub\','+ci+','+si+',null)" title="Delete group">✕</button>';
+      h+='</div>';
       (sub.apps||[]).forEach(function(a,ai){
         h+=alRenderAppEditRow(a,'appDB['+ci+'].subs['+si+'].apps['+ai+']');
       });
@@ -2810,6 +2822,8 @@ function alRenderColEdit(cat, ci){
       h+=alRenderAppEditRow(a,'appDB['+ci+'].apps['+ai+']');
     });
     h+='<div class="al-edit-add" onclick="alAddAppTo('+ci+',null)">+ App</div>';
+    // Allow converting flat category to grouped
+    h+='<div class="al-edit-add" onclick="alAddGroup('+ci+')">+ Group</div>';
   }
   return h;
 }
@@ -2824,7 +2838,15 @@ function alAddAppTo(ci,si){
   openAppLaunch();
 }
 function alAddGroup(ci){
-  if(!appDB[ci].subs)appDB[ci].subs=[];
+  if(!appDB[ci].subs){
+    // Convert flat category to grouped — move existing apps into a default sub
+    var existingApps=appDB[ci].apps||[];
+    appDB[ci].subs=[];
+    if(existingApps.length){
+      appDB[ci].subs.push({id:'sub_orig_'+Date.now(),ico:'📦',name:'General',apps:existingApps});
+    }
+    delete appDB[ci].apps;
+  }
   appDB[ci].subs.push({id:'sub_'+Date.now(),ico:'🏷',name:'New Group',apps:[]});
   openAppLaunch();
 }
@@ -2894,7 +2916,7 @@ function openAppLaunch(){
     var actCount=allInCol.filter(function(a){return a.active!==false}).length;
 
     h+='<div class="al-col">';
-    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+actCount+'</span></div></div>';
+    if(!alEditMode)h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+actCount+'</span></div></div>';
     h+='<div class="al-col-body">';
     if(alEditMode){h+=alRenderColEdit(cat,ci)}
     else{var c=alRenderColNormal(cat,ci);h+=c||'<div class="al-empty">No active apps</div>'}

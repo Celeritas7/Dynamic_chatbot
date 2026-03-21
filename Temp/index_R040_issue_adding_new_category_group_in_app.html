@@ -584,9 +584,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .al-summary{display:flex;gap:10px;margin-bottom:10px;padding:7px 10px;background:var(--as);border-radius:9px;align-items:center;font-size:10px;font-weight:600}
 .al-summary-dot{width:7px;height:7px;border-radius:50%}
 .al-grid{display:flex;gap:0;border:1.5px solid var(--as);border-radius:12px;overflow:hidden;min-height:150px}
-.al-grid.edit-mode{flex-direction:column}
-.al-grid.edit-mode .al-col{border-right:none;border-bottom:1px solid var(--as)}.al-grid.edit-mode .al-col:last-child{border-bottom:none}
-.al-grid.edit-mode .al-col-body{max-height:none;padding:10px}
 .al-col{flex:1;min-width:0;border-right:1px solid var(--as)}.al-col:last-child{border-right:none}
 .al-col-hd{padding:8px 6px;background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-bottom:1.5px solid var(--as);text-align:center}
 .al-col-title{font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:3px}
@@ -2793,13 +2790,6 @@ function alRenderColNormal(cat, ci){
 // Edit mode column
 function alRenderColEdit(cat, ci){
   var h='';
-  // Category header — editable name + icon
-  h+='<div style="display:flex;gap:4px;align-items:center;margin-bottom:6px;padding:4px 0">';
-  h+='<input style="width:28px;border:1px solid var(--as);border-radius:4px;padding:2px;font-size:14px;text-align:center;outline:none;background:white" value="'+esc(cat.ico)+'" onchange="appDB['+ci+'].ico=this.value;openAppLaunch()">';
-  h+='<input style="flex:1;border:1px solid var(--as);border-radius:4px;padding:4px 6px;font-size:11px;font-weight:700;font-family:DM Sans,sans-serif;outline:none;background:white;color:var(--text)" value="'+esc(cat.name)+'" onchange="appDB['+ci+'].name=this.value;openAppLaunch()">';
-  h+='<button style="border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.5" onclick="alAskDel(\'alcat\','+ci+',null,null)" title="Delete category">🗑️</button>';
-  h+='</div>';
-
   if(cat.subs){
     cat.subs.forEach(function(sub,si){
       var filtered=(sub.apps||[]).filter(function(a){
@@ -2807,13 +2797,8 @@ function alRenderColEdit(cat, ci){
         if(alFilter==='inactive')return a.active===false;
         return true;
       });
-      // SHOW group even if empty (in edit mode) — so you can rename/add apps
-      h+='<div class="al-sub-hd" style="display:flex;align-items:center;gap:4px">';
-      h+='<input style="width:22px;border:1px solid var(--as);border-radius:3px;padding:1px;font-size:11px;text-align:center;outline:none;background:white" value="'+esc(sub.ico)+'" onchange="appDB['+ci+'].subs['+si+'].ico=this.value;openAppLaunch()">';
-      h+='<input style="flex:1;border:1px solid var(--as);border-radius:3px;padding:3px 5px;font-size:10px;font-weight:700;font-family:DM Sans,sans-serif;outline:none;background:white;color:var(--text);text-transform:uppercase;letter-spacing:.5px" value="'+esc(sub.name)+'" onchange="appDB['+ci+'].subs['+si+'].name=this.value;openAppLaunch()">';
-      h+='<span style="font-size:8px;color:var(--text2)">('+filtered.length+')</span>';
-      h+='<button style="border:none;background:none;font-size:9px;cursor:pointer;color:#DC2626;opacity:.4" onclick="alAskDel(\'alsub\','+ci+','+si+',null)" title="Delete group">✕</button>';
-      h+='</div>';
+      if(!filtered.length)return;
+      h+='<div class="al-sub-hd"><div class="al-sub-title">'+sub.ico+' '+esc(sub.name)+' <span style="opacity:.5">('+filtered.length+')</span></div></div>';
       (sub.apps||[]).forEach(function(a,ai){
         h+=alRenderAppEditRow(a,'appDB['+ci+'].subs['+si+'].apps['+ai+']');
       });
@@ -2825,8 +2810,6 @@ function alRenderColEdit(cat, ci){
       h+=alRenderAppEditRow(a,'appDB['+ci+'].apps['+ai+']');
     });
     h+='<div class="al-edit-add" onclick="alAddAppTo('+ci+',null)">+ App</div>';
-    // Allow converting flat category to grouped
-    h+='<div class="al-edit-add" onclick="alAddGroup('+ci+')">+ Group</div>';
   }
   return h;
 }
@@ -2835,41 +2818,22 @@ function alRenderColEdit(cat, ci){
 var alEditPath=null,alEditApp=null;
 var alSnapshot=null; // saved copy of appDB before edit mode
 function alAddAppTo(ci,si){
-  if(ci<0||ci>=appDB.length)return;
   var newApp={id:'a_'+Date.now(),ico:'📱',name:'New App',url:'',active:true};
-  if(si!=null){
-    if(!appDB[ci].subs||si>=appDB[ci].subs.length)return;
-    appDB[ci].subs[si].apps.push(newApp);
-  } else {
-    if(!appDB[ci].apps)appDB[ci].apps=[];
-    appDB[ci].apps.push(newApp);
-  }
-  var path=si!=null?'appDB['+ci+'].subs['+si+'].apps['+(appDB[ci].subs[si].apps.length-1)+']':'appDB['+ci+'].apps['+(appDB[ci].apps.length-1)+']';
+  if(si!=null)appDB[ci].subs[si].apps.push(newApp);
+  else appDB[ci].apps.push(newApp);
   openAppLaunch();
-  setTimeout(function(){try{alOpenEditOv(path)}catch(e){console.error(e)}},100);
 }
 function alAddGroup(ci){
-  if(ci<0||ci>=appDB.length)return;
-  if(!appDB[ci].subs){
-    var existingApps=appDB[ci].apps||[];
-    appDB[ci].subs=[];
-    if(existingApps.length){
-      appDB[ci].subs.push({id:'sub_orig_'+Date.now(),ico:'📦',name:'General',apps:existingApps});
-    }
-    delete appDB[ci].apps;
-  }
+  if(!appDB[ci].subs)appDB[ci].subs=[];
   appDB[ci].subs.push({id:'sub_'+Date.now(),ico:'🏷',name:'New Group',apps:[]});
   openAppLaunch();
 }
 function alAddCategory(){
-  appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[{id:'a_'+Date.now(),ico:'📱',name:'New App',url:'',active:true}]});
-  var ci=appDB.length-1;
+  appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[]});
   openAppLaunch();
-  setTimeout(function(){try{alOpenEditOv('appDB['+ci+'].apps[0]')}catch(e){console.error(e)}},100);
 }
 function alOpenEditOv(path){
-  try{alEditPath=path;alEditApp=eval(path);if(!alEditApp){console.error('alOpenEditOv: null at',path);return}}
-  catch(e){console.error('alOpenEditOv error:',e,path);return}
+  alEditPath=path;alEditApp=eval(path);
   alRenderEditOv();
   document.getElementById('alEditOv').classList.add('show');
 }
@@ -2897,17 +2861,9 @@ function alSaveEditOv(){
   alEditPath=null;alEditApp=null;openAppLaunch();
 }
 function alDeleteEditOv(){
-  if(!alEditPath||!alEditApp)return;
+  if(!alEditPath)return;
   if(!confirm('Delete "'+alEditApp.name+'"?'))return;
-  // Parse path to find and splice correctly
-  try{
-    var m=alEditPath.match(/appDB\[(\d+)\]\.(?:subs\[(\d+)\]\.)?apps\[(\d+)\]/);
-    if(m){
-      var ci=parseInt(m[1]),si=m[2]!=null?parseInt(m[2]):null,ai=parseInt(m[3]);
-      if(si!=null)appDB[ci].subs[si].apps.splice(ai,1);
-      else appDB[ci].apps.splice(ai,1);
-    }
-  }catch(e){console.error('alDeleteEditOv:',e)}
+  try{eval(alEditPath.replace(/\.apps\[(\d+)\]$/,'.apps.splice($1,1)'))}catch(e){}
   document.getElementById('alEditOv').classList.remove('show');
   alEditPath=null;alEditApp=null;openAppLaunch();
 }
@@ -2930,7 +2886,7 @@ function openAppLaunch(){
     h+='</div>';
   }
 
-  h+='<div class="al-grid'+(alEditMode?' edit-mode':'')+'">';
+  h+='<div class="al-grid">';
   appDB.forEach(function(cat,ci){
     var allInCol=[];
     if(cat.apps)allInCol=cat.apps;
@@ -2938,7 +2894,7 @@ function openAppLaunch(){
     var actCount=allInCol.filter(function(a){return a.active!==false}).length;
 
     h+='<div class="al-col">';
-    if(!alEditMode)h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+actCount+'</span></div></div>';
+    h+='<div class="al-col-hd"><div class="al-col-title">'+cat.ico+' '+esc(cat.name)+' <span class="al-col-count">'+actCount+'</span></div></div>';
     h+='<div class="al-col-body">';
     if(alEditMode){h+=alRenderColEdit(cat,ci)}
     else{var c=alRenderColNormal(cat,ci);h+=c||'<div class="al-empty">No active apps</div>'}
