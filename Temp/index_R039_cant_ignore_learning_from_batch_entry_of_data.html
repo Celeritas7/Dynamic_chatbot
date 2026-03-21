@@ -1473,25 +1473,14 @@ let costTriggerCfg={
 function saveTriggerCfg(){memSave('cf_cost_triggers',JSON.stringify(costTriggerCfg))}
 
 function analyzeCostPatterns(){
-  if(!costExpenses.length){costPatterns={topShops:[],shopAvg:{},shopCat:{},lunchHour:12,dinnerHour:19,conbiniShops:[],realtimeCount:0};return}
+  if(!costExpenses.length){costPatterns={topShops:[],shopAvg:{},shopCat:{},lunchHour:12,dinnerHour:19,conbiniShops:[]};return}
   const shopCount={},shopTotal={},shopCatCount={};
   const conbiniWords=['conbini','コンビニ','lawson','ローソン','familymart','ファミマ','7-eleven','セブン','ministop','ミニストップ','daily yamazaki'];
   const hourBuckets={};
-  let realtimeCount=0;
   costExpenses.forEach(e=>{
     const s=e.shop||'';const c=e.category||'';const a=e.amount||0;
-    // Shop/amount/category learning — uses ALL entries (no timestamp needed)
     if(s){shopCount[s]=(shopCount[s]||0)+1;shopTotal[s]=(shopTotal[s]||0)+a;if(!shopCatCount[s])shopCatCount[s]={};shopCatCount[s][c]=(shopCatCount[s][c]||0)+1}
-    // Hour learning — ONLY entries logged on the same day (skip batch logs)
-    if(e.created_at&&e.date){
-      const logDate=e.created_at.split('T')[0];
-      if(logDate===e.date){
-        // Same day → real-time log → trustworthy timestamp
-        const h=new Date(e.created_at).getHours();
-        if(h>=5)hourBuckets[h]=(hourBuckets[h]||0)+1; // skip midnight garbage
-        realtimeCount++;
-      }
-    }
+    const h=new Date(e.created_at||e.date).getHours();if(h>=0)hourBuckets[h]=(hourBuckets[h]||0)+1;
   });
   const topShops=Object.entries(shopCount).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([name,count])=>({
     name,count,avgAmount:Math.round((shopTotal[name]||0)/count),
@@ -1501,8 +1490,7 @@ function analyzeCostPatterns(){
   const shopAvg={},shopCat={};topShops.forEach(s=>{shopAvg[s.name]=s.avgAmount;shopCat[s.name]=s.topCategory});
   const lunchH=[11,12,13].map(h=>({h,c:hourBuckets[h]||0})).sort((a,b)=>b.c-a.c);
   const dinnerH=[18,19,20,21].map(h=>({h,c:hourBuckets[h]||0})).sort((a,b)=>b.c-a.c);
-  // Only trust auto-learned hours if we have 5+ real-time entries in that bucket
-  costPatterns={topShops,shopAvg,shopCat,lunchHour:lunchH[0]?.c>=5?lunchH[0].h:12,dinnerHour:dinnerH[0]?.c>=5?dinnerH[0].h:19,conbiniShops:topShops.filter(s=>s.isConbini).map(s=>s.name),realtimeCount};
+  costPatterns={topShops,shopAvg,shopCat,lunchHour:lunchH[0]?.c>2?lunchH[0].h:12,dinnerHour:dinnerH[0]?.c>2?dinnerH[0].h:19,conbiniShops:topShops.filter(s=>s.isConbini).map(s=>s.name)};
 }
 function smartPrefillShop(shopName){
   if(!costPatterns)analyzeCostPatterns();
@@ -4089,7 +4077,7 @@ function renderSettings(){
   // === TIME TRIGGERS ===
   h+='<div style="font-size:10px;font-weight:700;color:var(--text2);margin:10px 0 6px">⏰ Time-Based Triggers</div>';
   if(!costPatterns)analyzeCostPatterns();
-  if(costPatterns)h+='<div style="font-size:9px;color:var(--text2);margin-bottom:6px;padding:4px 8px;background:var(--card);border-radius:6px">🧠 Auto-learn uses only <strong>same-day logs</strong> (batch entries filtered out). Real-time entries: <strong>'+costPatterns.realtimeCount+'</strong> / '+costExpenses.length+' total. Learned lunch: '+costPatterns.lunchHour+':00, dinner: '+costPatterns.dinnerHour+':00'+(costPatterns.realtimeCount<10?' — need more real-time logs for accuracy':'')+'</div>';
+  if(costPatterns)h+='<div style="font-size:9px;color:var(--text2);margin-bottom:6px;padding:4px 8px;background:var(--card);border-radius:6px">🧠 Auto-learned: peak lunch hour = '+costPatterns.lunchHour+':00, dinner = '+costPatterns.dinnerHour+':00</div>';
   costTriggerCfg.timeTriggers.forEach(function(t,i){
     h+='<div style="background:var(--card);border-radius:10px;padding:10px;margin-bottom:6px;border:1.5px solid var(--as);display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
     h+='<button class="ql-lnk-hide-sw '+(t.enabled?'on':'off')+'" onclick="costTriggerCfg.timeTriggers['+i+'].enabled=!costTriggerCfg.timeTriggers['+i+'].enabled;saveTriggerCfg();renderOv()"></button>';
