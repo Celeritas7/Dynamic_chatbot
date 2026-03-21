@@ -876,57 +876,6 @@ body.emergency-mode .fp-ball.def{background:linear-gradient(135deg,#BE185D,#9D17
 .tkv-btn.skip{background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.5);font-size:11px;padding:8px 16px}
 .tkv-btn.waiting{background:rgba(255,255,255,.1);color:rgba(255,255,255,.3);cursor:not-allowed}
 .tkv-penalty{font-size:9px;color:rgba(255,255,255,.35);margin-top:8px;position:relative;z-index:1}
-
-/* Cost panel in queue */
-.cost-summary{background:var(--card);border-radius:12px;padding:12px;margin-bottom:10px;border:1.5px solid var(--as)}
-.cost-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
-.cost-lbl{font-size:10px;color:var(--text2);font-weight:500}
-.cost-val{font-size:12px;font-weight:700}
-.cost-val.warn{color:#DC2626}
-.cost-val.ok{color:#059669}
-.cost-cat-bar{display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden;margin:6px 0}
-.cost-cat-seg{height:100%;border-radius:3px;min-width:3px}
-.cost-recent{margin-top:8px}
-.cost-exp{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--as)}
-.cost-exp:last-child{border-bottom:none}
-.cost-exp-amt{font-size:12px;font-weight:700;min-width:50px}
-.cost-exp-info{flex:1;font-size:10px;color:var(--text2)}
-.cost-exp-shop{font-weight:600;color:var(--text)}
-.cost-add{background:var(--card);border-radius:12px;padding:12px;margin-bottom:10px;border:1.5px solid var(--accent)}
-.cost-add-title{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:8px}
-.cost-add-row{display:flex;gap:6px;margin-bottom:6px}
-.cost-add-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:11px;background:var(--bg);color:var(--text);outline:none}
-.cost-add-inp:focus{border-color:var(--accent)}
-.cost-add-inp.amt{width:80px;flex:none;font-weight:700;font-size:13px}
-.cost-add-sel{border:1.5px solid var(--as);border-radius:8px;padding:7px 8px;font-family:'DM Sans',sans-serif;font-size:10px;background:var(--bg);color:var(--text);outline:none;cursor:pointer}
-.cost-add-btn{border:none;background:var(--accent);color:white;padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;width:100%}
-.cost-add-btn:active{transform:scale(.97)}
-
-/* Cost team panel */
-.cost-summary{background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:8px;border:1.5px solid var(--as)}
-.cost-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
-.cost-lbl{font-size:10px;color:var(--text2);font-weight:500}
-.cost-val{font-size:12px;font-weight:700;color:var(--text)}
-.cost-val.warn{color:#DC2626}
-.cost-val.good{color:#059669}
-.cost-divider{border-top:1px solid var(--as);margin:6px 0}
-.cost-entry{background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border:1.5px solid var(--accent)}
-.cost-entry-title{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
-.cost-entry-row{display:flex;gap:6px;margin-bottom:6px}
-.cost-inp{flex:1;border:1.5px solid var(--as);border-radius:8px;padding:7px 10px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none}
-.cost-inp:focus{border-color:var(--accent)}
-.cost-inp.amount{width:80px;flex:none;font-weight:700;text-align:right}
-.cost-sel{border:1.5px solid var(--as);border-radius:8px;padding:7px 8px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);outline:none;cursor:pointer;flex:1}
-.cost-submit{border:none;background:var(--accent);color:white;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-top:4px}
-.cost-submit:active{transform:scale(.97)}
-.cost-recent{margin-top:6px}
-.cost-tx{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--as)}
-.cost-tx:last-child{border-bottom:none}
-.cost-tx-cat{font-size:14px;flex-shrink:0}
-.cost-tx-info{flex:1;min-width:0}
-.cost-tx-shop{font-size:10px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cost-tx-note{font-size:8px;color:var(--text2)}
-.cost-tx-amt{font-size:12px;font-weight:700;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -1366,77 +1315,9 @@ EXAMPLES:
 - "Overtime? Don't care. 10 minutes before bed. Plank + stretch. The streak lives or dies now."`,
     emergencyBehavior:'GENTLE' // adapts to "just a 5 min walk"
   },
-  Cost:{
-    ico:'💰',name:'Cost',tone:'analytical',
-    system:`You are the Cost Management Team — Aniket's financial watchdog inside Command Centre. Your personality:
-
-TONE: Sharp, data-driven, slightly sarcastic. You speak in numbers. You notice patterns. You're not mean, but you're blunt about spending habits.
-
-PHILOSOPHY: Every yen counts. Conbini spending is the silent killer. Cooking at home saves money AND health. Track everything — what you can't measure, you can't improve.
-
-BEHAVIOR:
-- Always reference actual spending numbers from context
-- Compare this week vs last week, or vs monthly average
-- Call out conbini/convenience store overspending specifically
-- Suggest cooking at home when spending is high
-- Celebrate when spending is under control
-- Max 3 sentences. Numbers first, advice second.
-
-EXAMPLES:
-- "¥4,200 at conbini this week. That's double last week. Cook tonight — you have chicken expiring tomorrow."
-- "Monthly spend: ¥62,000. You're ¥8,000 under budget. Good discipline. Keep it."
-- "3 conbini trips in 2 days. That's ¥1,800 you didn't need to spend. Meal prep Sunday."`,
-    emergencyBehavior:'SILENT'
-  },
 };
 
-// ===== COST DATA LAYER =====
-let costExpenses=[]; // recent expenses from cost_management_expenses
-let costCategories=[]; // from cost_management_categories
-let costShops=[]; // from cost_management_shops
-let costLoaded=false;
-
-function getCostSummary(){
-  const today=todayK();
-  const now=new Date();
-  const weekAgo=new Date(now.getTime()-7*24*60*60*1000).toISOString().split('T')[0];
-  const monthStart=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
-  const todayExp=costExpenses.filter(e=>e.date===today);
-  const weekExp=costExpenses.filter(e=>e.date>=weekAgo);
-  const monthExp=costExpenses.filter(e=>e.date>=monthStart);
-  const todayTotal=todayExp.reduce((s,e)=>s+(e.amount||0),0);
-  const weekTotal=weekExp.reduce((s,e)=>s+(e.amount||0),0);
-  const monthTotal=monthExp.reduce((s,e)=>s+(e.amount||0),0);
-  // Conbini tracking
-  const conbiniWords=['conbini','コンビニ','lawson','ローソン','familymart','ファミマ','7-eleven','セブン','ministop','ミニストップ','daily yamazaki'];
-  const isConbini=e=>{const s=(e.shop||'').toLowerCase()+(e.category||'').toLowerCase()+(e.notes||'').toLowerCase();return conbiniWords.some(w=>s.includes(w))};
-  const weekConbini=weekExp.filter(isConbini);
-  const weekConbiniTotal=weekConbini.reduce((s,e)=>s+(e.amount||0),0);
-  // Category breakdown
-  const catBreak={};monthExp.forEach(e=>{const c=e.category||'Other';catBreak[c]=(catBreak[c]||0)+(e.amount||0)});
-  const topCats=Object.entries(catBreak).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  return{todayTotal,todayCount:todayExp.length,weekTotal,weekCount:weekExp.length,monthTotal,monthCount:monthExp.length,weekConbiniTotal,weekConbiniCount:weekConbini.length,topCats,recentExpenses:costExpenses.slice(0,5)};
-}
-
-async function addQuickExpense(amount,shop,category,notes){
-  const today=todayK();
-  const{data,error}=await sb.from('cost_management_expenses').insert({
-    amount:parseInt(amount),date:today,category:category||'Conbini',shop:shop||'',notes:notes||'',
-    expense_type:'daily',tags:'',created_at:new Date().toISOString()
-  }).select().single();
-  if(error){console.error('addExpense:',error);return false}
-  if(data)costExpenses.unshift(data);
-  return true;
-}
-async function costQuickAdd(){
-  const amt=document.getElementById('costAmt')?.value;
-  const cat=document.getElementById('costCat')?.value;
-  const shop=document.getElementById('costShop')?.value;
-  const note=document.getElementById('costNote')?.value;
-  if(!amt||parseInt(amt)<=0){alert('Enter an amount');return}
-  const ok=await addQuickExpense(amt,shop,cat,note);
-  if(ok)showQueue(); // re-render to show new expense
-}
+// Build context string for AI personality call
 function buildPersonalityContext(sqN){
   const today=todayK();
   // All active tasks
@@ -1463,17 +1344,6 @@ function buildPersonalityContext(sqN){
   const todayDone=allTasks.filter(t=>t.status==='done'&&t.updated_at&&t.updated_at.startsWith(today));
   if(todayDone.length)ctx.push(`Completed today: ${todayDone.slice(0,5).map(t=>t.name).join(', ')}`);
   else ctx.push('Completed today: nothing yet');
-  // Cost-specific context
-  if(sqN==='Cost'&&costLoaded){
-    const cs=getCostSummary();
-    ctx.push(`\n--- SPENDING DATA ---`);
-    ctx.push(`Today: ¥${cs.todayTotal.toLocaleString()} (${cs.todayCount} transactions)`);
-    ctx.push(`This week: ¥${cs.weekTotal.toLocaleString()} (${cs.weekCount} transactions)`);
-    ctx.push(`This month: ¥${cs.monthTotal.toLocaleString()} (${cs.monthCount} transactions)`);
-    ctx.push(`Conbini this week: ¥${cs.weekConbiniTotal.toLocaleString()} (${cs.weekConbiniCount} visits)`);
-    if(cs.topCats.length)ctx.push('Top categories: '+cs.topCats.map(([c,a])=>`${c}: ¥${a.toLocaleString()}`).join(', '));
-    if(cs.recentExpenses.length){ctx.push('Recent:');cs.recentExpenses.forEach(e=>ctx.push(`  ${e.date} ¥${e.amount} ${e.shop||''} (${e.category||''})`))}
-  }
   return ctx.join('\n');
 }
 
@@ -1596,8 +1466,6 @@ function ruleBriefing(sqN){
       'Your muscles don\'t build themselves. 30 minutes today. Upper or lower — your pick. But you WILL pick.',
     ]);
   }
-
-  if(sqN==='Cost')return costRuleBriefing();
 
   return 'Tap to generate a briefing.';
 }
@@ -2105,18 +1973,6 @@ async function loadAll(){
   uniTiles.forEach(t=>{if(defaultUrls[t.id]&&!t.url){t.url=defaultUrls[t.id];migrated=true}});
   appDB.forEach(cat=>{(cat.apps||[]).forEach(a=>{if(a.id==='a_cal'&&!a.url){a.url=defaultUrls.cal;migrated=true}if(a.id==='a_cost'&&!a.url){a.url=defaultUrls.cost;migrated=true}})});
   if(migrated)saveAppDB();
-  // Load cost management data (cross-app)
-  try{
-    const[cExp,cCat,cShp]=await Promise.all([
-      sb.from('cost_management_expenses').select('*').order('date',{ascending:false}).limit(200),
-      sb.from('cost_management_categories').select('*').order('sort_order'),
-      sb.from('cost_management_shops').select('*').order('name'),
-    ]);
-    costExpenses=(cExp.data||[]).map(r=>({id:r.id,amount:r.amount,date:r.date,category:r.category,shop:r.shop,notes:r.notes,expense_type:r.expense_type,tags:r.tags,created_at:r.created_at}));
-    costCategories=cCat.data||[];
-    costShops=cShp.data||[];
-    costLoaded=true;
-  }catch(e){console.error('Cost data load:',e)}
 }
 async function memSave(key,val){
   const now=new Date().toISOString();try{const{data}=await sb.from('mind_map_app_chat_memory').select('id').eq('key',key).maybeSingle();
@@ -2130,41 +1986,6 @@ async function saveRegenDefaults(){await memSave('cf_regen_defaults',JSON.string
 async function saveRegenTasks(){await memSave('cf_regen_tasks',JSON.stringify(regenTasks))}
 async function saveTimeSlots(){await memSave('cf_timeslots',JSON.stringify(timeSlotRules))}
 async function saveOfcState(){await memSave('cf_office',JSON.stringify({checkedIn:ofcCheckedIn,checkoutDone:ofcCheckoutDone,timesheetDone:ofcTimesheetDone,freeeDone:ofcFreeeDone,date:todayK()}))}
-
-// Cost rule-based briefing
-function costRuleBriefing(){
-  if(!costLoaded)return'Loading cost data...';
-  if(emergencyMode)return'💰 Cost tracking paused. Focus on yourself. Money can wait.';
-  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
-  const cs=getCostSummary();
-  const fY=v=>'¥'+v.toLocaleString();
-
-  if(cs.weekConbiniCount>=3)return pick([
-    `${cs.weekConbiniCount} conbini trips this week — ${fY(cs.weekConbiniTotal)} gone. Cook tonight. Your wallet is begging.`,
-    `Conbini count: ${cs.weekConbiniCount} this week. Pattern detected. Meal prep or this repeats next week.`,
-  ]);
-  if(cs.todayTotal>3000)return pick([
-    `${fY(cs.todayTotal)} spent today already. Slow down. No more purchases unless essential.`,
-    `Today: ${fY(cs.todayTotal)} across ${cs.todayCount} transactions. Heavy day. Stay disciplined.`,
-  ]);
-  if(cs.monthTotal>80000)return pick([
-    `Monthly total: ${fY(cs.monthTotal)}. Running hot.${cs.topCats.length?' Biggest drain: '+cs.topCats[0][0]+' at '+fY(cs.topCats[0][1])+'.':''} Cut non-essentials.`,
-  ]);
-  if(cs.monthTotal>0&&cs.monthTotal<40000)return pick([
-    `${fY(cs.monthTotal)} this month. Good control. Keep tracking — consistency is power.`,
-    `Monthly spend under ¥40k. Solid discipline.`,
-  ]);
-  if(cs.todayTotal===0&&new Date().getHours()>=14)return pick([
-    '¥0 spent today. Either discipline or you forgot to log. If discipline — respect.',
-    'Nothing logged today. If you bought something, log it now. Data gaps kill budgets.',
-  ]);
-  if(cs.weekTotal>0)return pick([
-    `Week: ${fY(cs.weekTotal)} across ${cs.weekCount} purchases.${cs.topCats.length?' Top: '+cs.topCats[0][0]+'.':''} Log everything.`,
-    `${fY(cs.weekTotal)} this week. ${cs.weekConbiniCount?cs.weekConbiniCount+' conbini trips.':'No conbini detected. Good.'} Keep tracking.`,
-  ]);
-  if(!cs.monthCount)return'No expenses logged this month. Start tracking — what you can\'t measure, you can\'t improve.';
-  return `Month: ${fY(cs.monthTotal)} across ${cs.monthCount} transactions. Track every purchase.`;
-}
 async function saveOfcQL(){await memSave('cf_ofc_qlinks',JSON.stringify(ofcQLGroups))}
 
 // QL sorting, visibility, drag, editor
@@ -3454,8 +3275,6 @@ async function addTaskToCat(){const inp=document.getElementById('catNewTask');co
 // ===== NEW CATEGORY MODAL =====
 let catModalForPlayer='attacker';
 let customSquads={}; // { categoryName: {type:'attacker',locs:['home','office']} }
-
-// ===== COST DATA (cross-app) =====
 function openNewCatModal(pl){catModalForPlayer=pl;document.getElementById('catModalTitle').textContent='New Category';document.getElementById('catModalInput').value='';document.getElementById('catModalPlayer').value=pl;document.getElementById('catLocHome').checked=true;document.getElementById('catLocOffice').checked=false;document.getElementById('catLocOutside').checked=false;document.getElementById('catModal').classList.add('show')}
 function closeCatModal(){document.getElementById('catModal').classList.remove('show')}
 async function saveCatModal(){
@@ -3722,49 +3541,6 @@ function showQueue(){
       h+=`<div style="font-size:9px;opacity:.5;margin-top:6px">${esc(aiCached.text)}</div>`;
     }
     h+=`</div>`;
-  }
-
-  // === COST TEAM DATA PANEL ===
-  if(sqN==='Cost'&&costLoaded){
-    const cs=getCostSummary();
-    const fmtY=v=>'¥'+v.toLocaleString();
-
-    // Spending summary
-    h+=`<div class="cost-summary">`;
-    h+=`<div class="cost-row"><span class="cost-lbl">Today</span><span class="cost-val">${fmtY(cs.todayTotal)} <span style="font-size:9px;font-weight:400;color:var(--text2)">(${cs.todayCount})</span></span></div>`;
-    h+=`<div class="cost-row"><span class="cost-lbl">This week</span><span class="cost-val">${fmtY(cs.weekTotal)}</span></div>`;
-    h+=`<div class="cost-row"><span class="cost-lbl">This month</span><span class="cost-val">${fmtY(cs.monthTotal)}</span></div>`;
-    if(cs.weekConbiniCount>0)h+=`<div class="cost-row"><span class="cost-lbl">🏪 Conbini (week)</span><span class="cost-val${cs.weekConbiniCount>=3?' warn':''}">${cs.weekConbiniCount} trips · ${fmtY(cs.weekConbiniTotal)}</span></div>`;
-    if(cs.topCats.length){
-      h+=`<div style="border-top:1px solid var(--as);margin:6px 0;padding-top:6px">`;
-      cs.topCats.forEach(([c,v])=>{
-        const catObj=costCategories.find(x=>x.name===c);
-        h+=`<div class="cost-row"><span class="cost-lbl">${catObj?catObj.icon:'📦'} ${c}</span><span class="cost-val">${fmtY(v)}</span></div>`;
-      });
-      h+=`</div>`;
-    }
-    h+=`</div>`;
-
-    // Quick expense entry
-    h+=`<div class="cost-add"><div class="cost-add-title">💰 Quick Expense</div>`;
-    h+=`<div class="cost-add-row"><input class="cost-add-inp amt" id="costAmt" type="number" placeholder="¥ Amount" min="1"><select class="cost-add-sel" id="costCat">`;
-    costCategories.forEach(c=>{h+=`<option value="${esc(c.name)}">${c.icon||''} ${esc(c.name)}</option>`});
-    if(!costCategories.length)h+=`<option>Food</option><option>Transport</option><option>Daily</option><option>Other</option>`;
-    h+=`</select></div>`;
-    h+=`<div class="cost-add-row"><input class="cost-add-inp" id="costShop" placeholder="Shop name..." list="costShopDL"><datalist id="costShopDL">`;
-    costShops.forEach(s=>{h+=`<option value="${esc(s.name)}">`});
-    h+=`</datalist><input class="cost-add-inp" id="costNote" placeholder="Notes (optional)"></div>`;
-    h+=`<button class="cost-add-btn" onclick="costQuickAdd()">+ Add Expense</button></div>`;
-
-    // Recent transactions
-    if(cs.recentExpenses.length){
-      h+=`<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Recent</div>`;
-      cs.recentExpenses.forEach(e=>{
-        const catObj=costCategories.find(x=>x.name===e.category);
-        h+=`<div class="cost-exp"><span style="font-size:14px">${catObj?catObj.icon:'📦'}</span><div class="cost-exp-info"><div class="cost-exp-shop">${esc(e.shop||e.category||'?')}</div><div>${e.date}${e.notes?' · '+esc(e.notes):''}</div></div><div class="cost-exp-amt">${fmtY(e.amount||0)}</div></div>`;
-      });
-      h+=`</div>`;
-    }
   }
 
   if(!tasks.length){
