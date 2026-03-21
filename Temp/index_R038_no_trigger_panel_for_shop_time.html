@@ -1454,44 +1454,15 @@ let costLastGpsShopPrompt=0;
 let costLastTimePrompt='';
 let costWasAtOffice=false;
 
-// Configurable triggers (saved to Supabase)
-let costTriggerCfg={
-  gpsShops:[
-    {name:'Lawson',lat:35.7095,lng:139.9460,radius:80,enabled:true},
-    {name:'FamilyMart',lat:35.7082,lng:139.9448,radius:80,enabled:true},
-    {name:'7-Eleven',lat:35.7100,lng:139.9470,radius:80,enabled:true},
-    {name:'Lawson (Office)',lat:35.5795,lng:139.7490,radius:80,enabled:true},
-    {name:'FamilyMart (Office)',lat:35.5788,lng:139.7480,radius:80,enabled:true},
-  ],
-  timeTriggers:[
-    {id:'lunch',label:'🍱 Lunch',hour:12,minute:0,enabled:true,autoLearned:true},
-    {id:'dinner',label:'🍽️ Dinner',hour:19,minute:0,enabled:true,autoLearned:true},
-  ],
-  officeDeparture:{enabled:true,delayMin:1},
-  gpsCooldownMin:30,
-};
-function saveTriggerCfg(){memSave('cf_cost_triggers',JSON.stringify(costTriggerCfg))}
-
 function analyzeCostPatterns(){
-  if(!costExpenses.length){costPatterns={topShops:[],shopAvg:{},shopCat:{},lunchHour:12,dinnerHour:19,conbiniShops:[],realtimeCount:0};return}
+  if(!costExpenses.length){costPatterns={topShops:[],shopAvg:{},shopCat:{},lunchHour:12,dinnerHour:19,conbiniShops:[]};return}
   const shopCount={},shopTotal={},shopCatCount={};
   const conbiniWords=['conbini','コンビニ','lawson','ローソン','familymart','ファミマ','7-eleven','セブン','ministop','ミニストップ','daily yamazaki'];
   const hourBuckets={};
-  let realtimeCount=0;
   costExpenses.forEach(e=>{
     const s=e.shop||'';const c=e.category||'';const a=e.amount||0;
-    // Shop/amount/category learning — uses ALL entries (no timestamp needed)
     if(s){shopCount[s]=(shopCount[s]||0)+1;shopTotal[s]=(shopTotal[s]||0)+a;if(!shopCatCount[s])shopCatCount[s]={};shopCatCount[s][c]=(shopCatCount[s][c]||0)+1}
-    // Hour learning — ONLY entries logged on the same day (skip batch logs)
-    if(e.created_at&&e.date){
-      const logDate=e.created_at.split('T')[0];
-      if(logDate===e.date){
-        // Same day → real-time log → trustworthy timestamp
-        const h=new Date(e.created_at).getHours();
-        if(h>=5)hourBuckets[h]=(hourBuckets[h]||0)+1; // skip midnight garbage
-        realtimeCount++;
-      }
-    }
+    const h=new Date(e.created_at||e.date).getHours();if(h>=0)hourBuckets[h]=(hourBuckets[h]||0)+1;
   });
   const topShops=Object.entries(shopCount).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([name,count])=>({
     name,count,avgAmount:Math.round((shopTotal[name]||0)/count),
@@ -1501,8 +1472,7 @@ function analyzeCostPatterns(){
   const shopAvg={},shopCat={};topShops.forEach(s=>{shopAvg[s.name]=s.avgAmount;shopCat[s.name]=s.topCategory});
   const lunchH=[11,12,13].map(h=>({h,c:hourBuckets[h]||0})).sort((a,b)=>b.c-a.c);
   const dinnerH=[18,19,20,21].map(h=>({h,c:hourBuckets[h]||0})).sort((a,b)=>b.c-a.c);
-  // Only trust auto-learned hours if we have 5+ real-time entries in that bucket
-  costPatterns={topShops,shopAvg,shopCat,lunchHour:lunchH[0]?.c>=5?lunchH[0].h:12,dinnerHour:dinnerH[0]?.c>=5?dinnerH[0].h:19,conbiniShops:topShops.filter(s=>s.isConbini).map(s=>s.name),realtimeCount};
+  costPatterns={topShops,shopAvg,shopCat,lunchHour:lunchH[0]?.c>2?lunchH[0].h:12,dinnerHour:dinnerH[0]?.c>2?dinnerH[0].h:19,conbiniShops:topShops.filter(s=>s.isConbini).map(s=>s.name)};
 }
 function smartPrefillShop(shopName){
   if(!costPatterns)analyzeCostPatterns();
@@ -1556,33 +1526,29 @@ async function seSubmit(){
 // Triggers
 function costTimeCheck(){
   if(!costLoaded||!costExpenses.length||smartExpVisible||tkvActive||emergencyMode)return;
-  const today=todayK();
+  const today=todayK();if(costLastTimePrompt===today)return;
+  if(!costPatterns)analyzeCostPatterns();
   const hr=new Date().getHours(),min=new Date().getMinutes();
-  costTriggerCfg.timeTriggers.filter(t=>t.enabled).forEach(trig=>{
-    const trigKey=today+'_'+trig.id;
-    if(costLastTimePrompt===trigKey)return;
-    // Update auto-learned hours from patterns
-    if(trig.autoLearned&&costPatterns){
-      if(trig.id==='lunch'&&costPatterns.lunchHour)trig.hour=costPatterns.lunchHour;
-      if(trig.id==='dinner'&&costPatterns.dinnerHour)trig.hour=costPatterns.dinnerHour;
-    }
-    if(hr===trig.hour&&min<=(trig.minute||0)+15){
-      const todayExp=costExpenses.filter(e=>e.date===today&&Math.abs(new Date(e.created_at).getHours()-hr)<=2);
-      if(!todayExp.length){costLastTimePrompt=trigKey;const pf=smartPrefillTime();pf.reason=`${trig.label} (${hr}:${String(trig.minute||0).padStart(2,'0')}) — did you buy something?`;openSmartExpense(pf)}
-    }
-  });
+  if(hr===costPatterns.lunchHour&&min<=15){
+    const todayExp=costExpenses.filter(e=>e.date===today&&Math.abs(new Date(e.created_at).getHours()-hr)<=2);
+    if(!todayExp.length){costLastTimePrompt=today;const pf=smartPrefillTime();pf.reason=`🍱 Lunch time (${hr}:00) — did you buy something?`;openSmartExpense(pf);return}
+  }
+  if(hr===costPatterns.dinnerHour&&min<=15){
+    const todayExp=costExpenses.filter(e=>e.date===today&&Math.abs(new Date(e.created_at).getHours()-hr)<=2);
+    if(!todayExp.length){costLastTimePrompt=today;const pf=smartPrefillTime();pf.reason=`🍽️ Dinner time (${hr}:00) — log if you bought food`;openSmartExpense(pf);return}
+  }
 }
 function costGpsCheck(){
   if(!gpsLat||!costLoaded||smartExpVisible||tkvActive||emergencyMode)return;
-  if(Date.now()-costLastGpsShopPrompt<costTriggerCfg.gpsCooldownMin*60*1000)return;
-  const shops=costTriggerCfg.gpsShops.filter(s=>s.enabled);
-  for(const s of shops){if(gpsDistM(gpsLat,gpsLng,s.lat,s.lng)<=s.radius){costLastGpsShopPrompt=Date.now();const pf=smartPrefillShop(s.name.replace(/ \(.*\)/,''));pf.reason=`📍 Near ${s.name}`;openSmartExpense(pf);return}}
+  if(Date.now()-costLastGpsShopPrompt<30*60*1000)return;
+  const SHOPS=[{n:'Lawson',la:35.7095,ln:139.9460},{n:'FamilyMart',la:35.7082,ln:139.9448},{n:'7-Eleven',la:35.7100,ln:139.9470},{n:'Lawson',la:35.5795,ln:139.7490},{n:'FamilyMart',la:35.5788,ln:139.7480}];
+  for(const s of SHOPS){if(gpsDistM(gpsLat,gpsLng,s.la,s.ln)<=80){costLastGpsShopPrompt=Date.now();const pf=smartPrefillShop(s.n);pf.reason=`📍 Near ${s.n}`;openSmartExpense(pf);return}}
 }
 function costOfficeDepartCheck(){
-  if(!gpsLat||!costLoaded||smartExpVisible||!costTriggerCfg.officeDeparture.enabled)return;
+  if(!gpsLat||!costLoaded||smartExpVisible)return;
   const near=gpsDistM(gpsLat,gpsLng,GPS_COORDS.office.lat,GPS_COORDS.office.lng)<=GPS_RADIUS;
   if(near){costWasAtOffice=true}
-  else if(costWasAtOffice){costWasAtOffice=false;const k=todayK()+'_dep';if(costLastTimePrompt===k)return;costLastTimePrompt=k;setTimeout(()=>{if(!smartExpVisible&&!tkvActive){const pf=smartPrefillTime();pf.reason='🏢 Left office — log transport or conbini?';openSmartExpense(pf)}},costTriggerCfg.officeDeparture.delayMin*60*1000)}
+  else if(costWasAtOffice){costWasAtOffice=false;const k=todayK()+'_dep';if(costLastTimePrompt===k)return;costLastTimePrompt=k;setTimeout(()=>{if(!smartExpVisible&&!tkvActive){const pf=smartPrefillTime();pf.reason='🏢 Left office — log transport or conbini?';openSmartExpense(pf)}},60000)}
 }
 setInterval(costTimeCheck,60000);
 function buildPersonalityContext(sqN){
@@ -2206,7 +2172,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks','cf_takeover_cfg','cf_takeover_fired','cf_cost_triggers']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks','cf_takeover_cfg','cf_takeover_fired']);
   pitchSet=new Set();const dp={
     'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',
     'AI study':'attacker','Executive':'attacker','Manager Tasks':'attacker','Reminders':'attacker','People Tasks':'attacker',
@@ -2241,7 +2207,6 @@ async function loadAll(){
     if(m.key==='cf_streaks')try{streakData=JSON.parse(m.value)}catch{};
     if(m.key==='cf_takeover_cfg')try{const tc=JSON.parse(m.value);Object.keys(tc).forEach(k=>{takeoverConfig[k]={...takeoverConfig[k],...tc[k]}})}catch{};
     if(m.key==='cf_takeover_fired')try{tkvFiredToday=JSON.parse(m.value)}catch{};
-    if(m.key==='cf_cost_triggers')try{const ct=JSON.parse(m.value);if(ct.gpsShops)costTriggerCfg.gpsShops=ct.gpsShops;if(ct.timeTriggers)costTriggerCfg.timeTriggers=ct.timeTriggers;if(ct.officeDeparture)costTriggerCfg.officeDeparture=ct.officeDeparture;if(ct.gpsCooldownMin!=null)costTriggerCfg.gpsCooldownMin=ct.gpsCooldownMin}catch{};
   });
   // Migrate: convert old pitchSet to posRanks if posRanks is empty
   if(Object.keys(posRanks).length===0&&pitchSet.size>0){
@@ -4080,84 +4045,6 @@ function renderSettings(){
     var streak=streakData[nm]||{lastDone:null,streak:0};
     h+='<div style="display:flex;align-items:center;gap:6px;padding:4px 0"><span style="font-size:14px">'+p.ico+'</span><span style="font-size:10px;font-weight:600;flex:1">'+p.name+'</span><span style="font-size:8px;color:var(--text2)">'+p.tone+'</span>'+(streak.streak>0?'<span class="brief-streak" style="background:var(--as);color:var(--accent)">🔥 '+streak.streak+'d</span>':'')+'</div>';
   });
-  h+='</div>';
-
-  // Smart Expense Triggers section
-  h+='<div class="sett-sec"><div class="sett-sec-hd">💰 Smart Expense Triggers</div>';
-  h+='<div class="sett-sec-sub">Automatic popups that remind you to log expenses. Patterns are learned from your spending history (no API needed).</div>';
-
-  // === TIME TRIGGERS ===
-  h+='<div style="font-size:10px;font-weight:700;color:var(--text2);margin:10px 0 6px">⏰ Time-Based Triggers</div>';
-  if(!costPatterns)analyzeCostPatterns();
-  if(costPatterns)h+='<div style="font-size:9px;color:var(--text2);margin-bottom:6px;padding:4px 8px;background:var(--card);border-radius:6px">🧠 Auto-learn uses only <strong>same-day logs</strong> (batch entries filtered out). Real-time entries: <strong>'+costPatterns.realtimeCount+'</strong> / '+costExpenses.length+' total. Learned lunch: '+costPatterns.lunchHour+':00, dinner: '+costPatterns.dinnerHour+':00'+(costPatterns.realtimeCount<10?' — need more real-time logs for accuracy':'')+'</div>';
-  costTriggerCfg.timeTriggers.forEach(function(t,i){
-    h+='<div style="background:var(--card);border-radius:10px;padding:10px;margin-bottom:6px;border:1.5px solid var(--as);display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
-    h+='<button class="ql-lnk-hide-sw '+(t.enabled?'on':'off')+'" onclick="costTriggerCfg.timeTriggers['+i+'].enabled=!costTriggerCfg.timeTriggers['+i+'].enabled;saveTriggerCfg();renderOv()"></button>';
-    h+='<input style="width:70px;border:1px solid var(--as);border-radius:6px;padding:4px 6px;font-size:11px;font-family:DM Sans,sans-serif;outline:none" value="'+esc(t.label)+'" onchange="costTriggerCfg.timeTriggers['+i+'].label=this.value;saveTriggerCfg()">';
-    h+='<select class="rule-sel" onchange="costTriggerCfg.timeTriggers['+i+'].hour=parseInt(this.value);saveTriggerCfg()">';
-    for(var hh=5;hh<=23;hh++)h+='<option value="'+hh+'" '+(t.hour===hh?'selected':'')+'>'+String(hh).padStart(2,'0')+':00</option>';
-    h+='</select>';
-    h+='<label style="font-size:9px;display:flex;align-items:center;gap:3px;color:var(--text2)"><input type="checkbox" '+(t.autoLearned?'checked':'')+' onchange="costTriggerCfg.timeTriggers['+i+'].autoLearned=this.checked;saveTriggerCfg()"> Auto-learn</label>';
-    h+='<button style="border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.5" onclick="costTriggerCfg.timeTriggers.splice('+i+',1);saveTriggerCfg();renderOv()">✕</button>';
-    h+='</div>';
-  });
-  h+='<div style="border:1.5px dashed var(--as);border-radius:8px;padding:6px;text-align:center;font-size:10px;color:var(--text2);cursor:pointer;margin-bottom:10px" onclick="costTriggerCfg.timeTriggers.push({id:\'t\'+Date.now(),label:\'☕ Custom\',hour:8,minute:0,enabled:true,autoLearned:false});saveTriggerCfg();renderOv()">+ Add Time Trigger</div>';
-
-  // === GPS SHOP TRIGGERS ===
-  h+='<div style="font-size:10px;font-weight:700;color:var(--text2);margin:10px 0 6px">📍 GPS Shop Triggers</div>';
-  h+='<div style="font-size:9px;color:var(--text2);margin-bottom:6px">When you\'re within radius of a shop → expense popup appears. Tap "📍 Pin Here" to use your current GPS location.</div>';
-  costTriggerCfg.gpsShops.forEach(function(s,i){
-    h+='<div style="background:var(--card);border-radius:10px;padding:8px 10px;margin-bottom:4px;border:1.5px solid var(--as)">';
-    h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">';
-    h+='<button class="ql-lnk-hide-sw '+(s.enabled?'on':'off')+'" onclick="costTriggerCfg.gpsShops['+i+'].enabled=!costTriggerCfg.gpsShops['+i+'].enabled;saveTriggerCfg();renderOv()"></button>';
-    h+='<input style="flex:1;border:1px solid var(--as);border-radius:6px;padding:4px 8px;font-size:11px;font-family:DM Sans,sans-serif;outline:none;font-weight:600" value="'+esc(s.name)+'" onchange="costTriggerCfg.gpsShops['+i+'].name=this.value;saveTriggerCfg()">';
-    h+='<span style="font-size:8px;color:var(--text2)">'+s.radius+'m</span>';
-    h+='<button style="border:none;background:none;font-size:10px;cursor:pointer;color:#DC2626;opacity:.5" onclick="costTriggerCfg.gpsShops.splice('+i+',1);saveTriggerCfg();renderOv()">✕</button>';
-    h+='</div>';
-    h+='<div style="display:flex;align-items:center;gap:4px">';
-    h+='<span style="font-size:8px;color:var(--text2)">'+s.lat.toFixed(4)+', '+s.lng.toFixed(4)+'</span>';
-    if(gpsLat){
-      var dist=Math.round(gpsDistM(gpsLat,gpsLng,s.lat,s.lng));
-      h+='<span style="font-size:8px;color:'+(dist<=s.radius?'#059669':'var(--text2)')+'">'+dist+'m away</span>';
-      h+='<button style="border:none;background:var(--accent);color:white;padding:2px 8px;border-radius:5px;font-size:8px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:auto" onclick="costTriggerCfg.gpsShops['+i+'].lat='+gpsLat+';costTriggerCfg.gpsShops['+i+'].lng='+gpsLng+';saveTriggerCfg();renderOv()">📍 Pin Here</button>';
-    }
-    h+='<select class="rule-sel" style="font-size:8px;margin-left:auto" onchange="costTriggerCfg.gpsShops['+i+'].radius=parseInt(this.value);saveTriggerCfg()">';
-    [50,80,100,150,200].forEach(function(r){h+='<option value="'+r+'" '+(s.radius===r?'selected':'')+'>'+r+'m</option>'});
-    h+='</select>';
-    h+='</div></div>';
-  });
-  // Add new shop
-  h+='<div style="display:flex;gap:4px;margin-bottom:10px">';
-  h+='<button style="flex:1;border:1.5px dashed var(--as);border-radius:8px;padding:6px;font-size:10px;color:var(--text2);cursor:pointer;font-family:DM Sans,sans-serif;background:transparent" onclick="costTriggerCfg.gpsShops.push({name:\'New Shop\',lat:'+(gpsLat||35.7089)+',lng:'+(gpsLng||139.9454)+',radius:80,enabled:true});saveTriggerCfg();renderOv()">+ Add Shop'+(gpsLat?' (at current GPS)':'')+'</button>';
-  h+='</div>';
-
-  // === OFFICE DEPARTURE ===
-  h+='<div style="font-size:10px;font-weight:700;color:var(--text2);margin:10px 0 6px">🏢 Office Departure Trigger</div>';
-  h+='<div style="background:var(--card);border-radius:10px;padding:10px;border:1.5px solid var(--as);display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
-  h+='<button class="ql-lnk-hide-sw '+(costTriggerCfg.officeDeparture.enabled?'on':'off')+'" onclick="costTriggerCfg.officeDeparture.enabled=!costTriggerCfg.officeDeparture.enabled;saveTriggerCfg();renderOv()"></button>';
-  h+='<span style="font-size:11px;font-weight:500;flex:1">Prompt after leaving office</span>';
-  h+='<span style="font-size:9px;color:var(--text2)">Delay:</span>';
-  h+='<select class="rule-sel" onchange="costTriggerCfg.officeDeparture.delayMin=parseInt(this.value);saveTriggerCfg()">';
-  [0,1,2,5,10].forEach(function(m){h+='<option value="'+m+'" '+(costTriggerCfg.officeDeparture.delayMin===m?'selected':'')+'>'+(!m?'Immediate':m+' min')+'</option>'});
-  h+='</select></div>';
-
-  // === GPS COOLDOWN ===
-  h+='<div style="margin-top:8px"><div class="sett-ss-row"><span class="sett-ss-lbl">GPS popup cooldown</span><select class="rule-sel" onchange="costTriggerCfg.gpsCooldownMin=parseInt(this.value);saveTriggerCfg()">';
-  [10,15,20,30,45,60].forEach(function(m){h+='<option value="'+m+'" '+(costTriggerCfg.gpsCooldownMin===m?'selected':'')+'>'+m+' min</option>'});
-  h+='</select></div></div>';
-
-  // === TEST BUTTON ===
-  h+='<button style="border:none;background:var(--accent);color:white;padding:8px 14px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;margin-top:8px;width:100%" onclick="closeOv();openSmartExpense(smartPrefillTime())">⚡ Test Smart Expense Popup</button>';
-
-  // === PATTERN INFO ===
-  if(costPatterns&&costPatterns.topShops.length){
-    h+='<div style="margin-top:10px;font-size:9px;font-weight:600;color:var(--text2)">🧠 Learned patterns from '+costExpenses.length+' expenses:</div>';
-    h+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">';
-    costPatterns.topShops.slice(0,6).forEach(function(s){
-      h+='<span style="font-size:8px;padding:3px 7px;border-radius:5px;background:var(--card);border:1px solid var(--as);color:var(--text2)">'+(s.isConbini?'🏪 ':'')+s.name+' · ¥'+s.avgAmount+' · '+s.count+'x → '+s.topCategory+'</span>';
-    });
-    h+='</div>';
-  }
   h+='</div>';
 
   // Team Takeover section
