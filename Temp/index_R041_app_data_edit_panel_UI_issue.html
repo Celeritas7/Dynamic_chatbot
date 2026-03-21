@@ -584,9 +584,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .al-summary{display:flex;gap:10px;margin-bottom:10px;padding:7px 10px;background:var(--as);border-radius:9px;align-items:center;font-size:10px;font-weight:600}
 .al-summary-dot{width:7px;height:7px;border-radius:50%}
 .al-grid{display:flex;gap:0;border:1.5px solid var(--as);border-radius:12px;overflow:hidden;min-height:150px}
-.al-grid.edit-mode{flex-direction:column}
-.al-grid.edit-mode .al-col{border-right:none;border-bottom:1px solid var(--as)}.al-grid.edit-mode .al-col:last-child{border-bottom:none}
-.al-grid.edit-mode .al-col-body{max-height:none;padding:10px}
 .al-col{flex:1;min-width:0;border-right:1px solid var(--as)}.al-col:last-child{border-right:none}
 .al-col-hd{padding:8px 6px;background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-bottom:1.5px solid var(--as);text-align:center}
 .al-col-title{font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:3px}
@@ -2835,22 +2832,14 @@ function alRenderColEdit(cat, ci){
 var alEditPath=null,alEditApp=null;
 var alSnapshot=null; // saved copy of appDB before edit mode
 function alAddAppTo(ci,si){
-  if(ci<0||ci>=appDB.length)return;
   var newApp={id:'a_'+Date.now(),ico:'📱',name:'New App',url:'',active:true};
-  if(si!=null){
-    if(!appDB[ci].subs||si>=appDB[ci].subs.length)return;
-    appDB[ci].subs[si].apps.push(newApp);
-  } else {
-    if(!appDB[ci].apps)appDB[ci].apps=[];
-    appDB[ci].apps.push(newApp);
-  }
-  var path=si!=null?'appDB['+ci+'].subs['+si+'].apps['+(appDB[ci].subs[si].apps.length-1)+']':'appDB['+ci+'].apps['+(appDB[ci].apps.length-1)+']';
+  if(si!=null)appDB[ci].subs[si].apps.push(newApp);
+  else appDB[ci].apps.push(newApp);
   openAppLaunch();
-  setTimeout(function(){try{alOpenEditOv(path)}catch(e){console.error(e)}},100);
 }
 function alAddGroup(ci){
-  if(ci<0||ci>=appDB.length)return;
   if(!appDB[ci].subs){
+    // Convert flat category to grouped — move existing apps into a default sub
     var existingApps=appDB[ci].apps||[];
     appDB[ci].subs=[];
     if(existingApps.length){
@@ -2862,14 +2851,11 @@ function alAddGroup(ci){
   openAppLaunch();
 }
 function alAddCategory(){
-  appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[{id:'a_'+Date.now(),ico:'📱',name:'New App',url:'',active:true}]});
-  var ci=appDB.length-1;
+  appDB.push({id:'cat_'+Date.now(),ico:'📂',name:'New Category',apps:[]});
   openAppLaunch();
-  setTimeout(function(){try{alOpenEditOv('appDB['+ci+'].apps[0]')}catch(e){console.error(e)}},100);
 }
 function alOpenEditOv(path){
-  try{alEditPath=path;alEditApp=eval(path);if(!alEditApp){console.error('alOpenEditOv: null at',path);return}}
-  catch(e){console.error('alOpenEditOv error:',e,path);return}
+  alEditPath=path;alEditApp=eval(path);
   alRenderEditOv();
   document.getElementById('alEditOv').classList.add('show');
 }
@@ -2897,17 +2883,9 @@ function alSaveEditOv(){
   alEditPath=null;alEditApp=null;openAppLaunch();
 }
 function alDeleteEditOv(){
-  if(!alEditPath||!alEditApp)return;
+  if(!alEditPath)return;
   if(!confirm('Delete "'+alEditApp.name+'"?'))return;
-  // Parse path to find and splice correctly
-  try{
-    var m=alEditPath.match(/appDB\[(\d+)\]\.(?:subs\[(\d+)\]\.)?apps\[(\d+)\]/);
-    if(m){
-      var ci=parseInt(m[1]),si=m[2]!=null?parseInt(m[2]):null,ai=parseInt(m[3]);
-      if(si!=null)appDB[ci].subs[si].apps.splice(ai,1);
-      else appDB[ci].apps.splice(ai,1);
-    }
-  }catch(e){console.error('alDeleteEditOv:',e)}
+  try{eval(alEditPath.replace(/\.apps\[(\d+)\]$/,'.apps.splice($1,1)'))}catch(e){}
   document.getElementById('alEditOv').classList.remove('show');
   alEditPath=null;alEditApp=null;openAppLaunch();
 }
@@ -2930,7 +2908,7 @@ function openAppLaunch(){
     h+='</div>';
   }
 
-  h+='<div class="al-grid'+(alEditMode?' edit-mode':'')+'">';
+  h+='<div class="al-grid">';
   appDB.forEach(function(cat,ci){
     var allInCol=[];
     if(cat.apps)allInCol=cat.apps;
