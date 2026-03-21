@@ -1625,6 +1625,12 @@ function buildPersonalityContext(sqN){
     if(cs.topCats.length)ctx.push('Top categories: '+cs.topCats.map(([c,a])=>`${c}: ¥${a.toLocaleString()}`).join(', '));
     if(cs.recentExpenses.length){ctx.push('Recent:');cs.recentExpenses.forEach(e=>ctx.push(`  ${e.date} ¥${e.amount} ${e.shop||''} (${e.category||''})`))}
   }
+  // Weather context (available to all personalities)
+  const wx=getTodayWeather();
+  if(wx)ctx.push(`\nWeather today: ${wx.icon} ${wx.tMax}°C high / ${wx.tMin}°C low (code ${wx.code})`);
+  // Holiday context
+  const holName=getHolidayName(todayK());
+  if(holName)ctx.push(`Today is a holiday: ${holName}`);
   return ctx.join('\n');
 }
 
@@ -2115,8 +2121,62 @@ setInterval(tkvCheck,60000);
 // Helpers
 function todayK(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function isWknd(){const d=new Date().getDay();return d===0||d===6}
-const JP_HOL={'2025-01-01':1,'2025-01-13':1,'2025-02-11':1,'2025-02-23':1,'2025-02-24':1,'2025-03-20':1,'2025-04-29':1,'2025-05-03':1,'2025-05-04':1,'2025-05-05':1,'2025-05-06':1,'2025-07-21':1,'2025-08-11':1,'2025-09-15':1,'2025-09-23':1,'2025-10-13':1,'2025-11-03':1,'2025-11-23':1,'2025-11-24':1,'2026-01-01':1,'2026-01-12':1,'2026-02-11':1,'2026-02-23':1,'2026-03-20':1,'2026-04-29':1,'2026-05-03':1,'2026-05-04':1,'2026-05-05':1,'2026-05-06':1,'2026-07-20':1,'2026-08-11':1,'2026-09-21':1,'2026-09-23':1,'2026-10-12':1,'2026-11-03':1,'2026-11-23':1};
-function dayType(){if(manHol)return'holiday';if(JP_HOL[todayK()])return'holiday';if(isWknd())return'weekend';return'weekday'}
+
+// ===== DYNAMIC HOLIDAYS (replaces hardcoded list) =====
+let holidayMap={}; // {'2026-03-20':'Vernal Equinox', '2026-04-29':'Shōwa Day', ...}
+let personalDaysOff={}; // {'2026-03-25':true} from calendar_app_entries marked days
+let weatherData={}; // {'2026-03-21': {icon:'☀️', tMax:20, tMin:8, code:0}}
+const WX_ICONS={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',66:'🌧️',67:'🌧️',71:'❄️',73:'❄️',75:'❄️',77:'❄️',80:'🌧️',81:'🌧️',82:'🌧️',85:'❄️',86:'❄️',95:'⛈️',96:'⛈️',99:'⛈️'};
+
+async function loadHolidays(){
+  try{
+    const yr=new Date().getFullYear();
+    for(const y of[yr,yr+1]){
+      const res=await fetch('https://date.nager.at/api/v3/PublicHolidays/'+y+'/JP');
+      if(!res.ok)continue;
+      const data=await res.json();
+      data.forEach(h=>{holidayMap[h.date]=h.localName||h.name});
+    }
+    console.log('✅ Holidays loaded from API:',Object.keys(holidayMap).length);
+  }catch(e){console.warn('Holiday API failed:',e.message)}
+}
+
+async function loadPersonalDaysOff(){
+  try{
+    // Read marked days from calendar_app_entries — these are personal days off
+    const today=new Date();
+    const startDate=new Date(today.getFullYear(),today.getMonth(),1).toISOString().split('T')[0];
+    const endDate=new Date(today.getFullYear(),today.getMonth()+2,0).toISOString().split('T')[0];
+    const{data}=await sb.from('calendar_app_entries').select('entry_date,is_marked,note').eq('user_id','default-user').eq('is_marked',true).gte('entry_date',startDate).lte('entry_date',endDate);
+    (data||[]).forEach(r=>{personalDaysOff[r.entry_date]=r.note||'Day off'});
+  }catch(e){console.warn('Personal days load:',e.message)}
+}
+
+async function loadWeatherData(){
+  try{
+    const res=await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.79&longitude=140.06&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=7');
+    if(!res.ok)return;
+    const d=await res.json();
+    const days=d.daily;
+    for(let i=0;i<days.time.length;i++){
+      const code=days.weathercode[i],tMax=Math.round(days.temperature_2m_max[i]),tMin=Math.round(days.temperature_2m_min[i]);
+      weatherData[days.time[i]]={icon:WX_ICONS[code]||'🌤️',tMax,tMin,code};
+    }
+    console.log('✅ Weather loaded');
+  }catch(e){console.warn('Weather failed:',e.message)}
+}
+
+function isHoliday(dateStr){return!!holidayMap[dateStr]||!!personalDaysOff[dateStr]}
+function getHolidayName(dateStr){return holidayMap[dateStr]||personalDaysOff[dateStr]||null}
+function getTodayWeather(){return weatherData[todayK()]||null}
+
+function dayType(){
+  if(manHol)return'holiday';
+  const today=todayK();
+  if(isHoliday(today))return'holiday';
+  if(isWknd())return'weekend';
+  return'weekday';
+}
 function isOff(){return dayType()!=='weekday'}
 function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
 
@@ -2209,7 +2269,7 @@ async function loadAll(){
   allTags=taR.data||[];tagMap={};allTags.forEach(t=>tagMap[t.id]=t);
   allTasks=(tR.data||[]).map(r=>({id:r.id,name:r.name,status:r.status,parent_id:r.parent_id,estimated_minutes:r.estimated_minutes,due_date:r.due_date,created_at:r.created_at,links:r.links||''}));
   taskTags={};(ttR.data||[]).forEach(r=>{if(!taskTags[r.task_id])taskTags[r.task_id]=[];taskTags[r.task_id].push(r.tag_id)});
-  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks','cf_takeover_cfg','cf_takeover_fired','cf_cost_triggers']);
+  const{data:mem}=await sb.from('mind_map_app_chat_memory').select('key,value').in('key',['cf_pitch','cf_possession','cf_players','cf_regen_defaults','cf_regen_tasks','cf_timeslots','cf_office','cf_ofc_qlinks','cf_ofc_apps','cf_app_db','cf_ofc_tasks','cf_ofc_bl_links','cf_screensaver','cf_pos_ranks','cf_commute','cf_custom_squads','cf_api_key','cf_briefing_cache','cf_streaks','cf_takeover_cfg','cf_takeover_fired','cf_cost_triggers','cf_app_order_rules']);
   pitchSet=new Set();const dp={
     'Paper study':'attacker','Quick study':'attacker',Coding:'attacker','App generation':'attacker',Reading:'attacker',Documentation:'attacker',
     'AI study':'attacker','Executive':'attacker','Manager Tasks':'attacker','Reminders':'attacker','People Tasks':'attacker',
@@ -2245,6 +2305,7 @@ async function loadAll(){
     if(m.key==='cf_takeover_cfg')try{const tc=JSON.parse(m.value);Object.keys(tc).forEach(k=>{takeoverConfig[k]={...takeoverConfig[k],...tc[k]}})}catch{};
     if(m.key==='cf_takeover_fired')try{tkvFiredToday=JSON.parse(m.value)}catch{};
     if(m.key==='cf_cost_triggers')try{const ct=JSON.parse(m.value);if(ct.gpsShops)costTriggerCfg.gpsShops=ct.gpsShops;if(ct.timeTriggers)costTriggerCfg.timeTriggers=ct.timeTriggers;if(ct.officeDeparture)costTriggerCfg.officeDeparture=ct.officeDeparture;if(ct.gpsCooldownMin!=null)costTriggerCfg.gpsCooldownMin=ct.gpsCooldownMin}catch{};
+    if(m.key==='cf_app_order_rules')try{appOrderRules=JSON.parse(m.value)}catch{};
   });
   // Migrate: convert old pitchSet to posRanks if posRanks is empty
   if(Object.keys(posRanks).length===0&&pitchSet.size>0){
@@ -2912,6 +2973,56 @@ function alDeleteEditOv(){
   alEditPath=null;alEditApp=null;openAppLaunch();
 }
 
+// ===== APP ORDERING RULES =====
+// Each rule: condition → ordered list of category names (first = leftmost column)
+// First matching rule wins. Unmentioned categories go at the end.
+let appOrderRules=[
+  {id:'r1',label:'Weekday home morning',cond:{dayType:'weekday',loc:'home',hourBefore:10},order:['Language Study','Coding','Mechanical','General Purpose']},
+  {id:'r2',label:'Weekday near Ryutsu',cond:{dayType:'weekday',nearStation:'ryutsu'},order:['General Purpose','Language Study','Coding','Mechanical']},
+  {id:'r3',label:'Weekday office',cond:{dayType:'weekday',loc:'office'},order:['Six sigma apps','Mechanical','Language Study','Coding']},
+  {id:'r4',label:'Weekday returning home',cond:{dayType:'weekday',loc:'home',hourAfter:17},order:['Language Study','Coding','Mechanical','General Purpose']},
+  {id:'r5',label:'Weekend home',cond:{dayType:'weekend',loc:'home'},order:['Language Study','Coding','Mechanical','General Purpose']},
+  {id:'r6',label:'Weekend outside',cond:{dayType:'weekend',loc:'outside'},order:['General Purpose','Language Study','Coding','Mechanical']},
+  {id:'r7',label:'Holiday',cond:{dayType:'holiday'},order:['Language Study','Coding','Mechanical','General Purpose']},
+];
+function saveAppOrderRules(){memSave('cf_app_order_rules',JSON.stringify(appOrderRules))}
+
+function matchAppOrderRule(){
+  var dt=dayType(),hr=new Date().getHours();
+  var nearStn=gpsLat?gpsNearestStation():null;
+  var nearStnDist=gpsLat?gpsDistToNearestStation():9999;
+  for(var i=0;i<appOrderRules.length;i++){
+    var r=appOrderRules[i],c=r.cond;
+    // Day type check
+    if(c.dayType&&c.dayType!==dt)continue;
+    // Location check
+    if(c.loc&&c.loc!==loc)continue;
+    // Hour checks
+    if(c.hourBefore!=null&&hr>=c.hourBefore)continue;
+    if(c.hourAfter!=null&&hr<c.hourAfter)continue;
+    // Near station check (within 500m)
+    if(c.nearStation&&(nearStn!==c.nearStation||nearStnDist>500))continue;
+    // All conditions passed
+    return r;
+  }
+  return null;
+}
+
+function getOrderedAppDB(){
+  var rule=matchAppOrderRule();
+  if(!rule)return appDB;
+  // Build ordered array: categories in rule.order first, then the rest
+  var ordered=[];
+  var used=new Set();
+  rule.order.forEach(function(name){
+    var idx=appDB.findIndex(function(c){return c.name.toLowerCase()===name.toLowerCase()});
+    if(idx>=0){ordered.push(appDB[idx]);used.add(idx)}
+  });
+  // Append unmentioned categories
+  appDB.forEach(function(c,i){if(!used.has(i))ordered.push(c)});
+  return ordered;
+}
+
 function openAppLaunch(){
   var sheet=document.getElementById('appLaunchSheet');
   var all=alAllApps();
@@ -2931,7 +3042,11 @@ function openAppLaunch(){
   }
 
   h+='<div class="al-grid'+(alEditMode?' edit-mode':'')+'">';
-  appDB.forEach(function(cat,ci){
+  // In view mode: apply ordering rules. In edit mode: original order (indices must match appDB)
+  var displayList=alEditMode?appDB.map(function(c,i){return{cat:c,ci:i}}):getOrderedAppDB().map(function(c){return{cat:c,ci:appDB.indexOf(c)}});
+  var activeRule=alEditMode?null:matchAppOrderRule();
+  displayList.forEach(function(item){
+    var cat=item.cat,ci=item.ci;
     var allInCol=[];
     if(cat.apps)allInCol=cat.apps;
     if(cat.subs)(cat.subs||[]).forEach(function(s){allInCol=allInCol.concat(s.apps||[])});
@@ -2945,6 +3060,10 @@ function openAppLaunch(){
     h+='</div></div>';
   });
   h+='</div>';
+  // Show active rule indicator
+  if(activeRule&&!alEditMode){
+    h+='<div style="text-align:center;font-size:9px;color:var(--text2);margin-top:6px">📐 Order: '+esc(activeRule.label)+'</div>';
+  }
 
   if(alEditMode){
     h+='<div class="al-edit-add" style="margin-top:8px;font-weight:600" onclick="alAddCategory()">+ Add Category</div>';
@@ -3502,7 +3621,16 @@ function setLoc(l,manual){
 }
 function setMood(m){mood=m;renderPitch()}
 function toggleHol(){manHol=!manHol;updateBadge();checkPoss();renderPitch()}
-function updateBadge(){const dt=dayType(),b=document.getElementById('dayB');b.textContent=dt==='holiday'?'Holiday':dt==='weekend'?'Weekend':'Weekday';b.className='day-badge '+dt;document.getElementById('holB').classList.toggle('active',manHol)}
+function updateBadge(){
+  const dt=dayType(),b=document.getElementById('dayB');
+  const holName=getHolidayName(todayK());
+  const wx=getTodayWeather();
+  let label=dt==='holiday'?(holName||'Holiday'):dt==='weekend'?'Weekend':'Weekday';
+  if(wx)label+=' '+wx.icon+wx.tMax+'°';
+  b.textContent=label;
+  b.className='day-badge '+dt;
+  document.getElementById('holB').classList.toggle('active',manHol);
+}
 function updateClock(){document.getElementById('timeD').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}
 
 // ===== OVERLAY =====
@@ -4352,7 +4480,12 @@ function ssInitListeners(){
   ssResetTimer();
 }
 
-async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';document.getElementById('emgBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch();setTimeout(tkvCheck,3000)}
+async function init(){applyTheme(loc);updateBadge();updateClock();setInterval(updateClock,60000);await loadAll();await checkAndReactivate();
+  // Load calendar integrations (non-blocking — app renders while these fetch)
+  loadHolidays().then(()=>{updateBadge();renderPitch()});
+  loadPersonalDaysOff();
+  loadWeatherData();
+  document.getElementById('loadingView').style.display='none';document.getElementById('pitch').style.display='';document.getElementById('cornerBtn').style.display='';document.getElementById('appLaunchBtn').style.display='';document.getElementById('emgBtn').style.display='';checkPoss();ofcUpdateBlockers();ssInitListeners();gpsCheck();renderPitch();setTimeout(tkvCheck,3000)}
 init();
 </script>
 </body>
